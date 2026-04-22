@@ -8,15 +8,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portfolio.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# --- الجداول ---
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     full_details = db.Column(db.Text, nullable=True)
     technologies = db.Column(db.String(200), nullable=True)
-    icon = db.Column(db.String(200), default='fas fa-code') # تم تكبير الحجم ليقبل الروابط الطويلة
-    is_visible = db.Column(db.Boolean, default=True) # ميزة الإخفاء والإظهار
+    icon = db.Column(db.String(200), default='fas fa-code')
+    is_visible = db.Column(db.Boolean, default=True)
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,7 +25,6 @@ class Message(db.Model):
     content = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, default=False)
 
-# --- حماية المسارات ---
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -38,31 +36,32 @@ def login_required(f):
 with app.app_context():
     db.create_all()
 
-# --- المسارات العامة ---
 @app.route('/')
 def home():
-    # جلب المشاريع المرئية فقط للزوار
     projects = Project.query.filter_by(is_visible=True).all()
     return render_template('index.html', projects=projects)
 
+# --- التحديث الجبار: جلب المشروع التالي والسابق ---
 @app.route('/project/<int:id>')
 def project_details(id):
     project = Project.query.get_or_404(id)
-    # منع الزوار من رؤية المشاريع المخفية عبر الرابط المباشر
     if not project.is_visible and 'logged_in' not in session:
         return redirect(url_for('home'))
-    return render_template('project_details.html', project=project)
+    
+    # جلب المشروع السابق والتالي لعمل التنقل اللانهائي
+    prev_project = Project.query.filter(Project.id < id, Project.is_visible == True).order_by(Project.id.desc()).first()
+    next_project = Project.query.filter(Project.id > id, Project.is_visible == True).order_by(Project.id.asc()).first()
+    
+    return render_template('project_details.html', project=project, prev_project=prev_project, next_project=next_project)
 
 @app.route('/contact', methods=['POST'])
 def contact():
-    new_msg = Message(name=request.form.get('name'), email=request.form.get('email'), 
-                      phone=request.form.get('phone'), content=request.form.get('content'))
+    new_msg = Message(name=request.form.get('name'), email=request.form.get('email'), phone=request.form.get('phone'), content=request.form.get('content'))
     db.session.add(new_msg)
     db.session.commit()
     flash("Message sent to Al-Mustafa Programming. We will contact you soon.")
     return redirect(url_for('home'))
 
-# --- نظام تسجيل الدخول ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -77,24 +76,19 @@ def logout():
     session.pop('logged_in', None)
     return redirect(url_for('home'))
 
-# --- لوحة التحكم (المحمية) ---
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
     if request.method == 'POST':
-        new_project = Project(title=request.form['title'], description=request.form['description'],
-                             full_details=request.form['full_details'], technologies=request.form['technologies'],
-                             icon=request.form['icon'])
+        new_project = Project(title=request.form['title'], description=request.form['description'], full_details=request.form['full_details'], technologies=request.form['technologies'], icon=request.form['icon'])
         db.session.add(new_project)
         db.session.commit()
         return redirect(url_for('admin'))
-    
     projects = Project.query.all()
     messages = Message.query.order_by(Message.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count()
     return render_template('admin.html', projects=projects, messages=messages, unread=unread_count)
 
-# --- مسارات التعديل الجديدة ---
 @app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_project(id):

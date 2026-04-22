@@ -15,8 +15,7 @@
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div id="toast-notification" class="toast-container show">
-        <div class="toast-content">
-            <i class="fas fa-check-circle toast-icon"></i>
+        <div class="toast-content"><i class="fas fa-check-circle toast-icon"></i>
             <p>{{ messages[0] }}</p>
         </div>
     </div>
@@ -27,9 +26,7 @@
         <div class="logo">
             <h1><a href="{{ url_for('home') }}">Al-Mustafa Programming</a></h1>
         </div>
-        <div class="menu-btn" id="menu-btn">
-            <i class="fas fa-bars"></i>
-        </div>
+        <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
                 <li><a href="#home">الرئيسية</a></li>
@@ -39,7 +36,7 @@
         </nav>
     </header>
 
-    <section id="home" class="hero">
+    <section id="home" class="hero reveal-on-scroll">
         <div class="hero-content">
             <h2 class="hero-title">تجارب رقمية فاخرة</h2>
             <p class="hero-subtitle">هندسة برمجية متكاملة بمعايير عالمية</p>
@@ -48,14 +45,13 @@
     </section>
 
     <section id="portfolio" class="portfolio">
-        <div class="section-title">
+        <div class="section-title reveal-on-scroll">
             <h2>معرض الأعمال</h2>
             <div class="title-underline"></div>
         </div>
-
         <div class="projects-grid">
             {% for project in projects %}
-            <a href="{{ url_for('project_details', id=project.id) }}" class="project-card-link">
+            <a href="{{ url_for('project_details', id=project.id) }}" class="project-card-link reveal-on-scroll">
                 <div class="project-card">
                     <div class="project-image">
                         {% if project.icon.startswith('http') %}
@@ -75,18 +71,15 @@
         </div>
     </section>
 
-    <section id="contact" class="contact-section">
+    <section id="contact" class="contact-section reveal-on-scroll">
         <div class="section-title">
             <h2>تواصل معي</h2>
             <div class="title-underline"></div>
         </div>
-
         <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
             <input type="text" name="name" placeholder="الاسم الكريم" required>
             <input type="email" name="email" placeholder="البريد الإلكتروني" required>
-            <div class="phone-input-container">
-                <input type="tel" id="phone" name="phone" required>
-            </div>
+            <div class="phone-input-container"><input type="tel" id="phone" name="phone" required></div>
             <textarea name="content" rows="5" placeholder="كيف يمكنني مساعدتك؟" required></textarea>
             <button type="submit" class="cta-button">إرسال الرسالة</button>
         </form>
@@ -103,6 +96,22 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        });
+    </script>
 </body>
 
 </html>

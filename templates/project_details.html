@@ -19,7 +19,6 @@
     </header>
 
     <main class="project-showcase">
-
         <div class="sticky-visual-column">
             <div class="mockup-glass-container">
                 {% if project.icon.startswith('http') %}
@@ -31,10 +30,8 @@
         </div>
 
         <div class="scrollable-info-column">
-
             <section class="info-block">
                 <h3 class="block-title"><i class="fas fa-bolt"></i> هندسة الميزات</h3>
-
                 <div class="bento-grid">
                     {% if project.full_details %}
                     {% set sentences = project.full_details.split('.') %}
@@ -68,9 +65,39 @@
                     {% endif %}
                 </div>
             </section>
-
         </div>
     </main>
+
+    <div class="project-footer-premium">
+        <div class="cta-banner-glass">
+            <h2>هل تبحث عن تجربة رقمية مماثلة؟</h2>
+            <p>دعنا نحول فكرتك إلى واقع برمجي بمعايير عالمية.</p>
+            <a href="{{ url_for('home') }}#contact" class="cta-button">تواصل معي الآن</a>
+        </div>
+
+        <div class="project-navigation">
+            {% if prev_project %}
+            <a href="{{ url_for('project_details', id=prev_project.id) }}" class="nav-card prev-card">
+                <span class="nav-label"><i class="fas fa-chevron-right"></i> المشروع السابق</span>
+                <h4>{{ prev_project.title }}</h4>
+            </a>
+            {% else %}
+            <div class="nav-card empty-card"></div>
+            {% endif %}
+
+            <a href="{{ url_for('home') }}#portfolio" class="nav-center-btn" title="معرض الأعمال"><i
+                    class="fas fa-th-large"></i></a>
+
+            {% if next_project %}
+            <a href="{{ url_for('project_details', id=next_project.id) }}" class="nav-card next-card">
+                <span class="nav-label">المشروع التالي <i class="fas fa-chevron-left"></i></span>
+                <h4>{{ next_project.title }}</h4>
+            </a>
+            {% else %}
+            <div class="nav-card empty-card"></div>
+            {% endif %}
+        </div>
+    </div>
 
 </body>
 
