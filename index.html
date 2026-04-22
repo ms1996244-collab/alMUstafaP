@@ -1,0 +1,17 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<div class="projects-grid">
+    {% for project in projects %}
+    <div class="project-card">
+        <div class="project-image">
+            <i class="{{ project.icon }} card-icon"></i>
+        </div>
+        <div class="project-info">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.description }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>

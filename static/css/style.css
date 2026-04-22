@@ -1,0 +1,623 @@
+/* استيراد خط Tajawal لتصميم عربي عصري وراقي */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+/* --- 1. المتغيرات والأساسيات (Obsidian Premium Setup) --- */
+:root {
+    --primary-gold: #d4af37;
+    --dark-bg: #070605;
+    /* أسود دافئ وعميق جداً */
+    --glass-bg: rgba(18, 16, 14, 0.45);
+    /* خلفية زجاجية بألوان الأوبسيديان */
+    --glass-border: rgba(212, 175, 55, 0.15);
+    /* إطار زجاجي ذهبي خفيف */
+    --light-text: #ffffff;
+    --gray-text: #a39d93;
+    /* رمادي دافئ يتناغم مع الذهبي */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-gold);
+    border-radius: 10px;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: var(--dark-bg);
+    /* تدرج الأوبسيديان الشبكي (العمق البصري) */
+    background-image:
+        radial-gradient(circle at 15% 15%, rgba(26, 20, 15, 0.6) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(15, 18, 20, 0.5) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, var(--dark-bg) 0%, transparent 100%);
+    background-attachment: fixed;
+    color: var(--light-text);
+    line-height: 1.8;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- تأثيرات النصوص المتدرجة (Gradient Text) --- */
+.hero-title,
+.section-title h2,
+.admin-container h1 {
+    background: linear-gradient(135deg, #ffffff 0%, var(--primary-gold) 50%, #8a6d1c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+/* --- 2. شريط التنقل (Navbar) --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 20px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(7, 6, 5, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    z-index: 1000;
+    transition: all 0.4s ease;
+}
+
+.navbar .logo h1 a {
+    color: var(--primary-gold);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 40px;
+}
+
+.nav-links li a {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--gray-text);
+    transition: all 0.3s ease;
+}
+
+.nav-links li a:hover {
+    color: var(--light-text);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+
+/* --- 3. قسم الترحيب والزر (Hero & Buttons) --- */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin-top: 80px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.hero-subtitle {
+    font-size: 1.4rem;
+    color: var(--gray-text);
+    margin-bottom: 50px;
+    font-weight: 400;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 16px 50px;
+    border: 1px solid var(--glass-border);
+    color: var(--primary-gold) !important;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 30px;
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.cta-button:hover {
+    background: var(--primary-gold) !important;
+    color: var(--dark-bg) !important;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+    transform: translateY(-3px);
+}
+
+/* --- 4. تأثير الزجاج لمعرض الأعمال (Glassmorphism Cards) --- */
+.portfolio {
+    padding: 120px 8%;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-title h2 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+}
+
+.title-underline {
+    width: 50px;
+    height: 2px;
+    background-color: var(--primary-gold);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+}
+
+.project-card-link {
+    display: block;
+    text-decoration: none;
+}
+
+.project-card,
+.admin-card,
+.details-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    height: 100%;
+}
+
+.project-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.5);
+}
+
+.project-image {
+    width: 100%;
+    height: 240px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.card-icon {
+    font-size: 3.5rem;
+    color: var(--primary-gold);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    opacity: 0.8;
+    transition: transform 0.5s ease;
+}
+
+.project-card:hover .card-icon {
+    transform: scale(1.1);
+}
+
+.project-info {
+    padding: 30px;
+}
+
+.project-info h3 {
+    color: var(--light-text);
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.project-info p {
+    color: var(--gray-text);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+/* --- 5. نماذج الإدخال (Forms) --- */
+.contact-section {
+    padding: 100px 8%;
+    background: rgba(5, 4, 4, 0.8);
+}
+
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.contact-form input,
+.contact-form textarea,
+.admin-form input,
+.admin-form textarea {
+    width: 100%;
+    padding: 18px 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--light-text);
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus,
+.admin-form input:focus,
+.admin-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-gold);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+}
+
+/* --- تنسيقات حقل الهاتف الذكي --- */
+.phone-input-container {
+    width: 100%;
+}
+
+.iti {
+    width: 100%;
+}
+
+.iti__country-list {
+    background-color: #1a1a1a;
+    border: 1px solid var(--glass-border);
+    color: white;
+}
+
+.iti__country:hover {
+    background-color: var(--primary-gold);
+    color: black;
+}
+
+/* --- رسالة الشكر الزجاجية (Toast Notification) --- */
+.toast-container {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    z-index: 2000;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-container.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-content {
+    background: rgba(212, 175, 55, 0.15);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--primary-gold);
+    padding: 20px 40px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.toast-icon {
+    color: var(--primary-gold);
+    font-size: 1.5rem;
+}
+
+.toast-content p {
+    color: white;
+    font-weight: 500;
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* --- 6. صفحة التفاصيل ولوحة التحكم (Details & Admin) --- */
+.details-page,
+.admin-page {
+    padding: 120px 5% 80px 5%;
+    min-height: 100vh;
+}
+
+.admin-container h1,
+.admin-card h2 {
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+.back-btn {
+    color: var(--gray-text);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+.back-btn:hover {
+    color: var(--primary-gold);
+}
+
+.details-header {
+    text-align: center;
+    margin-bottom: 50px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 40px;
+}
+
+.details-icon {
+    font-size: 6rem;
+    color: var(--primary-gold);
+    margin-bottom: 25px;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+.details-content h3 {
+    color: var(--light-text);
+    margin: 35px 0 15px 0;
+    font-size: 1.4rem;
+}
+
+.tech-tags {
+    display: inline-block;
+    background: rgba(212, 175, 55, 0.08);
+    color: var(--primary-gold);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* --- 7. عناصر لوحة التحكم (Admin Specifics) --- */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+button.cta-button {
+    width: 100%;
+    border-radius: 12px;
+}
+
+.msg-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border-right: 3px solid var(--primary-gold);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 18px 15px;
+    text-align: right;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+th {
+    color: var(--gray-text);
+    font-weight: 500;
+}
+
+.delete-btn {
+    color: #ff4a4a;
+    text-decoration: none;
+    padding: 5px 15px;
+    background: rgba(255, 74, 74, 0.1);
+    border-radius: 20px;
+    transition: all 0.3s;
+}
+
+.delete-btn:hover {
+    background: #ff4a4a;
+    color: #fff;
+}
+
+/* --- 8. التذييل (Footer) --- */
+.footer {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #030202;
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.social-links {
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.social-links i {
+    font-size: 1.8rem;
+    color: var(--gray-text);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.social-links i:hover {
+    color: var(--primary-gold);
+    transform: translateY(-5px);
+}
+
+/* --- رسالة الشكر الزجاجية (Toast Notification) --- */
+.toast-container {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    z-index: 2000;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-container.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-content {
+    background: rgba(18, 16, 14, 0.85);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--primary-gold);
+    padding: 20px 40px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.toast-icon {
+    color: var(--primary-gold);
+    font-size: 1.5rem;
+}
+
+.toast-content p {
+    color: white;
+    font-weight: 500;
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* --- 9. الأنيميشن عند التمرير --- */
+.hidden-element {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.show-element {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .menu-btn {
+        display: block;
+        font-size: 1.5rem;
+        color: var(--light-text);
+        cursor: pointer;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(7, 6, 5, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 0;
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        display: none;
+        gap: 20px;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .menu-btn {
+        display: none;
+    }
+}
+
+/* تحسين الاسم في الهيدر والجوال */
+.navbar .logo h1 a {
+    font-size: clamp(18px, 4vw, 26px);
+    /* حجم خط مرن يتناسب مع الشاشة */
+    white-space: nowrap;
+}
+
+/* ستايل صفحة تسجيل الدخول */
+.login-container {
+    max-width: 400px;
+    margin: 150px auto;
+    padding: 40px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    text-align: center;
+}
+
+/* شارة الإشعارات */
+.notification-badge {
+    background: #ff4a4a;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin-right: 10px;
+}
+
+.unread-box {
+    border-right: 4px solid var(--primary-gold) !important;
+    background: rgba(212, 175, 55, 0.05) !important;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 15px 5%;
+    }
+
+    .logo h1 a {
+        font-size: 18px;
+    }
+}

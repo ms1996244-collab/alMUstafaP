@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel | Al-Mustafa Programming</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="admin-page">
+
+    <div class="admin-container">
+        <div class="admin-header"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Admin Panel
+                {% if unread > 0 %}
+                <span class="notification-badge">{{ unread }} New</span>
+                {% endif %}
+            </h1>
+            <a href="{{ url_for('logout') }}"
+                style="color: #ff4a4a; font-weight: bold; text-decoration: none;">Logout</a>
+        </div>
+
+        <a href="{{ url_for('home') }}" class="back-btn">العودة للموقع</a>
+
+        <div class="admin-grid">
+            <div class="admin-card">
+                <h2>إضافة مشروع جديد</h2>
+                <form action="{{ url_for('admin') }}" method="POST" class="admin-form">
+                    <input type="text" name="title" placeholder="اسم المشروع" required>
+                    <input type="text" name="description" placeholder="وصف قصير" required>
+                    <textarea name="full_details" placeholder="التفاصيل الكاملة" rows="3" required></textarea>
+                    <input type="text" name="technologies" placeholder="التقنيات (مثال: Python, Flask)" required>
+                    <input type="text" name="icon" placeholder="أيقونة FontAwesome (مثال: fas fa-code)" required>
+                    <button type="submit" class="cta-button">حفظ المشروع</button>
+                </form>
+            </div>
+
+            <div class="admin-card">
+                <h2>رسائل العملاء</h2>
+                <div class="messages-list">
+                    {% for msg in messages %}
+                    <div class="msg-box {% if not msg.is_read %}unread-box{% endif %}">
+                        <strong>{{ msg.name }} ({{ msg.phone }})</strong>
+                        <p>{{ msg.content }}</p>
+                        {% if not msg.is_read %}
+                        <a href="{{ url_for('mark_read', id=msg.id) }}"
+                            style="font-size: 0.8rem; color: var(--primary-gold); display: block; margin-top: 10px;">Mark
+                            as read</a>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <p>لا توجد رسائل حالياً.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card projects-list">
+            <h2>إدارة المشاريع</h2>
+            <table>
+                <tr>
+                    <th>المشروع</th>
+                    <th>إجراء</th>
+                </tr>
+                {% for project in projects %}
+                <tr>
+                    <td>{{ project.title }}</td>
+                    <td><a href="{{ url_for('delete_project', id=project.id) }}" class="delete-btn">حذف</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</body>
+
+</html>
