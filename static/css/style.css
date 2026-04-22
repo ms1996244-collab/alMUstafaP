@@ -621,3 +621,214 @@ th {
         font-size: 18px;
     }
 }
+
+/* =========================================================
+   تحديثات Luxury Premium لصفحة تفاصيل المشروع (Ultra-Modern)
+   ========================================================= */
+
+body.details-page-modern {
+    background-color: var(--dark-bg);
+    overflow-x: hidden;
+    padding: 0;
+}
+
+/* --- 1. الهيدر السينمائي (Vercel Style) --- */
+.cinematic-hero {
+    position: relative;
+    padding: 180px 5% 100px;
+    text-align: center;
+    background: radial-gradient(circle at top, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    z-index: 1;
+}
+
+.hero-glow {
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
+    filter: blur(60px);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.back-link-modern {
+    position: absolute;
+    top: 40px;
+    right: 5%;
+    color: var(--gray-text);
+    font-size: 1.1rem;
+    transition: color 0.3s;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.back-link-modern:hover {
+    color: var(--primary-gold);
+    border-color: var(--primary-gold);
+}
+
+.project-title-huge {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.project-subtitle-lead {
+    font-size: 1.3rem;
+    color: var(--gray-text);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* --- 2. التخطيط المزدوج الثابت (Stripe Style) --- */
+.project-showcase {
+    display: flex;
+    gap: 60px;
+    padding: 80px 5%;
+    max-width: 1500px;
+    margin: 0 auto;
+    align-items: flex-start;
+    /* أساسي لعمل التثبيت Sticky */
+}
+
+.sticky-visual-column {
+    width: 45%;
+    position: sticky;
+    top: 120px;
+    /* المسافة من أعلى الشاشة عند التمرير */
+}
+
+.mockup-glass-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.modern-mockup-img {
+    width: 100%;
+    border-radius: 16px;
+    object-fit: cover;
+    max-height: 70vh;
+}
+
+.modern-huge-icon {
+    font-size: 8rem;
+    color: var(--primary-gold);
+    padding: 80px 0;
+    filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
+}
+
+.scrollable-info-column {
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+.block-title {
+    color: var(--light-text);
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.block-title i {
+    color: var(--primary-gold);
+}
+
+/* --- 3. شبكة بانتو (Apple Bento Grid) --- */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.bento-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    padding: 30px;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.bento-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.bento-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(212, 175, 55, 0.4);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.bento-card:hover::before {
+    opacity: 1;
+}
+
+.bento-card h4 {
+    color: var(--primary-gold);
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    position: relative;
+}
+
+.bento-check {
+    margin-left: 8px;
+    font-size: 1rem;
+}
+
+.bento-card p {
+    color: #c0c0c0;
+    font-size: 1rem;
+    line-height: 1.8;
+    position: relative;
+}
+
+/* --- دعم شاشات الموبايل (Responsive) --- */
+@media (max-width: 992px) {
+    .project-showcase {
+        flex-direction: column;
+        padding: 40px 5%;
+    }
+
+    .sticky-visual-column,
+    .scrollable-info-column {
+        width: 100%;
+    }
+
+    .sticky-visual-column {
+        position: relative;
+        top: 0;
+    }
+
+    .modern-mockup-img {
+        max-height: 400px;
+    }
+}

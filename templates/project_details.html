@@ -3,29 +3,74 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ project.title }} | التفاصيل</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
-<body class="details-page">
+<body class="details-page-modern">
 
-    <div class="details-container">
-        <a href="{{ url_for('home') }}" class="back-btn"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
+    <header class="cinematic-hero">
+        <div class="hero-glow"></div>
+        <a href="{{ url_for('home') }}" class="back-link-modern"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
+        <h1 class="project-title-huge">{{ project.title }}</h1>
+        <p class="project-subtitle-lead">{{ project.description }}</p>
+    </header>
 
-        <div class="details-header">
-            <i class="{{ project.icon }} details-icon"></i>
-            <h1>{{ project.title }}</h1>
+    <main class="project-showcase">
+
+        <div class="sticky-visual-column">
+            <div class="mockup-glass-container">
+                {% if project.icon.startswith('http') %}
+                <img src="{{ project.icon }}" alt="{{ project.title }}" class="modern-mockup-img">
+                {% else %}
+                <i class="{{ project.icon }} modern-huge-icon"></i>
+                {% endif %}
+            </div>
         </div>
 
-        <div class="details-content">
-            <h3>نبذة عن المشروع</h3>
-            <p>{{ project.full_details }}</p>
+        <div class="scrollable-info-column">
 
-            <h3 class="tech-title">التقنيات المستخدمة</h3>
-            <p class="tech-tags">{{ project.technologies }}</p>
+            <section class="info-block">
+                <h3 class="block-title"><i class="fas fa-bolt"></i> هندسة الميزات (Bento Grid)</h3>
+
+                <div class="bento-grid">
+                    {% if project.full_details %}
+                    {% set sentences = project.full_details.split('.') %}
+                    {% for sentence in sentences %}
+                    {% set clean_sentence = sentence.strip() %}
+                    {% if clean_sentence|length > 15 %}
+                    <div class="bento-card">
+                        {% if ':' in clean_sentence %}
+                        {% set parts = clean_sentence.split(':', 1) %}
+                        <h4><i class="fas fa-check-circle bento-check"></i> {{ parts[0].strip() }}</h4>
+                        <p>{{ parts[1].strip() }}</p>
+                        {% else %}
+                        <p>{{ clean_sentence }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% else %}
+                    <p>لا توجد تفاصيل إضافية لهذا المشروع.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="info-block tech-block-modern">
+                <h3 class="block-title"><i class="fas fa-microchip"></i> البنية التحتية (Tech Stack)</h3>
+                <div class="tags-container">
+                    {% if project.technologies %}
+                    {% for tech in project.technologies.split(',') %}
+                    <span class="tech-tag">{{ tech.strip() }}</span>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </section>
+
         </div>
-    </div>
+    </main>
 
 </body>
 
