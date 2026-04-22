@@ -15,7 +15,8 @@ class Project(db.Model):
     description = db.Column(db.Text, nullable=False)
     full_details = db.Column(db.Text, nullable=True)
     technologies = db.Column(db.String(200), nullable=True)
-    icon = db.Column(db.String(50), default='fas fa-code')
+    icon = db.Column(db.String(200), default='fas fa-code') # تم تكبير الحجم ليقبل الروابط الطويلة
+    is_visible = db.Column(db.Boolean, default=True) # ميزة الإخفاء والإظهار
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,7 +26,7 @@ class Message(db.Model):
     content = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, default=False)
 
-# --- حماية المسارات (Login Decorator) ---
+# --- حماية المسارات ---
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -40,12 +41,16 @@ with app.app_context():
 # --- المسارات العامة ---
 @app.route('/')
 def home():
-    projects = Project.query.all()
+    # جلب المشاريع المرئية فقط للزوار
+    projects = Project.query.filter_by(is_visible=True).all()
     return render_template('index.html', projects=projects)
 
 @app.route('/project/<int:id>')
 def project_details(id):
     project = Project.query.get_or_404(id)
+    # منع الزوار من رؤية المشاريع المخفية عبر الرابط المباشر
+    if not project.is_visible and 'logged_in' not in session:
+        return redirect(url_for('home'))
     return render_template('project_details.html', project=project)
 
 @app.route('/contact', methods=['POST'])
@@ -88,6 +93,29 @@ def admin():
     messages = Message.query.order_by(Message.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count()
     return render_template('admin.html', projects=projects, messages=messages, unread=unread_count)
+
+# --- مسارات التعديل الجديدة ---
+@app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_project(id):
+    project = Project.query.get_or_404(id)
+    if request.method == 'POST':
+        project.title = request.form['title']
+        project.description = request.form['description']
+        project.full_details = request.form['full_details']
+        project.technologies = request.form['technologies']
+        project.icon = request.form['icon']
+        db.session.commit()
+        return redirect(url_for('admin'))
+    return render_template('edit_project.html', project=project)
+
+@app.route('/toggle_visibility/<int:id>')
+@login_required
+def toggle_visibility(id):
+    project = Project.query.get_or_404(id)
+    project.is_visible = not project.is_visible
+    db.session.commit()
+    return redirect(url_for('admin'))
 
 @app.route('/read/<int:id>')
 @login_required

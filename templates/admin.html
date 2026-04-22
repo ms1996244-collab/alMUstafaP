@@ -8,7 +8,6 @@
 </head>
 
 <body class="admin-page">
-
     <div class="admin-container">
         <div class="admin-header"
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -30,8 +29,8 @@
                     <input type="text" name="title" placeholder="اسم المشروع" required>
                     <input type="text" name="description" placeholder="وصف قصير" required>
                     <textarea name="full_details" placeholder="التفاصيل الكاملة" rows="3" required></textarea>
-                    <input type="text" name="technologies" placeholder="التقنيات (مثال: Python, Flask)" required>
-                    <input type="text" name="icon" placeholder="أيقونة FontAwesome (مثال: fas fa-code)" required>
+                    <input type="text" name="technologies" placeholder="التقنيات (مثال: Python, Flutter)" required>
+                    <input type="text" name="icon" placeholder="رابط الصورة (ImgBB) أو أيقونة (fas fa-code)" required>
                     <button type="submit" class="cta-button">حفظ المشروع</button>
                 </form>
             </div>
@@ -61,18 +60,33 @@
             <table>
                 <tr>
                     <th>المشروع</th>
+                    <th>الحالة</th>
                     <th>إجراء</th>
                 </tr>
                 {% for project in projects %}
                 <tr>
                     <td>{{ project.title }}</td>
-                    <td><a href="{{ url_for('delete_project', id=project.id) }}" class="delete-btn">حذف</a></td>
+                    <td>
+                        {% if project.is_visible %}
+                        <span style="color: #4caf50; font-weight: bold;">مرئي</span>
+                        {% else %}
+                        <span style="color: #888;">مخفي</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('toggle_visibility', id=project.id) }}"
+                            style="color: #17a2b8; text-decoration: none; margin-left: 10px;">
+                            {% if project.is_visible %}إخفاء{% else %}إظهار{% endif %}
+                        </a>
+                        <a href="{{ url_for('edit_project', id=project.id) }}"
+                            style="color: #ffc107; text-decoration: none; margin-left: 10px;">تعديل</a>
+                        <a href="{{ url_for('delete_project', id=project.id) }}" class="delete-btn">حذف</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </table>
         </div>
     </div>
-
 </body>
 
 </html>

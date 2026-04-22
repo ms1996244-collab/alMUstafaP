@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>تعديل المشروع | Al-Mustafa Programming</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .preview-wrapper {
+            border: 1px solid var(--primary-gold);
+            padding: 20px;
+            border-radius: 10px;
+            background: var(--dark-bg);
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            object-fit: cover;
+        }
+
+        .editor-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .editor-box {
+            flex: 1;
+            min-width: 300px;
+        }
+    </style>
+</head>
+
+<body class="admin-page">
+    <div class="admin-container editor-container">
+
+        <div class="admin-card editor-box">
+            <h2>تعديل المشروع: {{ project.title }}</h2>
+            <form action="{{ url_for('edit_project', id=project.id) }}" method="POST" class="admin-form">
+                <label style="color: var(--primary-gold); font-size: 0.9rem;">اسم المشروع</label>
+                <input type="text" id="title" name="title" value="{{ project.title }}" required>
+
+                <label style="color: var(--primary-gold); font-size: 0.9rem;">وصف قصير</label>
+                <input type="text" id="description" name="description" value="{{ project.description }}" required>
+
+                <label style="color: var(--primary-gold); font-size: 0.9rem;">التفاصيل الكاملة</label>
+                <textarea name="full_details" rows="4" required>{{ project.full_details }}</textarea>
+
+                <label style="color: var(--primary-gold); font-size: 0.9rem;">التقنيات</label>
+                <input type="text" name="technologies" value="{{ project.technologies }}" required>
+
+                <label style="color: var(--primary-gold); font-size: 0.9rem;">رابط الصورة المباشر أو الأيقونة</label>
+                <input type="text" id="icon" name="icon" value="{{ project.icon }}" required>
+
+                <button type="submit" class="cta-button">حفظ التعديلات النهائية</button>
+                <a href="{{ url_for('admin') }}" class="back-btn"
+                    style="display: block; text-align: center; margin-top: 10px;">إلغاء والعودة</a>
+            </form>
+        </div>
+
+        <div class="admin-card editor-box">
+            <h2>المعاينة اللحظية (Live Preview)</h2>
+            <div class="preview-wrapper">
+                <img id="preview-image" src="" alt="Preview" class="preview-img" style="display: none;"
+                    onerror="this.style.display='none'">
+                <i id="preview-icon" class="card-icon"
+                    style="font-size: 4rem; color: var(--primary-gold); display: none;"></i>
+                <h3 id="preview-title" style="color: var(--primary-gold); margin: 15px 0;"></h3>
+                <p id="preview-desc" style="color: #ccc; line-height: 1.6;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tInput = document.getElementById('title');
+        const dInput = document.getElementById('description');
+        const iInput = document.getElementById('icon');
+
+        const pTitle = document.getElementById('preview-title');
+        const pDesc = document.getElementById('preview-desc');
+        const pImg = document.getElementById('preview-image');
+        const pIcon = document.getElementById('preview-icon');
+
+        function updateLivePreview() {
+            pTitle.textContent = tInput.value;
+            pDesc.textContent = dInput.value;
+            const iconVal = iInput.value.trim();
+
+            if (iconVal.startsWith('http')) {
+                pImg.src = iconVal;
+                pImg.style.display = 'block';
+                pIcon.style.display = 'none';
+            } else {
+                pImg.style.display = 'none';
+                pIcon.className = iconVal;
+                pIcon.style.display = 'inline-block';
+            }
+        }
+        tInput.addEventListener('input', updateLivePreview);
+        dInput.addEventListener('input', updateLivePreview);
+        iInput.addEventListener('input', updateLivePreview);
+
+        updateLivePreview(); // تشغيل عند فتح الصفحة
+    </script>
+</body>
+
+</html>
