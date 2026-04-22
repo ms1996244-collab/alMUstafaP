@@ -902,3 +902,36 @@ th {
         text-align: center !important;
     }
 }
+
+/* =========================================================
+   ميزة Growth Hacking: زر الواتساب المغناطيسي العائم
+   ========================================================= */
+.whatsapp-float {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    /* في الزاوية اليسرى السفلية */
+    width: 60px;
+    height: 60px;
+    background-color: #25d366;
+    /* لون واتساب الرسمي */
+    color: #FFF;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 35px;
+    box-shadow: 0px 4px 20px rgba(37, 211, 102, 0.4);
+    z-index: 9999;
+    /* يظل فوق كل شيء */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.15) rotate(-5deg);
+    /* حركة لطيفة تجذب الانتباه */
+    box-shadow: 0px 6px 25px rgba(37, 211, 102, 0.6);
+    color: #fff;
+}

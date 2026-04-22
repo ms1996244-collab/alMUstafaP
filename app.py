@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, Response
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 
@@ -36,19 +36,38 @@ def login_required(f):
 with app.app_context():
     db.create_all()
 
+# --- مسارات التسويق ومحركات البحث (Growth Hacking) ---
+@app.route('/sitemap.xml')
+def sitemap():
+    projects = Project.query.filter_by(is_visible=True).all()
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    # الصفحة الرئيسية
+    xml += f'  <url>\n    <loc>{url_for("home", _external=True)}</loc>\n    <priority>1.0</priority>\n  </url>\n'
+    # صفحات المشاريع (دراسات الحالة)
+    for p in projects:
+        xml += f'  <url>\n    <loc>{url_for("project_details", id=p.id, _external=True)}</loc>\n    <priority>0.8</priority>\n  </url>\n'
+    xml += '</urlset>'
+    return Response(xml, mimetype='application/xml')
+
+@app.route('/robots.txt')
+def robots():
+    txt = "User-agent: *\nDisallow: /admin\nAllow: /\n"
+    txt += f"Sitemap: {url_for('sitemap', _external=True)}"
+    return Response(txt, mimetype='text/plain')
+
+# --- المسارات العامة ---
 @app.route('/')
 def home():
     projects = Project.query.filter_by(is_visible=True).all()
     return render_template('index.html', projects=projects)
 
-# --- التحديث الجبار: جلب المشروع التالي والسابق ---
 @app.route('/project/<int:id>')
 def project_details(id):
     project = Project.query.get_or_404(id)
     if not project.is_visible and 'logged_in' not in session:
         return redirect(url_for('home'))
     
-    # جلب المشروع السابق والتالي لعمل التنقل اللانهائي
     prev_project = Project.query.filter(Project.id < id, Project.is_visible == True).order_by(Project.id.desc()).first()
     next_project = Project.query.filter(Project.id > id, Project.is_visible == True).order_by(Project.id.asc()).first()
     
@@ -59,16 +78,17 @@ def contact():
     new_msg = Message(name=request.form.get('name'), email=request.form.get('email'), phone=request.form.get('phone'), content=request.form.get('content'))
     db.session.add(new_msg)
     db.session.commit()
-    flash("Message sent to Al-Mustafa Programming. We will contact you soon.")
+    flash("رسالتك وصلت بنجاح. سيتم التواصل معك قريباً.")
     return redirect(url_for('home'))
 
+# --- لوحة الإدارة ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         if request.form['username'] == 'admin' and request.form['password'] == 'mustafa2026':
             session['logged_in'] = True
             return redirect(url_for('admin'))
-        flash("Invalid Credentials")
+        flash("بيانات الدخول غير صحيحة")
     return render_template('login.html')
 
 @app.route('/logout')

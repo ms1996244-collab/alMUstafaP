@@ -4,12 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ project.title }} | التفاصيل</title>
+
+    <title>{{ project.title }} | دراسة حالة - Al-Mustafa Programming</title>
+    <meta name="description" content="{{ project.description }}">
+    <meta name="keywords"
+        content="{{ project.technologies }}, برمجة تطبيقات, Flutter, MQL5, تصميم فاخر, {{ project.title }}">
+    <meta name="author" content="Mustafa">
+
+    <meta property="og:title" content="{{ project.title }} | Al-Mustafa Programming">
+    <meta property="og:description" content="{{ project.description }}">
+    {% if project.icon.startswith('http') %}
+    <meta property="og:image" content="{{ project.icon }}">
+    {% endif %}
+    <meta property="og:type" content="article">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body class="details-page-modern">
+
+    <a href="https://wa.me/9647821800086?text=مرحباً مصطفى، أطلعت على مشروع ({{ project.title }}) وأريد الاستفسار عن خدماتك."
+        class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
     <header class="cinematic-hero">
         <div class="hero-glow"></div>
@@ -31,7 +49,7 @@
 
         <div class="scrollable-info-column">
             <section class="info-block">
-                <h3 class="block-title"><i class="fas fa-bolt"></i> هندسة الميزات</h3>
+                <h3 class="block-title"><i class="fas fa-bolt"></i> دراسة الحالة (Case Study)</h3>
                 <div class="bento-grid">
                     {% if project.full_details %}
                     {% set sentences = project.full_details.split('.') %}
@@ -98,7 +116,6 @@
             {% endif %}
         </div>
     </div>
-
 </body>
 
 </html>
