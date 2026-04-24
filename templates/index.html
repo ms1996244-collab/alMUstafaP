@@ -35,42 +35,7 @@
 </head>
 
 <body>
-    <ul class="nav-links" id="nav-links">
-        <li><a href="#home">الرئيسية</a></li>
-        <li><a href="#portfolio">دراسات الحالة</a></li>
-        <li><a href="#blog">المدونة التقنية</a></li>
-        <li><a href="#contact">تواصل معي</a></li>
-    </ul>
 
-    <section id="blog" class="portfolio">
-        <div class="section-title reveal-on-scroll">
-            <h2>المدونة التقنية</h2>
-            <div class="title-underline"></div>
-        </div>
-        <div class="projects-grid">
-            {% for article in articles %}
-            <a href="{{ url_for('article_details', id=article.id) }}" class="project-card-link reveal-on-scroll">
-                <div class="project-card" style="border-color: rgba(23, 162, 184, 0.2);">
-                    <div class="project-image" style="height: 180px;">
-                        {% if article.image %}
-                        <img src="{{ article.image }}" alt="{{ article.title }}">
-                        {% else %}
-                        <i class="fas fa-newspaper card-icon" style="color: #17a2b8;"></i>
-                        {% endif %}
-                    </div>
-                    <div class="project-info">
-                        <h3 style="font-size: 1.3rem;">{{ article.title }}</h3>
-                        <p style="color: #ccc; font-size: 0.9rem;">{{ article.summary }}</p>
-                        <span style="color: #17a2b8; font-size: 0.8rem; margin-top: 15px; display: inline-block;">اقرأ
-                            المزيد <i class="fas fa-arrow-left"></i></span>
-                    </div>
-                </div>
-            </a>
-            {% else %}
-            <p style="text-align: center; width: 100%; color: var(--gray-text);">سيتم نشر مقالات تقنية قريباً...</p>
-            {% endfor %}
-        </div>
-    </section>
     <a href="https://wa.me/9647821800086?text=مرحباً مصطفى، أريد الاستفسار عن برمجة تطبيق خاص بي."
         class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
@@ -94,7 +59,8 @@
         <nav>
             <ul class="nav-links" id="nav-links">
                 <li><a href="#home">الرئيسية</a></li>
-                <li><a href="#portfolio">دراسات الحالة (الأعمال)</a></li>
+                <li><a href="#portfolio">دراسات الحالة</a></li>
+                <li><a href="#blog">المدونة التقنية</a></li>
                 <li><a href="#contact">تواصل معي</a></li>
             </ul>
         </nav>
@@ -131,6 +97,36 @@
                     </div>
                 </div>
             </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="blog" class="portfolio">
+        <div class="section-title reveal-on-scroll">
+            <h2>المدونة التقنية</h2>
+            <div class="title-underline"></div>
+        </div>
+        <div class="projects-grid">
+            {% for article in articles %}
+            <a href="{{ url_for('article_details', id=article.id) }}" class="project-card-link reveal-on-scroll">
+                <div class="project-card" style="border-color: rgba(23, 162, 184, 0.2);">
+                    <div class="project-image" style="height: 180px;">
+                        {% if article.image %}
+                        <img src="{{ article.image }}" alt="{{ article.title }}">
+                        {% else %}
+                        <i class="fas fa-newspaper card-icon" style="color: #17a2b8;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="project-info">
+                        <h3 style="font-size: 1.3rem;">{{ article.title }}</h3>
+                        <p style="color: #ccc; font-size: 0.9rem;">{{ article.summary }}</p>
+                        <span style="color: #17a2b8; font-size: 0.8rem; margin-top: 15px; display: inline-block;">اقرأ
+                            المزيد <i class="fas fa-arrow-left"></i></span>
+                    </div>
+                </div>
+            </a>
+            {% else %}
+            <p style="text-align: center; width: 100%; color: var(--gray-text);">سيتم نشر مقالات تقنية قريباً...</p>
             {% endfor %}
         </div>
     </section>
