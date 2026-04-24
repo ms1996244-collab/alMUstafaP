@@ -11,80 +11,104 @@
     <div class="admin-container">
         <div class="admin-header"
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>Admin Panel
-                {% if unread > 0 %}
-                <span class="notification-badge">{{ unread }} New</span>
-                {% endif %}
-            </h1>
+            <h1>Admin Panel {% if unread > 0 %}<span class="notification-badge">{{ unread }} New</span>{% endif %}</h1>
             <a href="{{ url_for('logout') }}"
                 style="color: #ff4a4a; font-weight: bold; text-decoration: none;">Logout</a>
         </div>
-
         <a href="{{ url_for('home') }}" class="back-btn">العودة للموقع</a>
 
         <div class="admin-grid">
             <div class="admin-card">
-                <h2>إضافة مشروع جديد</h2>
+                <h2>إضافة مشروع (دراسة حالة)</h2>
                 <form action="{{ url_for('admin') }}" method="POST" class="admin-form">
+                    <input type="hidden" name="form_type" value="project">
                     <input type="text" name="title" placeholder="اسم المشروع" required>
                     <input type="text" name="description" placeholder="وصف قصير" required>
                     <textarea name="full_details" placeholder="التفاصيل الكاملة" rows="3" required></textarea>
                     <input type="text" name="technologies" placeholder="التقنيات (مثال: Python, Flutter)" required>
-                    <input type="text" name="icon" placeholder="رابط الصورة (ImgBB) أو أيقونة (fas fa-code)" required>
+                    <input type="text" name="icon" placeholder="رابط الصورة (ImgBB)" required>
                     <button type="submit" class="cta-button">حفظ المشروع</button>
                 </form>
             </div>
 
-            <div class="admin-card">
-                <h2>رسائل العملاء</h2>
-                <div class="messages-list">
-                    {% for msg in messages %}
-                    <div class="msg-box {% if not msg.is_read %}unread-box{% endif %}">
-                        <strong>{{ msg.name }} ({{ msg.phone }})</strong>
-                        <p>{{ msg.content }}</p>
-                        {% if not msg.is_read %}
-                        <a href="{{ url_for('mark_read', id=msg.id) }}"
-                            style="font-size: 0.8rem; color: var(--primary-gold); display: block; margin-top: 10px;">Mark
-                            as read</a>
-                        {% endif %}
-                    </div>
-                    {% else %}
-                    <p>لا توجد رسائل حالياً.</p>
-                    {% endfor %}
-                </div>
+            <div class="admin-card" style="border-color: #17a2b8;">
+                <h2 style="color: #17a2b8;">نشر مقال تقني جديد</h2>
+                <form action="{{ url_for('admin') }}" method="POST" class="admin-form">
+                    <input type="hidden" name="form_type" value="article">
+                    <input type="text" name="title" placeholder="عنوان المقال (جذاب للـ SEO)" required>
+                    <input type="text" name="summary" placeholder="مقدمة مشوقة قصيرة" required>
+                    <textarea name="content" placeholder="محتوى المقال (يفصل بنقاط . للفقرات)" rows="4"
+                        required></textarea>
+                    <input type="text" name="image" placeholder="رابط صورة المقال (اختياري)">
+                    <button type="submit" class="cta-button"
+                        style="background: rgba(23, 162, 184, 0.1) !important; color: #17a2b8 !important; border-color: #17a2b8;">نشر
+                        المقال</button>
+                </form>
             </div>
         </div>
 
-        <div class="admin-card projects-list">
-            <h2>إدارة المشاريع</h2>
-            <table>
-                <tr>
-                    <th>المشروع</th>
-                    <th>الحالة</th>
-                    <th>إجراء</th>
-                </tr>
-                {% for project in projects %}
-                <tr>
-                    <td>{{ project.title }}</td>
-                    <td>
-                        {% if project.is_visible %}
-                        <span style="color: #4caf50; font-weight: bold;">مرئي</span>
-                        {% else %}
-                        <span style="color: #888;">مخفي</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{{ url_for('toggle_visibility', id=project.id) }}"
-                            style="color: #17a2b8; text-decoration: none; margin-left: 10px;">
-                            {% if project.is_visible %}إخفاء{% else %}إظهار{% endif %}
-                        </a>
-                        <a href="{{ url_for('edit_project', id=project.id) }}"
-                            style="color: #ffc107; text-decoration: none; margin-left: 10px;">تعديل</a>
-                        <a href="{{ url_for('delete_project', id=project.id) }}" class="delete-btn">حذف</a>
-                    </td>
-                </tr>
+        <div class="admin-grid">
+            <div class="admin-card projects-list">
+                <h2>إدارة المشاريع</h2>
+                <table>
+                    <tr>
+                        <th>المشروع</th>
+                        <th>الحالة</th>
+                        <th>إجراء</th>
+                    </tr>
+                    {% for project in projects %}
+                    <tr>
+                        <td>{{ project.title }}</td>
+                        <td>{% if project.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
+                                style="color: #888;">مخفي</span>{% endif %}</td>
+                        <td>
+                            <a href="{{ url_for('toggle_visibility', type='project', id=project.id) }}"
+                                style="color: #17a2b8; margin-left: 10px;">إخفاء/إظهار</a>
+                            <a href="{{ url_for('delete_item', type='project', id=project.id) }}"
+                                class="delete-btn">حذف</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div class="admin-card projects-list">
+                <h2>إدارة المقالات التقنية</h2>
+                <table>
+                    <tr>
+                        <th>المقال</th>
+                        <th>الحالة</th>
+                        <th>إجراء</th>
+                    </tr>
+                    {% for article in articles %}
+                    <tr>
+                        <td>{{ article.title }}</td>
+                        <td>{% if article.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
+                                style="color: #888;">مخفي</span>{% endif %}</td>
+                        <td>
+                            <a href="{{ url_for('toggle_visibility', type='article', id=article.id) }}"
+                                style="color: #17a2b8; margin-left: 10px;">إخفاء/إظهار</a>
+                            <a href="{{ url_for('delete_item', type='article', id=article.id) }}"
+                                class="delete-btn">حذف</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="admin-card" style="margin-top: 40px;">
+            <h2>رسائل العملاء</h2>
+            <div class="messages-list">
+                {% for msg in messages %}
+                <div class="msg-box {% if not msg.is_read %}unread-box{% endif %}">
+                    <strong>{{ msg.name }} ({{ msg.phone }})</strong>
+                    <p>{{ msg.content }}</p>
+                    {% if not msg.is_read %}<a href="{{ url_for('mark_read', id=msg.id) }}"
+                        style="color: var(--primary-gold);">Mark as read</a>{% endif %}
+                </div>
                 {% endfor %}
-            </table>
+            </div>
         </div>
     </div>
 </body>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} | مدونة Al-Mustafa</title>
+    <meta name="description" content="{{ article.summary }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .article-container {
+            max-width: 800px;
+            margin: 120px auto 100px;
+            padding: 0 5%;
+        }
+
+        .article-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .article-title {
+            font-size: 2.8rem;
+            color: var(--light-text);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .article-date {
+            color: var(--primary-gold);
+            font-size: 1rem;
+            margin-bottom: 30px;
+            display: block;
+        }
+
+        .article-img {
+            width: 100%;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .article-body p {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #d1d1d1;
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+
+        .article-body h4 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin: 40px 0 15px;
+        }
+    </style>
+</head>
+
+<body class="details-page-modern">
+
+    <div class="article-container">
+        <a href="{{ url_for('home') }}#blog" class="back-link-modern"
+            style="position: relative; top: 0; left: 0; margin-bottom: 40px; display: inline-flex;"><i
+                class="fas fa-arrow-right"></i> العودة للمدونة</a>
+
+        <header class="article-header reveal-on-scroll">
+            <h1 class="article-title">{{ article.title }}</h1>
+            <span class="article-date"><i class="far fa-calendar-alt"></i> {{ article.created_at.strftime('%Y-%m-%d') }}
+                | بقلم: مصطفى</span>
+            {% if article.image %}
+            <img src="{{ article.image }}" alt="{{ article.title }}" class="article-img">
+            {% endif %}
+        </header>
+
+        <main class="article-body reveal-on-scroll">
+            {% set paragraphs = article.content.split('.') %}
+            {% for para in paragraphs %}
+            {% if para.strip()|length > 10 %}
+            <p>{{ para.strip() }}.</p>
+            {% endif %}
+            {% endfor %}
+        </main>
+
+        <div class="cta-banner-glass reveal-on-scroll" style="margin-top: 80px;">
+            <h2>هل تواجه تحدياً برمجياً مشابهاً؟</h2>
+            <p>أنا هنا لتقديم استشارة تقنية أو بناء نظام متكامل لعملك.</p>
+            <a href="{{ url_for('home') }}#contact" class="cta-button">تواصل معي الآن</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('is-revealed'); });
+            });
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+
+</html>
