@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, Response
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from datetime import datetime
+from datetime import datetime, date
+import hashlib
+from sqlalchemy import text
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = 'al_mustafa_secure_2026_key'
@@ -18,6 +20,7 @@ class Project(db.Model):
     technologies = db.Column(db.String(200), nullable=True)
     icon = db.Column(db.String(200), default='fas fa-code')
     is_visible = db.Column(db.Boolean, default=True)
+    views = db.Column(db.Integer, default=0) # تمت الإضافة
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -27,6 +30,13 @@ class Article(db.Model):
     image = db.Column(db.String(250), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_visible = db.Column(db.Boolean, default=True)
+    views = db.Column(db.Integer, default=0) # تمت الإضافة
+
+# جدول جديد لتتبع الزوار الفريدين (بدقة وحماية للخصوصية)
+class SiteVisitor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_hash = db.Column(db.String(128), nullable=False)
+    visit_date = db.Column(db.Date, nullable=False, default=date.today)
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,8 +54,31 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# التحديث الذكي لقاعدة البيانات (دون فقدان البيانات)
 with app.app_context():
-    db.create_all() # سيقوم بإنشاء جدول المقالات تلقائياً دون حذف مشاريعك
+    db.create_all()
+    try:
+        db.session.execute(text("ALTER TABLE project ADD COLUMN views INTEGER DEFAULT 0"))
+        db.session.execute(text("ALTER TABLE article ADD COLUMN views INTEGER DEFAULT 0"))
+        db.session.commit()
+    except Exception:
+        pass # الأعمدة موجودة مسبقاً، لا تفعل شيئاً
+
+# --- محرك تتبع الزوار (Global Tracker) ---
+@app.before_request
+def track_visitor():
+    # عدم تتبع ملفات التصميم أو لوحة الإدارة لضمان دقة الأرقام للعملاء فقط
+    if request.endpoint and not request.endpoint.startswith('static') and request.endpoint not in ['admin', 'login', 'logout']:
+        # سحب الـ IP من السيرفر وتشفيره
+        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if ip:
+            ip_hash = hashlib.sha256(ip.encode('utf-8')).hexdigest()
+            today = date.today()
+            # هل زار الموقع اليوم؟
+            existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first()
+            if not existing:
+                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today))
+                db.session.commit()
 
 # --- مسارات الـ SEO ---
 @app.route('/sitemap.xml')
@@ -54,10 +87,11 @@ def sitemap():
     articles = Article.query.filter_by(is_visible=True).all()
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     xml += f'  <url>\n    <loc>{url_for("home", _external=True)}</loc>\n    <priority>1.0</priority>\n  </url>\n'
+    xml += f'  <url>\n    <loc>{url_for("blog", _external=True)}</loc>\n    <priority>0.9</priority>\n  </url>\n'
     for p in projects:
         xml += f'  <url>\n    <loc>{url_for("project_details", id=p.id, _external=True)}</loc>\n    <priority>0.8</priority>\n  </url>\n'
     for a in articles:
-        xml += f'  <url>\n    <loc>{url_for("article_details", id=a.id, _external=True)}</loc>\n    <priority>0.9</priority>\n  </url>\n'
+        xml += f'  <url>\n    <loc>{url_for("article_details", id=a.id, _external=True)}</loc>\n    <priority>0.8</priority>\n  </url>\n'
     xml += '</urlset>'
     return Response(xml, mimetype='application/xml')
 
@@ -71,13 +105,22 @@ def robots():
 @app.route('/')
 def home():
     projects = Project.query.filter_by(is_visible=True).all()
+    return render_template('index.html', projects=projects)
+
+@app.route('/blog')
+def blog():
     articles = Article.query.filter_by(is_visible=True).order_by(Article.created_at.desc()).all()
-    return render_template('index.html', projects=projects, articles=articles)
+    return render_template('blog.html', articles=articles)
 
 @app.route('/project/<int:id>')
 def project_details(id):
     project = Project.query.get_or_404(id)
     if not project.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
+    
+    # زيادة المشاهدات
+    project.views += 1
+    db.session.commit()
+
     prev_project = Project.query.filter(Project.id < id, Project.is_visible == True).order_by(Project.id.desc()).first()
     next_project = Project.query.filter(Project.id > id, Project.is_visible == True).order_by(Project.id.asc()).first()
     return render_template('project_details.html', project=project, prev_project=prev_project, next_project=next_project)
@@ -86,6 +129,11 @@ def project_details(id):
 def article_details(id):
     article = Article.query.get_or_404(id)
     if not article.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
+    
+    # زيادة المشاهدات
+    article.views += 1
+    db.session.commit()
+
     return render_template('article_details.html', article=article)
 
 @app.route('/contact', methods=['POST'])
@@ -96,7 +144,6 @@ def contact():
     flash("رسالتك وصلت بنجاح. سيتم التواصل معك قريباً.")
     return redirect(url_for('home'))
 
-# --- الإدارة ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -129,9 +176,13 @@ def admin():
     articles = Article.query.all()
     messages = Message.query.order_by(Message.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count()
-    return render_template('admin.html', projects=projects, articles=articles, messages=messages, unread=unread_count)
+    
+    # إحصائيات لوحة التحكم
+    total_visitors = SiteVisitor.query.count()
+    today_visitors = SiteVisitor.query.filter_by(visit_date=date.today()).count()
+    
+    return render_template('admin.html', projects=projects, articles=articles, messages=messages, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors)
 
-# مسارات الحذف والإخفاء للمشاريع والمقالات
 @app.route('/toggle_visibility/<string:type>/<int:id>')
 @login_required
 def toggle_visibility(type, id):

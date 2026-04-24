@@ -5,11 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ project.title }} | دراسة حالة - Al-Mustafa Programming</title>
+    <title>{{ project.title }} | دراسة حالة - الشرق الأوسط</title>
     <meta name="description" content="{{ project.description }}">
     <meta name="keywords"
-        content="{{ project.technologies }}, برمجة تطبيقات, Flutter, MQL5, تصميم فاخر, {{ project.title }}">
-    <meta name="author" content="Mustafa">
+        content="{{ project.technologies }}, برمجة تطبيقات في السعودية, تطبيقات الإمارات, الشرق الأوسط, Flutter, {{ project.title }}">
+    <meta name="author" content="Mustafa Ali Jasim Alabid">
+
+    <link rel="canonical" href="{{ request.base_url }}">
+    <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-SA" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-AE" href="{{ request.base_url }}" />
 
     <meta property="og:title" content="{{ project.title }} | Al-Mustafa Programming">
     <meta property="og:description" content="{{ project.description }}">
@@ -20,6 +25,21 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "{{ project.title }}",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Android, iOS, Web",
+      "description": "{{ project.description }}",
+      "author": {
+        "@type": "Person",
+        "name": "Mustafa Ali Jasim Alabid"
+      }
+    }
+    </script>
 </head>
 
 <body class="details-page-modern">
@@ -40,7 +60,7 @@
         <div class="sticky-visual-column">
             <div class="mockup-glass-container">
                 {% if project.icon.startswith('http') %}
-                <img src="{{ project.icon }}" alt="{{ project.title }}" class="modern-mockup-img">
+                <img src="{{ project.icon }}" alt="{{ project.title }}" class="modern-mockup-img" loading="lazy">
                 {% else %}
                 <i class="{{ project.icon }} modern-huge-icon"></i>
                 {% endif %}

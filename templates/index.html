@@ -7,11 +7,21 @@
 
     <title>Al-Mustafa Programming | هندسة برمجية متكاملة</title>
     <meta name="description"
-        content="مصطفى - مطور برمجيات خبير متخصص في تطبيقات الموبايل الفاخرة (Flutter)، التحليل المالي وأنظمة التداول (MQL5/Python).">
+        content="مصطفى - مطور برمجيات خبير متخصص في تطبيقات الموبايل الفاخرة، التحليل المالي وأنظمة التداول، يقدم خدماته للشركات والأفراد في العراق، السعودية، الإمارات وكافة دول الشرق الأوسط.">
     <meta name="keywords"
-        content="برمجة تطبيقات, مطور فلاتر, برمجة بوتات تداول, تطبيقات متاجر إلكترونية, مصطفى مبرمج, العراق">
+        content="برمجة تطبيقات, مطور فلاتر, الشرق الأوسط, الخليج العربي, السعودية, الإمارات, قطر, برمجة بوتات تداول, تطبيقات متاجر إلكترونية, مصطفى مبرمج">
 
-    <meta property="og:title" content="Al-Mustafa Programming">
+    <link rel="canonical" href="{{ request.base_url }}">
+
+    <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-SA" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-AE" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-QA" href="{{ request.base_url }}" />
+    <meta name="geo.region" content="IQ" />
+
+    <meta name="google-site-verification" content="YOUR_CODE_HERE" />
+
+    <meta property="og:title" content="Al-Mustafa Programming | الشرق الأوسط">
     <meta property="og:description" content="تجارب رقمية فاخرة، وهندسة برمجية بمعايير عالمية. تصفح معرض أعمالنا الآن.">
     <meta property="og:type" content="website">
 
@@ -24,11 +34,12 @@
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       "name": "Al-Mustafa Programming",
-      "image": "",
-      "description": "تطوير تطبيقات محمول احترافية وأنظمة تداول مالي",
+      "founder": "Mustafa Ali Jasim Alabid",
+      "description": "تطوير تطبيقات محمول احترافية وأنظمة تداول مالي في الشرق الأوسط",
+      "areaServed": ["IQ", "SA", "AE", "QA", "KW", "BH", "OM", "JO"],
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": "العراق"
+        "addressCountry": "IQ"
       }
     }
     </script>
@@ -36,8 +47,8 @@
 
 <body>
 
-    <a href="https://wa.me/9647821800086?text=مرحباً مصطفى، أريد الاستفسار عن برمجة تطبيق خاص بي."
-        class="whatsapp-float" target="_blank">
+    <a href="https://wa.me/9647821800086?text=مرحباً مصطفى، أريد الاستفسار عن برمجة تطبيق لعملي." class="whatsapp-float"
+        target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
 
@@ -58,10 +69,10 @@
         <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
-                <li><a href="#home">الرئيسية</a></li>
-                <li><a href="#portfolio">دراسات الحالة</a></li>
-                <li><a href="#blog">المدونة التقنية</a></li>
-                <li><a href="#contact">تواصل معي</a></li>
+                <li><a href="{{ url_for('home') }}#home">الرئيسية</a></li>
+                <li><a href="{{ url_for('home') }}#portfolio">دراسات الحالة</a></li>
+                <li><a href="{{ url_for('blog') }}">المدونة التقنية</a></li>
+                <li><a href="{{ url_for('home') }}#contact">تواصل معي</a></li>
             </ul>
         </nav>
     </header>
@@ -69,7 +80,7 @@
     <section id="home" class="hero reveal-on-scroll">
         <div class="hero-content">
             <h2 class="hero-title">تجارب رقمية فاخرة</h2>
-            <p class="hero-subtitle">هندسة برمجية متكاملة بمعايير عالمية</p>
+            <p class="hero-subtitle">هندسة برمجية متكاملة بمعايير عالمية للشرق الأوسط</p>
             <a href="#portfolio" class="cta-button">استكشف دراسات الحالة</a>
         </div>
     </section>
@@ -85,7 +96,7 @@
                 <div class="project-card">
                     <div class="project-image">
                         {% if project.icon.startswith('http') %}
-                        <img src="{{ project.icon }}" alt="{{ project.title }}">
+                        <img src="{{ project.icon }}" alt="{{ project.title }}" loading="lazy">
                         {% else %}
                         <i class="{{ project.icon }} card-icon"
                             style="font-size: 4rem; color: var(--primary-gold);"></i>
@@ -97,36 +108,6 @@
                     </div>
                 </div>
             </a>
-            {% endfor %}
-        </div>
-    </section>
-
-    <section id="blog" class="portfolio">
-        <div class="section-title reveal-on-scroll">
-            <h2>المدونة التقنية</h2>
-            <div class="title-underline"></div>
-        </div>
-        <div class="projects-grid">
-            {% for article in articles %}
-            <a href="{{ url_for('article_details', id=article.id) }}" class="project-card-link reveal-on-scroll">
-                <div class="project-card" style="border-color: rgba(23, 162, 184, 0.2);">
-                    <div class="project-image" style="height: 180px;">
-                        {% if article.image %}
-                        <img src="{{ article.image }}" alt="{{ article.title }}">
-                        {% else %}
-                        <i class="fas fa-newspaper card-icon" style="color: #17a2b8;"></i>
-                        {% endif %}
-                    </div>
-                    <div class="project-info">
-                        <h3 style="font-size: 1.3rem;">{{ article.title }}</h3>
-                        <p style="color: #ccc; font-size: 0.9rem;">{{ article.summary }}</p>
-                        <span style="color: #17a2b8; font-size: 0.8rem; margin-top: 15px; display: inline-block;">اقرأ
-                            المزيد <i class="fas fa-arrow-left"></i></span>
-                    </div>
-                </div>
-            </a>
-            {% else %}
-            <p style="text-align: center; width: 100%; color: var(--gray-text);">سيتم نشر مقالات تقنية قريباً...</p>
             {% endfor %}
         </div>
     </section>

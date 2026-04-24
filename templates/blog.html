@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المدونة التقنية | Al-Mustafa Programming</title>
+    <meta name="description"
+        content="مقالات تقنية متخصصة في هندسة البرمجيات، تطوير تطبيقات فلاتر، وأنظمة التداول، بقلم المطور مصطفى. موجهة للمطورين ورواد الأعمال في الشرق الأوسط.">
+
+    <link rel="canonical" href="{{ request.base_url }}">
+    <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-SA" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-AE" href="{{ request.base_url }}" />
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -42,7 +50,7 @@
                 <div class="project-card" style="border-color: rgba(23, 162, 184, 0.2);">
                     <div class="project-image" style="height: 200px;">
                         {% if article.image %}
-                        <img src="{{ article.image }}" alt="{{ article.title }}">
+                        <img src="{{ article.image }}" alt="{{ article.title }}" loading="lazy">
                         {% else %}
                         <i class="fas fa-newspaper card-icon" style="color: #17a2b8; font-size: 5rem;"></i>
                         {% endif %}

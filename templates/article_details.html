@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ article.title }} | مدونة Al-Mustafa</title>
     <meta name="description" content="{{ article.summary }}">
+    <meta name="author" content="Mustafa Ali Jasim Alabid">
+
+    <link rel="canonical" href="{{ request.base_url }}">
+    <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="ar-SA" href="{{ request.base_url }}" />
+
+    <meta property="og:title" content="{{ article.title }}">
+    <meta property="og:description" content="{{ article.summary }}">
+    {% if article.image %}
+    <meta property="og:image" content="{{ article.image }}">
+    {% endif %}
+    <meta property="og:type" content="article">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
@@ -48,19 +61,36 @@
             margin-bottom: 25px;
             text-align: justify;
         }
-
-        .article-body h4 {
-            color: #fff;
-            font-size: 1.5rem;
-            margin: 40px 0 15px;
-        }
     </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "{{ article.title }}",
+      "description": "{{ article.summary }}",
+      "author": {
+        "@type": "Person",
+        "name": "Mustafa Ali Jasim Alabid"
+      },
+      "datePublished": "{{ article.created_at.isoformat() }}",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Al-Mustafa Programming"
+      }
+    }
+    </script>
 </head>
 
 <body class="details-page-modern">
 
+    <a href="https://wa.me/9647821800086?text=مرحباً مصطفى، قرأت مقالك ({{ article.title }}) وأريد التواصل معك."
+        class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
     <div class="article-container">
-        <a href="{{ url_for('home') }}#blog" class="back-link-modern"
+        <a href="{{ url_for('blog') }}" class="back-link-modern"
             style="position: relative; top: 0; left: 0; margin-bottom: 40px; display: inline-flex;"><i
                 class="fas fa-arrow-right"></i> العودة للمدونة</a>
 
@@ -69,7 +99,7 @@
             <span class="article-date"><i class="far fa-calendar-alt"></i> {{ article.created_at.strftime('%Y-%m-%d') }}
                 | بقلم: مصطفى</span>
             {% if article.image %}
-            <img src="{{ article.image }}" alt="{{ article.title }}" class="article-img">
+            <img src="{{ article.image }}" alt="{{ article.title }}" class="article-img" loading="lazy">
             {% endif %}
         </header>
 

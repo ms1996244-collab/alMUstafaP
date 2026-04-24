@@ -3,19 +3,77 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Admin Panel | Al-Mustafa Programming</title>
+    <title>Admin Dashboard | Al-Mustafa Programming</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--primary-gold);
+            margin-bottom: 15px;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--light-text);
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: var(--gray-text);
+            font-size: 1rem;
+        }
+    </style>
 </head>
 
 <body class="admin-page">
     <div class="admin-container">
         <div class="admin-header"
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>Admin Panel {% if unread > 0 %}<span class="notification-badge">{{ unread }} New</span>{% endif %}</h1>
-            <a href="{{ url_for('logout') }}"
-                style="color: #ff4a4a; font-weight: bold; text-decoration: none;">Logout</a>
+            <h1>لوحة القيادة (Dashboard) {% if unread > 0 %}<span class="notification-badge">{{ unread }} رسالة</span>{%
+                endif %}</h1>
+            <a href="{{ url_for('logout') }}" style="color: #ff4a4a; font-weight: bold; text-decoration: none;"><i
+                    class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
         </div>
-        <a href="{{ url_for('home') }}" class="back-btn">العودة للموقع</a>
+        <a href="{{ url_for('home') }}" class="back-btn"><i class="fas fa-external-link-alt"></i> عرض الموقع</a>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-users"></i>
+                <h3>{{ total_visitors }}</h3>
+                <p>إجمالي الزوار الفريدين</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-user-clock"></i>
+                <h3>{{ today_visitors }}</h3>
+                <p>زوار اليوم</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-laptop-code"></i>
+                <h3>{{ projects|length }}</h3>
+                <p>إجمالي المشاريع</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-book-open"></i>
+                <h3>{{ articles|length }}</h3>
+                <p>إجمالي المقالات</p>
+            </div>
+        </div>
 
         <div class="admin-grid">
             <div class="admin-card">
@@ -35,7 +93,7 @@
                 <h2 style="color: #17a2b8;">نشر مقال تقني جديد</h2>
                 <form action="{{ url_for('admin') }}" method="POST" class="admin-form">
                     <input type="hidden" name="form_type" value="article">
-                    <input type="text" name="title" placeholder="عنوان المقال (جذاب للـ SEO)" required>
+                    <input type="text" name="title" placeholder="عنوان المقال" required>
                     <input type="text" name="summary" placeholder="مقدمة مشوقة قصيرة" required>
                     <textarea name="content" placeholder="محتوى المقال (يفصل بنقاط . للفقرات)" rows="4"
                         required></textarea>
@@ -48,48 +106,54 @@
         </div>
 
         <div class="admin-grid">
-            <div class="admin-card projects-list">
+            <div class="admin-card projects-list" style="overflow-x: auto;">
                 <h2>إدارة المشاريع</h2>
                 <table>
                     <tr>
                         <th>المشروع</th>
+                        <th>المشاهدات</th>
                         <th>الحالة</th>
                         <th>إجراء</th>
                     </tr>
                     {% for project in projects %}
                     <tr>
                         <td>{{ project.title }}</td>
+                        <td style="color: var(--primary-gold); font-weight: bold;">{{ project.views }} <i
+                                class="fas fa-eye"></i></td>
                         <td>{% if project.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
                                 style="color: #888;">مخفي</span>{% endif %}</td>
                         <td>
                             <a href="{{ url_for('toggle_visibility', type='project', id=project.id) }}"
-                                style="color: #17a2b8; margin-left: 10px;">إخفاء/إظهار</a>
-                            <a href="{{ url_for('delete_item', type='project', id=project.id) }}"
-                                class="delete-btn">حذف</a>
+                                style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
+                            <a href="{{ url_for('delete_item', type='project', id=project.id) }}" class="delete-btn"><i
+                                    class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
                 </table>
             </div>
 
-            <div class="admin-card projects-list">
-                <h2>إدارة المقالات التقنية</h2>
+            <div class="admin-card projects-list" style="overflow-x: auto;">
+                <h2>إدارة المقالات</h2>
                 <table>
                     <tr>
                         <th>المقال</th>
+                        <th>القراءات</th>
                         <th>الحالة</th>
                         <th>إجراء</th>
                     </tr>
                     {% for article in articles %}
                     <tr>
                         <td>{{ article.title }}</td>
+                        <td style="color: #17a2b8; font-weight: bold;">{{ article.views }} <i
+                                class="fas fa-book-reader"></i></td>
                         <td>{% if article.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
                                 style="color: #888;">مخفي</span>{% endif %}</td>
                         <td>
                             <a href="{{ url_for('toggle_visibility', type='article', id=article.id) }}"
-                                style="color: #17a2b8; margin-left: 10px;">إخفاء/إظهار</a>
-                            <a href="{{ url_for('delete_item', type='article', id=article.id) }}"
-                                class="delete-btn">حذف</a>
+                                style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
+                            <a href="{{ url_for('delete_item', type='article', id=article.id) }}" class="delete-btn"><i
+                                    class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -98,15 +162,19 @@
         </div>
 
         <div class="admin-card" style="margin-top: 40px;">
-            <h2>رسائل العملاء</h2>
+            <h2>صندوق الوارد (رسائل العملاء)</h2>
             <div class="messages-list">
                 {% for msg in messages %}
                 <div class="msg-box {% if not msg.is_read %}unread-box{% endif %}">
-                    <strong>{{ msg.name }} ({{ msg.phone }})</strong>
-                    <p>{{ msg.content }}</p>
-                    {% if not msg.is_read %}<a href="{{ url_for('mark_read', id=msg.id) }}"
-                        style="color: var(--primary-gold);">Mark as read</a>{% endif %}
+                    <strong><i class="fas fa-user-circle"></i> {{ msg.name }} | <i class="fas fa-phone"></i> {{
+                        msg.phone }} | <i class="fas fa-envelope"></i> {{ msg.email }}</strong>
+                    <p style="margin-top: 10px; font-size: 1.1rem; line-height: 1.6;">{{ msg.content }}</p>
+                    {% if not msg.is_read %}<a href="{{ url_for('mark_read', id=msg.id) }}" class="cta-button"
+                        style="padding: 8px 20px; font-size: 0.9rem; margin-top: 10px;"><i class="fas fa-check"></i>
+                        تحديد كمقروء</a>{% endif %}
                 </div>
+                {% else %}
+                <p style="color: var(--gray-text);">لا توجد رسائل جديدة.</p>
                 {% endfor %}
             </div>
         </div>
