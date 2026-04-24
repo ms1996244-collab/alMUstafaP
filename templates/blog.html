@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المدونة التقنية | Al-Mustafa Programming</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="details-page-modern">
+
+    <header class="navbar">
+        <div class="logo">
+            <h1><a href="{{ url_for('home') }}">Al-Mustafa Programming</a></h1>
+        </div>
+        <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
+        <nav>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="{{ url_for('home') }}#home">الرئيسية</a></li>
+                <li><a href="{{ url_for('home') }}#portfolio">دراسات الحالة</a></li>
+                <li><a href="{{ url_for('blog') }}"
+                        style="color: var(--light-text); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">المدونة
+                        التقنية</a></li>
+                <li><a href="{{ url_for('home') }}#contact">تواصل معي</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="portfolio" style="padding-top: 150px; min-height: 100vh;">
+        <div class="section-title reveal-on-scroll">
+            <h2>المقالات التقنية</h2>
+            <div class="title-underline"></div>
+            <p style="color: var(--gray-text); margin-top: 20px; font-size: 1.1rem;">أفكار، حلول برمجية، وتجارب تقنية
+                عميقة.</p>
+        </div>
+
+        <div class="projects-grid">
+            {% for article in articles %}
+            <a href="{{ url_for('article_details', id=article.id) }}" class="project-card-link reveal-on-scroll">
+                <div class="project-card" style="border-color: rgba(23, 162, 184, 0.2);">
+                    <div class="project-image" style="height: 200px;">
+                        {% if article.image %}
+                        <img src="{{ article.image }}" alt="{{ article.title }}">
+                        {% else %}
+                        <i class="fas fa-newspaper card-icon" style="color: #17a2b8; font-size: 5rem;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="project-info">
+                        <h3 style="font-size: 1.4rem;">{{ article.title }}</h3>
+                        <p style="color: #ccc; font-size: 1rem; line-height: 1.8;">{{ article.summary }}</p>
+                        <span
+                            style="color: #17a2b8; font-size: 0.9rem; margin-top: 20px; display: inline-block; font-weight: bold;">اقرأ
+                            المقال كاملاً <i class="fas fa-arrow-left"></i></span>
+                    </div>
+                </div>
+            </a>
+            {% else %}
+            <p style="text-align: center; width: 100%; color: var(--gray-text); font-size: 1.2rem;">سيتم نشر مقالات
+                تقنية قريباً... ابقَ على اطلاع!</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2026 Al-Mustafa Programming. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-revealed'); });
+            });
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+
+</html>
