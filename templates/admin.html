@@ -241,21 +241,51 @@
             </div>
         </div>
 
-        <div class="admin-card" style="margin-top: 40px;">
-            <h2>صندوق الوارد (رسائل العملاء)</h2>
-            <div class="messages-list">
-                {% for msg in messages %}
-                <div class="msg-box {% if not msg.is_read %}unread-box{% endif %}">
-                    <strong><i class="fas fa-user-circle"></i> {{ msg.name }} | <i class="fas fa-phone"></i> {{
-                        msg.phone }} | <i class="fas fa-envelope"></i> {{ msg.email }}</strong>
-                    <p style="margin-top: 10px; font-size: 1.1rem; line-height: 1.6;">{{ msg.content }}</p>
-                    {% if not msg.is_read %}<a href="{{ url_for('mark_read', id=msg.id) }}" class="cta-button"
-                        style="padding: 8px 20px; font-size: 0.9rem; margin-top: 10px;"><i class="fas fa-check"></i>
-                        تحديد كمقروء</a>{% endif %}
+        <div class="admin-grid" style="margin-top: 40px;">
+            <div class="admin-card">
+                <h2><i class="fas fa-envelope-open-text" style="color: #17a2b8;"></i> صندوق الوارد (رسائل الاتصال)</h2>
+                <div class="messages-list">
+                    {% for msg in messages %}
+                    <div class="msg-box {% if not msg.is_read %}unread-box{% endif %}">
+                        <strong><i class="fas fa-user-circle"></i> {{ msg.name }} | <i class="fas fa-phone"></i> {{
+                            msg.phone }} | <i class="fas fa-envelope"></i> {{ msg.email }}</strong>
+                        <p style="margin-top: 10px; font-size: 1.1rem; line-height: 1.6;">{{ msg.content }}</p>
+                        {% if not msg.is_read %}<a href="{{ url_for('mark_read', type='msg', id=msg.id) }}"
+                            class="cta-button" style="padding: 8px 20px; font-size: 0.9rem; margin-top: 10px;"><i
+                                class="fas fa-check"></i> مقروء</a>{% endif %}
+                    </div>
+                    {% else %}
+                    <p style="color: var(--gray-text);">لا توجد رسائل جديدة.</p>
+                    {% endfor %}
                 </div>
-                {% else %}
-                <p style="color: var(--gray-text);">لا توجد رسائل جديدة.</p>
-                {% endfor %}
+            </div>
+
+            <div class="admin-card" style="border-color: #4caf50;">
+                <h2><i class="fas fa-money-check-alt" style="color: #4caf50;"></i> طلبات التسعير (Leads)</h2>
+                <div class="messages-list">
+                    {% for lead in leads %}
+                    <div class="msg-box {% if not lead.is_read %}unread-box{% endif %}"
+                        style="border-left: 4px solid #4caf50;">
+                        <strong><i class="fas fa-address-book"></i> التواصل: {{ lead.contact_info }}</strong>
+                        <p style="margin-top: 10px; font-size: 1.1rem; color: #fff;">نوع التطبيق: <span
+                                style="color: #17a2b8;">{{ lead.app_type }}</span></p>
+                        <p style="font-size: 1.2rem; font-weight: bold; color: var(--primary-gold);">الميزانية
+                            التقديرية: ${{ lead.estimated_price }}</p>
+                        <p style="font-size: 0.8rem; color: var(--gray-text); margin-top: 5px;">{{
+                            lead.created_at.strftime('%Y-%m-%d') }}</p>
+                        <div style="margin-top: 10px;">
+                            {% if not lead.is_read %}<a href="{{ url_for('mark_read', type='lead', id=lead.id) }}"
+                                class="cta-button"
+                                style="padding: 8px 20px; font-size: 0.9rem; background: rgba(76, 175, 80, 0.2) !important; color: #4caf50 !important; border-color: #4caf50;"><i
+                                    class="fas fa-check"></i> تمت المتابعة</a>{% endif %}
+                            <a href="{{ url_for('delete_item', type='lead', id=lead.id) }}"
+                                style="color: #ff4a4a; margin-right: 15px;"><i class="fas fa-trash"></i> حذف</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="color: var(--gray-text);">بانتظار عملاء جدد من الحاسبة...</p>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

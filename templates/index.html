@@ -4,18 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Al-Mustafa Programming | هندسة برمجية متكاملة</title>
     <meta name="description"
         content="مصطفى - مطور برمجيات خبير متخصص في تطبيقات الموبايل الفاخرة، التحليل المالي وأنظمة التداول، يقدم خدماته للشركات والأفراد في العراق والشرق الأوسط.">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <style>
-        /* تعديلات فخمة لحقل الهاتف ليتناسب مع النمط الزجاجي المظلم */
         .iti {
             width: 100%;
             margin-bottom: 15px;
@@ -50,25 +47,89 @@
         .iti__country.iti__highlight {
             background-color: rgba(212, 175, 55, 0.2);
         }
+
+        /* تصميم قسم الحاسبة والأسئلة */
+        .calculator-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--primary-gold);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .calc-select {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+
+        .price-result {
+            font-size: 2.5rem;
+            color: var(--primary-gold);
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .faq-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            text-align: right;
+        }
+
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: var(--primary-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            padding: 0 20px 20px;
+            color: var(--gray-text);
+            display: none;
+            line-height: 1.8;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testi-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .testi-card i.fa-quote-right {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 3rem;
+            color: rgba(212, 175, 55, 0.1);
+        }
     </style>
 </head>
 
 <body>
-
-    <a href="https://wa.me/9647821800086?text=مرحباً مصطفى، أريد الاستفسار عن برمجة تطبيق لعملي." class="whatsapp-float"
-        target="_blank">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div id="toast-notification" class="toast-container show">
-        <div class="toast-content"><i class="fas fa-check-circle toast-icon"></i>
-            <p>{{ messages[0] }}</p>
-        </div>
-    </div>
-    {% endif %}
-    {% endwith %}
+    <a href="https://wa.me/9647821800086" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
 
     <header class="navbar">
         <div class="logo">
@@ -79,8 +140,9 @@
             <ul class="nav-links" id="nav-links">
                 <li><a href="#home">الرئيسية</a></li>
                 <li><a href="#about">عنا</a></li>
+                <li><a href="#calculator">حاسبة التكلفة</a></li>
                 <li><a href="#portfolio">سجل الإنجازات</a></li>
-                <li><a href="{{ url_for('blog') }}">المدونة التقنية</a></li>
+                <li><a href="{{ url_for('blog') }}">المدونة</a></li>
                 <li><a href="#contact">تواصل معي</a></li>
             </ul>
         </nav>
@@ -90,21 +152,79 @@
         <div class="hero-content">
             <h2 class="hero-title">تجارب رقمية فاخرة</h2>
             <p class="hero-subtitle">هندسة برمجية متكاملة بمعايير عالمية للشرق الأوسط</p>
-            <a href="#portfolio" class="cta-button">استكشف سجل الإنجازات</a>
+            <a href="#calculator" class="cta-button">احسب تكلفة تطبيقك الآن</a>
         </div>
     </section>
 
-    <section id="about" class="portfolio reveal-on-scroll" style="padding: 100px 8% 50px;">
+    <section id="calculator" class="portfolio reveal-on-scroll" style="padding: 100px 5%;">
         <div class="section-title">
-            <h2>عن Al-Mustafa Programming</h2>
+            <h2>حاسبة تكلفة التطبيقات الذكية</h2>
+            <div class="title-underline"></div>
+            <p style="color: var(--gray-text); margin-top: 15px;">احصل على تسعير مبدئي لمشروعك في ثوانٍ معدودة.</p>
+        </div>
+
+        <div class="calculator-card">
+            <select id="appType" class="calc-select" onchange="calculatePrice()">
+                <option value="0">اختر نوع التطبيق...</option>
+                <option value="2000">تطبيق متجر إلكتروني متكامل</option>
+                <option value="1500">تطبيق شركة / خدمات</option>
+                <option value="3500">تطبيق توصيل (عميل + مندوب + لوحة تحكم)</option>
+                <option value="4000">نظام تداول مالي / بوتات</option>
+            </select>
+
+            <select id="appDesign" class="calc-select" onchange="calculatePrice()">
+                <option value="0">مستوى التصميم...</option>
+                <option value="0">تصميم قياسي (Standard)</option>
+                <option value="500">تصميم فاخر ومخصص (Luxury UI/UX)</option>
+            </select>
+
+            <div id="priceDisplay" style="display: none;">
+                <p style="color: var(--light-text); font-size: 1.2rem;">التكلفة التقديرية لمشروعك تبدأ من:</p>
+                <div class="price-result">$<span id="finalPrice">0</span></div>
+
+                <div style="margin-top: 30px;">
+                    <input type="text" id="leadContact" placeholder="رقم هاتفك أو بريدك لنرسل لك العرض الفني"
+                        class="calc-select" style="max-width: 400px; display: inline-block; margin-left: 10px;">
+                    <button onclick="submitLead()" class="cta-button">طلب عرض سعر رسمي</button>
+                </div>
+                <p id="leadSuccess" style="color: #4caf50; display: none; margin-top: 15px;">تم استلام طلبك! سنتواصل معك
+                    قريباً.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="portfolio reveal-on-scroll" style="padding: 50px 8%;">
+        <div class="section-title">
+            <h2>لماذا Al-Mustafa؟</h2>
             <div class="title-underline"></div>
         </div>
         <div class="bento-card" style="max-width: 900px; margin: 0 auto; text-align: center;">
             <p style="font-size: 1.2rem; color: var(--gray-text); line-height: 2;">
-                نحن لسنا مجرد كُتّاب أكواد، بل نحن مهندسون نبني حلولاً رقمية تعيد تعريف الفخامة والاحترافية. تخصصنا في
-                تطبيقات الموبايل المتطورة باستخدام <strong>Flutter</strong>، وتطوير أنظمة التحليل المالي والتداول الآلي.
-                ندمج بين العلم البرمجي وبين الرؤية التجارية لنصنع لعملائنا أدوات تسيطر على الأسواق.
+                نحن لا نكتب أكواداً فقط، بل نبني أصولاً رقمية للشركات. تخصصنا في تطبيقات <strong>Flutter</strong>
+                الفاخرة وأنظمة التداول، مع تطبيق صارم لهيكلية Clean Architecture لضمان استدامة مشروعك.
             </p>
+        </div>
+    </section>
+
+    <section class="portfolio reveal-on-scroll" style="padding: 50px 5%;">
+        <div class="section-title">
+            <h2>شركاء النجاح</h2>
+            <div class="title-underline"></div>
+        </div>
+        <div class="testimonial-grid">
+            <div class="testi-card">
+                <i class="fas fa-quote-right"></i>
+                <p style="color: var(--light-text); line-height: 1.8; margin-bottom: 20px;">"احترافية عالية وتسليم في
+                    الموعد. التطبيق يعمل بسلاسة تامة، والهندسة البرمجية التي يتبعها مصطفى تضمن لنا التوسع مستقبلاً دون
+                    مشاكل."</p>
+                <h4 style="color: var(--primary-gold);">- مدير تنفيذي (تطبيق تجاري)</h4>
+            </div>
+            <div class="testi-card">
+                <i class="fas fa-quote-right"></i>
+                <p style="color: var(--light-text); line-height: 1.8; margin-bottom: 20px;">"واجهة المستخدم الفاخرة كانت
+                    بالضبط ما نبحث عنه. تواصل ممتاز وشفافية في الأسعار، أنصح بالتعامل معه للمشاريع الكبيرة."</p>
+                <h4 style="color: var(--primary-gold);">- رائد أعمال (السعودية)</h4>
+            </div>
         </div>
     </section>
 
@@ -118,12 +238,10 @@
             <a href="{{ url_for('project_details', id=project.id) }}" class="project-card-link reveal-on-scroll">
                 <div class="project-card">
                     <div class="project-image">
-                        {% if project.icon.startswith('http') %}
-                        <img src="{{ project.icon }}" alt="{{ project.title }}" loading="lazy">
-                        {% else %}
-                        <i class="{{ project.icon }} card-icon"
-                            style="font-size: 4rem; color: var(--primary-gold);"></i>
-                        {% endif %}
+                        {% if project.icon.startswith('http') %}<img src="{{ project.icon }}" alt="{{ project.title }}"
+                            loading="lazy">
+                        {% else %}<i class="{{ project.icon }} card-icon"
+                            style="font-size: 4rem; color: var(--primary-gold);"></i>{% endif %}
                     </div>
                     <div class="project-info">
                         <h3>{{ project.title }}</h3>
@@ -135,6 +253,33 @@
         </div>
     </section>
 
+    <section class="contact-section reveal-on-scroll" style="padding: 80px 5%;">
+        <div class="section-title">
+            <h2>الأسئلة الشائعة</h2>
+            <div class="title-underline"></div>
+        </div>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">هل توفرون خدمة رفع التطبيق على المتاجر؟ <i
+                        class="fas fa-plus"></i></div>
+                <div class="faq-answer">نعم بالتأكيد، نحن نتكفل برفع تطبيقك على متجري Google Play و App Store وفق أحدث
+                    سياسات القبول، لتستلم مشروعك جاهزاً للإطلاق.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">ما هي التقنيات المستخدمة في البرمجة؟ <i
+                        class="fas fa-plus"></i></div>
+                <div class="faq-answer">نعتمد على إطار عمل Flutter من جوجل لبرمجة تطبيقات سريعة تعمل على النظامين، مع
+                    استخدام Supabase أو Python للواجهة الخلفية (Backend) لضمان أعلى درجات الأمان والسرعة.</div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">هل هناك دعم فني بعد التسليم؟ <i
+                        class="fas fa-plus"></i></div>
+                <div class="faq-answer">نقدم فترة دعم فني مجانية بعد التسليم لضمان خلو النظام من أي أخطاء، مع إمكانية
+                    توقيع عقد صيانة وتطوير مستمر حسب رغبتك.</div>
+            </div>
+        </div>
+    </section>
+
     <section id="contact" class="contact-section reveal-on-scroll">
         <div class="section-title">
             <h2>تواصل معي المباشر</h2>
@@ -143,12 +288,10 @@
         <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
             <input type="text" name="name" placeholder="الاسم الكريم" required>
             <input type="email" name="email" placeholder="البريد الإلكتروني" required>
-
             <div class="phone-input-container" dir="ltr">
                 <input type="tel" id="phone" name="phone" required
                     style="text-align: left; background: rgba(255, 255, 255, 0.05); color: #fff;">
             </div>
-
             <textarea name="content" rows="5" placeholder="كيف يمكنني مساعدتك؟" required
                 style="margin-top: 15px;"></textarea>
             <button type="submit" class="cta-button">إرسال الرسالة</button>
@@ -160,27 +303,69 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
-
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // تأثيرات الظهور
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-revealed'); });
             });
             document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
 
-            // تفعيل مكتبة الهواتف بذكاء
             const phoneInput = document.querySelector("#phone");
             if (phoneInput) {
                 window.intlTelInput(phoneInput, {
-                    initialCountry: "iq", // العراق افتراضياً
-                    preferredCountries: ["iq", "sa", "ae", "qa", "kw", "bh", "om"], // التركيز على الخليج
+                    initialCountry: "iq", preferredCountries: ["iq", "sa", "ae", "qa"],
                     utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-                    separateDialCode: true // إظهار مفتاح الدولة خارج الحقل بشكل فخم
+                    separateDialCode: true
                 });
             }
         });
+
+        // خوارزمية الحاسبة
+        function calculatePrice() {
+            let basePrice = parseInt(document.getElementById('appType').value);
+            let designPrice = parseInt(document.getElementById('appDesign').value);
+            if (basePrice > 0) {
+                document.getElementById('priceDisplay').style.display = 'block';
+                let total = basePrice + designPrice;
+                document.getElementById('finalPrice').innerText = total.toLocaleString();
+            } else { document.getElementById('priceDisplay').style.display = 'none'; }
+        }
+
+        // إرسال طلب الحاسبة (Lead) بدون ريفرش
+        function submitLead() {
+            let contact = document.getElementById('leadContact').value;
+            let type = document.getElementById('appType').options[document.getElementById('appType').selectedIndex].text;
+            let price = document.getElementById('finalPrice').innerText;
+            if (contact.length < 5) { alert("رجاءً أدخل رقم هاتفك أو بريدك للتواصل"); return; }
+
+            let formData = new FormData();
+            formData.append('contact_info', contact);
+            formData.append('app_type', type);
+            formData.append('estimated_price', price);
+
+            fetch('/submit_lead', { method: 'POST', body: formData })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        document.getElementById('leadSuccess').style.display = 'block';
+                        document.getElementById('leadContact').value = '';
+                    }
+                });
+        }
+
+        // الأسئلة الشائعة
+        function toggleFaq(element) {
+            let answer = element.nextElementSibling;
+            let icon = element.querySelector('i');
+            if (answer.style.display === "block") {
+                answer.style.display = "none";
+                icon.className = "fas fa-plus";
+            } else {
+                answer.style.display = "block";
+                icon.className = "fas fa-minus";
+            }
+        }
     </script>
 </body>
 

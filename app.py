@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, Response, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import hashlib
 import urllib.request
 import json
@@ -13,6 +14,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portfolio.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+# تشفير كلمة المرور في الذاكرة (حماية عسكرية)
+ADMIN_USERNAME = 'admin'
+ADMIN_PASSWORD_HASH = generate_password_hash('mustafa2026')
+
+# --- الجداول الأساسية ---
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -45,7 +51,7 @@ class SiteVisitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_hash = db.Column(db.String(128), nullable=False)
     visit_date = db.Column(db.Date, nullable=False, default=date.today)
-    country = db.Column(db.String(100), default='غير معروف') # عمود الدولة الجديد
+    country = db.Column(db.String(100), default='غير معروف')
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,16 +61,24 @@ class Message(db.Model):
     content = db.Column(db.Text, nullable=False)
     is_read = db.Column(db.Boolean, default=False)
 
+# جدول جديد لطلبات "حاسبة التكلفة" (العملاء المحتملين)
+class Lead(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    contact_info = db.Column(db.String(150), nullable=False)
+    app_type = db.Column(db.String(100), nullable=False)
+    estimated_price = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'logged_in' not in session:
-            return redirect(url_for('login'))
+        if 'logged_in' not in session: return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
 
 with app.app_context():
-    db.create_all()
+    db.create_all() # سيقوم بإنشاء جدول Lead تلقائياً
     update_queries = [
         "ALTER TABLE project ADD COLUMN is_visible BOOLEAN DEFAULT 1",
         "ALTER TABLE article ADD COLUMN is_visible BOOLEAN DEFAULT 1",
@@ -80,22 +94,15 @@ with app.app_context():
         except Exception:
             db.session.rollback()
 
-# --- خوارزمية جلب الدولة من الـ IP ---
 def get_country_from_ip(ip):
     try:
-        # تجنب البحث عن الآيبيات المحلية للسيرفر
-        if ip.startswith('127.') or ip.startswith('192.168.') or ip.startswith('10.'):
-            return 'تصفح محلي'
-        # جلب اسم الدولة باللغة العربية مع مهلة ثانيتين فقط لعدم إبطاء الموقع
+        if ip.startswith(('127.', '192.168.', '10.')): return 'تصفح محلي'
         url = f"http://ip-api.com/json/{ip}?lang=ar"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=2) as response:
             data = json.loads(response.read().decode())
-            if data.get('status') == 'success':
-                return data.get('country', 'غير معروف')
-    except Exception:
-        pass
-    return 'غير معروف'
+            return data.get('country', 'غير معروف') if data.get('status') == 'success' else 'غير معروف'
+    except: return 'غير معروف'
 
 def update_unique_view(project_id=None, article_id=None):
     raw_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
@@ -120,10 +127,8 @@ def track_visitor():
             clean_ip = raw_ip.split(',')[0].strip()
             ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
             today = date.today()
-            existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first()
-            if not existing:
-                country_name = get_country_from_ip(clean_ip) # هنا نجلب الدولة!
-                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today, country=country_name))
+            if not SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first():
+                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today, country=get_country_from_ip(clean_ip)))
                 db.session.commit()
 
 @app.route('/sitemap.xml')
@@ -185,12 +190,37 @@ def contact():
     flash("رسالتك وصلت بنجاح. سيتم التواصل معك قريباً.")
     return redirect(url_for('home'))
 
+# استقبال طلبات الحاسبة
+@app.route('/submit_lead', methods=['POST'])
+def submit_lead():
+    new_lead = Lead(
+        contact_info=request.form.get('contact_info'),
+        app_type=request.form.get('app_type'),
+        estimated_price=request.form.get('estimated_price')
+    )
+    db.session.add(new_lead)
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # نظام الحماية من التخمين العشوائي للباسورد (Brute-force protection)
+    if 'login_attempts' not in session: session['login_attempts'] = 0
+    if session['login_attempts'] >= 5:
+        flash("تم حظر محاولات الدخول مؤقتاً لأسباب أمنية.")
+        return render_template('login.html')
+
     if request.method == 'POST':
-        if request.form['username'] == 'admin' and request.form['password'] == 'mustafa2026':
+        username = request.form['username']
+        password = request.form['password']
+        
+        # استخدام التشفير القوي
+        if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
             session['logged_in'] = True
+            session['login_attempts'] = 0 # تصفير العداد عند النجاح
             return redirect(url_for('admin'))
+        
+        session['login_attempts'] += 1
         flash("بيانات الدخول غير صحيحة")
     return render_template('login.html')
 
@@ -216,15 +246,21 @@ def admin():
     projects = Project.query.all()
     articles = Article.query.all()
     messages = Message.query.order_by(Message.id.desc()).all()
-    unread_count = Message.query.filter_by(is_read=False).count()
+    leads = Lead.query.order_by(Lead.id.desc()).all() # جلب طلبات التسعير
     
+    unread_count = Message.query.filter_by(is_read=False).count() + Lead.query.filter_by(is_read=False).count()
+    
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+    today_visitors = SiteVisitor.query.filter_by(visit_date=today).count()
+    yesterday_visitors = SiteVisitor.query.filter_by(visit_date=yesterday).count()
     total_visitors = SiteVisitor.query.count()
-    today_visitors = SiteVisitor.query.filter_by(visit_date=date.today()).count()
     
-    # تجميع الزوار حسب الدولة (تحليل البيانات)
     country_stats = db.session.query(SiteVisitor.country, func.count(SiteVisitor.id)).group_by(SiteVisitor.country).order_by(func.count(SiteVisitor.id).desc()).all()
-    
-    return render_template('admin.html', projects=projects, articles=articles, messages=messages, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors, country_stats=country_stats)
+    monthly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.extract('month', SiteVisitor.visit_date).label('month'), func.count(SiteVisitor.id)).group_by('year', 'month').order_by(text('year DESC, month DESC')).all()
+    yearly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.count(SiteVisitor.id)).group_by('year').order_by(text('year DESC')).all()
+
+    return render_template('admin.html', projects=projects, articles=articles, messages=messages, leads=leads, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors, yesterday_visitors=yesterday_visitors, country_stats=country_stats, monthly_stats=monthly_stats, yearly_stats=yearly_stats)
 
 @app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
 @login_required
@@ -266,15 +302,17 @@ def toggle_visibility(type, id):
 @login_required
 def delete_item(type, id):
     if type == 'project': db.session.delete(Project.query.get_or_404(id))
+    elif type == 'lead': db.session.delete(Lead.query.get_or_404(id))
     else: db.session.delete(Article.query.get_or_404(id))
     db.session.commit()
     return redirect(url_for('admin'))
 
-@app.route('/read/<int:id>')
+@app.route('/read/<string:type>/<int:id>')
 @login_required
-def mark_read(id):
-    msg = Message.query.get_or_404(id)
-    msg.is_read = True
+def mark_read(type, id):
+    if type == 'msg': item = Message.query.get_or_404(id)
+    else: item = Lead.query.get_or_404(id)
+    item.is_read = True
     db.session.commit()
     return redirect(url_for('admin'))
 
