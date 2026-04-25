@@ -20,7 +20,7 @@ class Project(db.Model):
     technologies = db.Column(db.String(200), nullable=True)
     icon = db.Column(db.String(200), default='fas fa-code')
     is_visible = db.Column(db.Boolean, default=True)
-    views = db.Column(db.Integer, default=0) # تمت الإضافة
+    views = db.Column(db.Integer, default=0)
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,9 +30,16 @@ class Article(db.Model):
     image = db.Column(db.String(250), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_visible = db.Column(db.Boolean, default=True)
-    views = db.Column(db.Integer, default=0) # تمت الإضافة
+    views = db.Column(db.Integer, default=0)
 
-# جدول جديد لتتبع الزوار الفريدين (بدقة وحماية للخصوصية)
+# جدول تتبع المشاهدات الفريدة لكل مشروع ومقال
+class ViewTracker(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_hash = db.Column(db.String(128), nullable=False)
+    project_id = db.Column(db.Integer, nullable=True)
+    article_id = db.Column(db.Integer, nullable=True)
+    view_date = db.Column(db.Date, nullable=False, default=date.today)
+
 class SiteVisitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_hash = db.Column(db.String(128), nullable=False)
@@ -54,54 +61,46 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# التحديث الذكي لقاعدة البيانات (دون فقدان البيانات)
 with app.app_context():
     db.create_all()
-    try:
-        db.session.execute(text("ALTER TABLE project ADD COLUMN views INTEGER DEFAULT 0"))
-        db.session.execute(text("ALTER TABLE article ADD COLUMN views INTEGER DEFAULT 0"))
-        db.session.commit()
-    except Exception:
-        pass # الأعمدة موجودة مسبقاً، لا تفعل شيئاً
 
-# --- محرك تتبع الزوار (Global Tracker) ---
+# --- خوارزمية تتبع المشاهدات الفريدة ---
+def update_unique_view(project_id=None, article_id=None):
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if ip:
+        ip_hash = hashlib.sha256(ip.encode('utf-8')).hexdigest()
+        today = date.today()
+        # هل شاهد هذا الـ IP هذا العنصر اليوم؟
+        viewed = ViewTracker.query.filter_by(
+            ip_hash=ip_hash, 
+            project_id=project_id, 
+            article_id=article_id, 
+            view_date=today
+        ).first()
+        
+        if not viewed:
+            if project_id:
+                target = Project.query.get(project_id)
+            else:
+                target = Article.query.get(article_id)
+            
+            if target:
+                target.views += 1
+                db.session.add(ViewTracker(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today))
+                db.session.commit()
+
 @app.before_request
 def track_visitor():
-    # عدم تتبع ملفات التصميم أو لوحة الإدارة لضمان دقة الأرقام للعملاء فقط
     if request.endpoint and not request.endpoint.startswith('static') and request.endpoint not in ['admin', 'login', 'logout']:
-        # سحب الـ IP من السيرفر وتشفيره
         ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         if ip:
             ip_hash = hashlib.sha256(ip.encode('utf-8')).hexdigest()
             today = date.today()
-            # هل زار الموقع اليوم؟
             existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first()
             if not existing:
                 db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today))
                 db.session.commit()
 
-# --- مسارات الـ SEO ---
-@app.route('/sitemap.xml')
-def sitemap():
-    projects = Project.query.filter_by(is_visible=True).all()
-    articles = Article.query.filter_by(is_visible=True).all()
-    xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    xml += f'  <url>\n    <loc>{url_for("home", _external=True)}</loc>\n    <priority>1.0</priority>\n  </url>\n'
-    xml += f'  <url>\n    <loc>{url_for("blog", _external=True)}</loc>\n    <priority>0.9</priority>\n  </url>\n'
-    for p in projects:
-        xml += f'  <url>\n    <loc>{url_for("project_details", id=p.id, _external=True)}</loc>\n    <priority>0.8</priority>\n  </url>\n'
-    for a in articles:
-        xml += f'  <url>\n    <loc>{url_for("article_details", id=a.id, _external=True)}</loc>\n    <priority>0.8</priority>\n  </url>\n'
-    xml += '</urlset>'
-    return Response(xml, mimetype='application/xml')
-
-@app.route('/robots.txt')
-def robots():
-    txt = "User-agent: *\nDisallow: /admin\nAllow: /\n"
-    txt += f"Sitemap: {url_for('sitemap', _external=True)}"
-    return Response(txt, mimetype='text/plain')
-
-# --- المسارات العامة ---
 @app.route('/')
 def home():
     projects = Project.query.filter_by(is_visible=True).all()
@@ -117,9 +116,8 @@ def project_details(id):
     project = Project.query.get_or_404(id)
     if not project.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
     
-    # زيادة المشاهدات
-    project.views += 1
-    db.session.commit()
+    # استدعاء التتبع الفريد
+    update_unique_view(project_id=id)
 
     prev_project = Project.query.filter(Project.id < id, Project.is_visible == True).order_by(Project.id.desc()).first()
     next_project = Project.query.filter(Project.id > id, Project.is_visible == True).order_by(Project.id.asc()).first()
@@ -130,9 +128,8 @@ def article_details(id):
     article = Article.query.get_or_404(id)
     if not article.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
     
-    # زيادة المشاهدات
-    article.views += 1
-    db.session.commit()
+    # استدعاء التتبع الفريد
+    update_unique_view(article_id=id)
 
     return render_template('article_details.html', article=article)
 
@@ -176,8 +173,6 @@ def admin():
     articles = Article.query.all()
     messages = Message.query.order_by(Message.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count()
-    
-    # إحصائيات لوحة التحكم
     total_visitors = SiteVisitor.query.count()
     today_visitors = SiteVisitor.query.filter_by(visit_date=date.today()).count()
     

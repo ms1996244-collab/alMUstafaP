@@ -7,42 +7,10 @@
 
     <title>Al-Mustafa Programming | هندسة برمجية متكاملة</title>
     <meta name="description"
-        content="مصطفى - مطور برمجيات خبير متخصص في تطبيقات الموبايل الفاخرة، التحليل المالي وأنظمة التداول، يقدم خدماته للشركات والأفراد في العراق، السعودية، الإمارات وكافة دول الشرق الأوسط.">
-    <meta name="keywords"
-        content="برمجة تطبيقات, مطور فلاتر, الشرق الأوسط, الخليج العربي, السعودية, الإمارات, قطر, برمجة بوتات تداول, تطبيقات متاجر إلكترونية, مصطفى مبرمج">
-
-    <link rel="canonical" href="{{ request.base_url }}">
-
-    <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
-    <link rel="alternate" hreflang="ar-SA" href="{{ request.base_url }}" />
-    <link rel="alternate" hreflang="ar-AE" href="{{ request.base_url }}" />
-    <link rel="alternate" hreflang="ar-QA" href="{{ request.base_url }}" />
-    <meta name="geo.region" content="IQ" />
-
-    <meta name="google-site-verification" content="YOUR_CODE_HERE" />
-
-    <meta property="og:title" content="Al-Mustafa Programming | الشرق الأوسط">
-    <meta property="og:description" content="تجارب رقمية فاخرة، وهندسة برمجية بمعايير عالمية. تصفح معرض أعمالنا الآن.">
-    <meta property="og:type" content="website">
+        content="مصطفى - مطور برمجيات خبير متخصص في تطبيقات الموبايل الفاخرة، التحليل المالي وأنظمة التداول، يقدم خدماته للشركات والأفراد في العراق والشرق الأوسط.">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ProfessionalService",
-      "name": "Al-Mustafa Programming",
-      "founder": "Mustafa Ali Jasim Alabid",
-      "description": "تطوير تطبيقات محمول احترافية وأنظمة تداول مالي في الشرق الأوسط",
-      "areaServed": ["IQ", "SA", "AE", "QA", "KW", "BH", "OM", "JO"],
-      "address": {
-        "@type": "PostalAddress",
-        "addressCountry": "IQ"
-      }
-    }
-    </script>
 </head>
 
 <body>
@@ -52,16 +20,6 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <div id="toast-notification" class="toast-container show">
-        <div class="toast-content"><i class="fas fa-check-circle toast-icon"></i>
-            <p>{{ messages[0] }}</p>
-        </div>
-    </div>
-    {% endif %}
-    {% endwith %}
-
     <header class="navbar">
         <div class="logo">
             <h1><a href="{{ url_for('home') }}">Al-Mustafa Programming</a></h1>
@@ -69,10 +27,11 @@
         <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
-                <li><a href="{{ url_for('home') }}#home">الرئيسية</a></li>
-                <li><a href="{{ url_for('home') }}#portfolio">دراسات الحالة</a></li>
+                <li><a href="#home">الرئيسية</a></li>
+                <li><a href="#about">عنا</a></li>
+                <li><a href="#portfolio">سجل الإنجازات</a></li>
                 <li><a href="{{ url_for('blog') }}">المدونة التقنية</a></li>
-                <li><a href="{{ url_for('home') }}#contact">تواصل معي</a></li>
+                <li><a href="#contact">تواصل معي</a></li>
             </ul>
         </nav>
     </header>
@@ -81,13 +40,27 @@
         <div class="hero-content">
             <h2 class="hero-title">تجارب رقمية فاخرة</h2>
             <p class="hero-subtitle">هندسة برمجية متكاملة بمعايير عالمية للشرق الأوسط</p>
-            <a href="#portfolio" class="cta-button">استكشف دراسات الحالة</a>
+            <a href="#portfolio" class="cta-button">استكشف سجل الإنجازات</a>
+        </div>
+    </section>
+
+    <section id="about" class="portfolio reveal-on-scroll" style="padding: 100px 8% 50px;">
+        <div class="section-title">
+            <h2>عن Al-Mustafa Programming</h2>
+            <div class="title-underline"></div>
+        </div>
+        <div class="bento-card" style="max-width: 900px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 1.2rem; color: var(--gray-text); line-height: 2;">
+                نحن لسنا مجرد كُتّاب أكواد، بل نحن مهندسون نبني حلولاً رقمية تعيد تعريف الفخامة والاحترافية. تخصصنا في
+                تطبيقات الموبايل المتطورة باستخدام <strong>Flutter</strong>، وتطوير أنظمة التحليل المالي والتداول الآلي.
+                ندمج بين العلم البرمجي وبين الرؤية التجارية لنصنع لعملائنا أدوات تسيطر على الأسواق.
+            </p>
         </div>
     </section>
 
     <section id="portfolio" class="portfolio">
         <div class="section-title reveal-on-scroll">
-            <h2>سجل الإنجازات التقنية</h2>
+            <h2>سجل الإنجازات</h2>
             <div class="title-underline"></div>
         </div>
         <div class="projects-grid">
@@ -127,28 +100,15 @@
     </section>
 
     <footer class="footer">
-        <div class="social-links">
-            <a href="#"><i class="fab fa-github"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-        </div>
         <p>&copy; 2026 Al-Mustafa Programming. All rights reserved.</p>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-revealed');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-revealed'); });
+            });
             document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
         });
     </script>
