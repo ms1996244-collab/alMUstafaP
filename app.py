@@ -77,24 +77,25 @@ def login_required(f):
         if 'logged_in' not in session: return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
-
 with app.app_context():
-    db.create_all() # سيقوم بإنشاء جدول Lead تلقائياً
+    db.create_all() 
+    # نظام التحديث التلقائي لقاعدة البيانات من الخلفية
     update_queries = [
         "ALTER TABLE project ADD COLUMN is_visible BOOLEAN DEFAULT 1",
         "ALTER TABLE article ADD COLUMN is_visible BOOLEAN DEFAULT 1",
         "ALTER TABLE project ADD COLUMN views INTEGER DEFAULT 0",
         "ALTER TABLE article ADD COLUMN views INTEGER DEFAULT 0",
         "ALTER TABLE article ADD COLUMN likes INTEGER DEFAULT 0",
-        "ALTER TABLE site_visitor ADD COLUMN country VARCHAR(100) DEFAULT 'غير معروف'"
+        "ALTER TABLE site_visitor ADD COLUMN country VARCHAR(100) DEFAULT 'غير معروف'",
+        "ALTER TABLE site_visitor ADD COLUMN source VARCHAR(255) DEFAULT 'دخول مباشر'"
     ]
     for query in update_queries:
         try:
             db.session.execute(text(query))
             db.session.commit()
         except Exception:
+            # إذا كان العمود موجوداً بالفعل، سيتجاهل الكود الخطأ بسلام
             db.session.rollback()
-
 def get_country_from_ip(ip):
     try:
         if ip.startswith(('127.', '192.168.', '10.')): return 'تصفح محلي'
@@ -144,7 +145,7 @@ def track_visitor():
                 country_name = get_country_from_ip(clean_ip)
                 db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today, country=country_name, source=source_name))
                 db.session.commit()
-                
+
 @app.route('/sitemap.xml')
 def sitemap():
     projects = Project.query.filter_by(is_visible=True).all()
