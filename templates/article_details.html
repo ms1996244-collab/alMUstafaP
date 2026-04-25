@@ -43,27 +43,8 @@
         .article-meta-info {
             color: var(--primary-gold);
             font-size: 1rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        /* زر لينكد إن المحسن */
-        .linkedin-share-btn {
-            display: inline-block;
-            background: #0a66c2;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.95rem;
             margin-bottom: 30px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(10, 102, 194, 0.3);
-        }
-
-        .linkedin-share-btn:hover {
-            background: #004182;
-            transform: translateY(-2px);
+            display: block;
         }
 
         .article-img {
@@ -81,14 +62,14 @@
             text-align: justify;
         }
 
-        /* تصميم نظام الإعجاب الفاخر */
+        /* تصميم نظام الإعجاب */
         .feedback-section {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 40px 30px;
             text-align: center;
-            margin: 60px 0;
+            margin: 60px 0 20px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
@@ -124,6 +105,61 @@
             color: var(--dark-bg);
             box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
             pointer-events: none;
+        }
+
+        /* تصميم أزرار المشاركة الاجتماعية */
+        .social-share-container {
+            text-align: center;
+            margin: 30px 0 50px;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .social-share-title {
+            color: var(--gray-text);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .share-btn:hover {
+            transform: translateY(-4px);
+        }
+
+        .share-linkedin {
+            background: #0a66c2;
+        }
+
+        .share-twitter {
+            background: #1da1f2;
+        }
+
+        .share-facebook {
+            background: #1877f2;
+        }
+
+        .share-whatsapp {
+            background: #25d366;
         }
     </style>
 
@@ -161,11 +197,6 @@
                 <i class="fas fa-eye"></i> {{ article.views }} قراءة
             </span>
 
-            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.base_url }}" target="_blank"
-                class="linkedin-share-btn">
-                <i class="fab fa-linkedin"></i> مشاركة على LinkedIn
-            </a>
-
             {% if article.image %}
             <img src="{{ article.image }}" alt="{{ article.title }}" class="article-img" loading="lazy">
             {% endif %}
@@ -196,7 +227,29 @@
                 لتقييمك! دعمك يحفزنا لتقديم المزيد.</p>
         </div>
 
-        <div class="cta-banner-glass reveal-on-scroll" style="margin-top: 40px;">
+        <div class="social-share-container reveal-on-scroll">
+            <h4 class="social-share-title">شارك هذا المقال مع مجتمعك التقني:</h4>
+            <div class="share-buttons">
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.base_url }}" target="_blank"
+                    class="share-btn share-linkedin" title="مشاركة على LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.base_url }}&text=مقال رائع: {{ article.title }}"
+                    target="_blank" class="share-btn share-twitter" title="مشاركة على Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.base_url }}" target="_blank"
+                    class="share-btn share-facebook" title="مشاركة على Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://api.whatsapp.com/send?text=انصحك بقراءة هذا المقال: {{ article.title }} - {{ request.base_url }}"
+                    target="_blank" class="share-btn share-whatsapp" title="مشاركة عبر WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="cta-banner-glass reveal-on-scroll" style="margin-top: 20px;">
             <h2>هل تواجه تحدياً برمجياً مشابهاً؟</h2>
             <p>أنا هنا لتقديم استشارة تقنية أو بناء نظام متكامل لعملك.</p>
             <a href="{{ url_for('home') }}#contact" class="cta-button">تواصل معي الآن</a>
