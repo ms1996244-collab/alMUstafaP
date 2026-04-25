@@ -30,7 +30,7 @@ class Article(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_visible = db.Column(db.Boolean, default=True)
     views = db.Column(db.Integer, default=0)
-    likes = db.Column(db.Integer, default=0) # ميزة الإعجابات الجديدة
+    likes = db.Column(db.Integer, default=0)
 
 class ViewTracker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -63,7 +63,6 @@ def login_required(f):
 with app.app_context():
     db.create_all()
     
-    # خوارزمية التحديث الذكي: معالجة كل عمود على حدة لتجنب توقف السيرفر
     update_queries = [
         "ALTER TABLE project ADD COLUMN is_visible BOOLEAN DEFAULT 1",
         "ALTER TABLE article ADD COLUMN is_visible BOOLEAN DEFAULT 1",
@@ -71,34 +70,41 @@ with app.app_context():
         "ALTER TABLE article ADD COLUMN views INTEGER DEFAULT 0",
         "ALTER TABLE article ADD COLUMN likes INTEGER DEFAULT 0"
     ]
-    
     for query in update_queries:
         try:
             db.session.execute(text(query))
             db.session.commit()
         except Exception:
-            db.session.rollback() # إذا كان العمود موجوداً، تجاهل الخطأ وأكمل بسلام
+            db.session.rollback()
 
+# --- خوارزمية تتبع المشاهدات (المحدثة والذكية) ---
 def update_unique_view(project_id=None, article_id=None):
-    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if ip:
-        ip_hash = hashlib.sha256(ip.encode('utf-8')).hexdigest()
+    raw_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if raw_ip:
+        # استخراج الآي بي النقي (العميل) فقط في حال وجود وسطاء
+        clean_ip = raw_ip.split(',')[0].strip()
+        ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
         today = date.today()
+        
         viewed = ViewTracker.query.filter_by(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today).first()
+        
         if not viewed:
             if project_id: target = Project.query.get(project_id)
             else: target = Article.query.get(article_id)
+            
             if target:
-                target.views += 1
+                # الحماية من القيمة الفارغة (None) في قواعد البيانات القديمة
+                target.views = (target.views or 0) + 1
                 db.session.add(ViewTracker(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today))
                 db.session.commit()
 
 @app.before_request
 def track_visitor():
     if request.endpoint and not request.endpoint.startswith('static') and request.endpoint not in ['admin', 'login', 'logout']:
-        ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if ip:
-            ip_hash = hashlib.sha256(ip.encode('utf-8')).hexdigest()
+        raw_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if raw_ip:
+            clean_ip = raw_ip.split(',')[0].strip()
+            ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
             today = date.today()
             existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first()
             if not existing:
@@ -137,7 +143,9 @@ def blog():
 def project_details(id):
     project = Project.query.get_or_404(id)
     if not project.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
+    
     update_unique_view(project_id=id)
+    
     prev_project = Project.query.filter(Project.id < id, Project.is_visible == True).order_by(Project.id.desc()).first()
     next_project = Project.query.filter(Project.id > id, Project.is_visible == True).order_by(Project.id.asc()).first()
     return render_template('project_details.html', project=project, prev_project=prev_project, next_project=next_project)
@@ -146,14 +154,15 @@ def project_details(id):
 def article_details(id):
     article = Article.query.get_or_404(id)
     if not article.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
+    
     update_unique_view(article_id=id)
+    
     return render_template('article_details.html', article=article)
 
-# --- نظام الإعجاب بالمقالات (AJAX) ---
 @app.route('/like_article/<int:id>', methods=['POST'])
 def like_article(id):
     article = Article.query.get_or_404(id)
-    article.likes += 1
+    article.likes = (article.likes or 0) + 1
     db.session.commit()
     return jsonify({'status': 'success', 'likes': article.likes})
 
@@ -216,7 +225,6 @@ def edit_project(id):
         return redirect(url_for('admin'))
     return render_template('edit_project.html', project=project)
 
-# --- مسار تعديل المقال الشامل ---
 @app.route('/edit_article/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_article(id):
