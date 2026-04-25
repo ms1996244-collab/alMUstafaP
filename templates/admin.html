@@ -145,6 +145,36 @@
                     {% endfor %}
                 </table>
             </div>
+
+            <div class="admin-card" style="overflow-x: auto; border-color: #4caf50;">
+                <h2><i class="fas fa-link" style="color: #4caf50;"></i> مصادر الزيارات (من أين جاؤوا؟)</h2>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <tr style="background: rgba(255, 255, 255, 0.05);">
+                        <th style="padding: 15px; border-bottom: 2px solid var(--glass-border); text-align: right;">
+                            المصدر / الرابط</th>
+                        <th style="padding: 15px; border-bottom: 2px solid var(--glass-border); text-align: right;">عدد
+                            الزوار</th>
+                    </tr>
+                    {% for src, count in source_stats %}
+                    <tr style="transition: background 0.3s;"
+                        onmouseover="this.style.background='rgba(76, 175, 80, 0.05)'"
+                        onmouseout="this.style.background='transparent'">
+                        <td style="padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 1.1rem;">
+                            <i class="fas fa-sign-in-alt" style="color: var(--gray-text); margin-left: 10px;"></i> {{
+                            src }}
+                        </td>
+                        <td
+                            style="padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #4caf50; font-size: 1.2rem; font-weight: bold;">
+                            {{ count }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="2" style="padding: 20px; text-align: center; color: var(--gray-text);">جاري تحليل
+                            مسارات الزوار...</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
 
         <div class="admin-grid">

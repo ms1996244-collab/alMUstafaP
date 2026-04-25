@@ -52,6 +52,7 @@ class SiteVisitor(db.Model):
     ip_hash = db.Column(db.String(128), nullable=False)
     visit_date = db.Column(db.Date, nullable=False, default=date.today)
     country = db.Column(db.String(100), default='غير معروف')
+    source = db.Column(db.String(255), default='دخول مباشر') # الحقل الجديد
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -127,10 +128,23 @@ def track_visitor():
             clean_ip = raw_ip.split(',')[0].strip()
             ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
             today = date.today()
-            if not SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first():
-                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today, country=get_country_from_ip(clean_ip)))
-                db.session.commit()
+            
+            existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first()
+            if not existing:
+                # التقاط مصدر الزيارة (جوجل، لينكد إن، إلخ)
+                ref = request.referrer
+                source_name = 'دخول مباشر'
+                if ref:
+                    if 'google' in ref: source_name = 'بحث Google'
+                    elif 'linkedin' in ref: source_name = 'LinkedIn'
+                    elif 'facebook' in ref: source_name = 'Facebook'
+                    elif 't.co' in ref or 'twitter' in ref: source_name = 'Twitter / X'
+                    else: source_name = ref # أي موقع آخر
 
+                country_name = get_country_from_ip(clean_ip)
+                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today, country=country_name, source=source_name))
+                db.session.commit()
+                
 @app.route('/sitemap.xml')
 def sitemap():
     projects = Project.query.filter_by(is_visible=True).all()
