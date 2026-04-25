@@ -61,6 +61,52 @@
             margin-bottom: 25px;
             text-align: justify;
         }
+
+        /* تصميم نظام الإعجاب الفاخر */
+        .feedback-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            margin: 60px 0;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-section h4 {
+            color: var(--light-text);
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .like-button {
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--primary-gold);
+            border: 1px solid var(--primary-gold);
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: inherit;
+        }
+
+        .like-button:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .like-button.liked {
+            background: var(--primary-gold);
+            color: var(--dark-bg);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
+            pointer-events: none;
+            /* يمنع الضغط مرة أخرى */
+        }
     </style>
 
     <script type="application/ld+json">
@@ -69,15 +115,9 @@
       "@type": "TechArticle",
       "headline": "{{ article.title }}",
       "description": "{{ article.summary }}",
-      "author": {
-        "@type": "Person",
-        "name": "Mustafa Ali Jasim Alabid"
-      },
+      "author": {"@type": "Person", "name": "Mustafa Ali Jasim Alabid"},
       "datePublished": "{{ article.created_at.isoformat() }}",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Al-Mustafa Programming"
-      }
+      "publisher": {"@type": "Organization", "name": "Al-Mustafa Programming"}
     }
     </script>
 </head>
@@ -97,7 +137,7 @@
         <header class="article-header reveal-on-scroll">
             <h1 class="article-title">{{ article.title }}</h1>
             <span class="article-date"><i class="far fa-calendar-alt"></i> {{ article.created_at.strftime('%Y-%m-%d') }}
-                | بقلم: مصطفى</span>
+                | بقلم: مصطفى | <i class="fas fa-eye"></i> {{ article.views }} قراءة</span>
             {% if article.image %}
             <img src="{{ article.image }}" alt="{{ article.title }}" class="article-img" loading="lazy">
             {% endif %}
@@ -107,12 +147,28 @@
             {% set paragraphs = article.content.split('.') %}
             {% for para in paragraphs %}
             {% if para.strip()|length > 10 %}
+            {% if ':' in para %}
+            {% set parts = para.split(':', 1) %}
+            <p><strong style="color: var(--primary-gold); font-size: 1.3rem;">{{ parts[0].strip() }}:</strong> {{
+                parts[1].strip() }}.</p>
+            {% else %}
             <p>{{ para.strip() }}.</p>
+            {% endif %}
             {% endif %}
             {% endfor %}
         </main>
 
-        <div class="cta-banner-glass reveal-on-scroll" style="margin-top: 80px;">
+        <div class="feedback-section reveal-on-scroll">
+            <h4>هل استفدت من هذا المقال التقني؟</h4>
+            <button id="likeBtn" class="like-button" data-id="{{ article.id }}">
+                <i class="fas fa-thumbs-up"></i> <span id="likeCount">{{ article.likes }}</span> إعجاب
+            </button>
+            <p id="thankYouMsg"
+                style="color: #4caf50; font-size: 0.9rem; margin-top: 15px; opacity: 0; transition: opacity 0.3s;">شكراً
+                لتقييمك! دعمك يحفزنا لتقديم المزيد.</p>
+        </div>
+
+        <div class="cta-banner-glass reveal-on-scroll" style="margin-top: 40px;">
             <h2>هل تواجه تحدياً برمجياً مشابهاً؟</h2>
             <p>أنا هنا لتقديم استشارة تقنية أو بناء نظام متكامل لعملك.</p>
             <a href="{{ url_for('home') }}#contact" class="cta-button">تواصل معي الآن</a>
@@ -120,11 +176,42 @@
     </div>
 
     <script>
+        // خوارزمية الظهور السينمائي
         document.addEventListener('DOMContentLoaded', function () {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('is-revealed'); });
             });
             document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+            // خوارزمية الإعجاب (AJAX + LocalStorage)
+            const likeBtn = document.getElementById('likeBtn');
+            const articleId = likeBtn.getAttribute('data-id');
+            const storageKey = `liked_article_${articleId}`;
+
+            // التحقق إذا كان المستخدم قد أعجب بالمقال سابقاً
+            if (localStorage.getItem(storageKey)) {
+                likeBtn.classList.add('liked');
+                likeBtn.innerHTML = `<i class="fas fa-check"></i> شكراً لك`;
+            } else {
+                likeBtn.addEventListener('click', function () {
+                    // إرسال الطلب للسيرفر بالخفاء
+                    fetch(`/like_article/${articleId}`, { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // تحديث الواجهة وتخزين الإعجاب
+                                document.getElementById('likeCount').innerText = data.likes;
+                                likeBtn.classList.add('liked');
+                                localStorage.setItem(storageKey, 'true');
+                                document.getElementById('thankYouMsg').style.opacity = '1';
+
+                                // إضافة تأثير توهج عند الضغط
+                                likeBtn.style.transform = "scale(1.1)";
+                                setTimeout(() => likeBtn.style.transform = "scale(1)", 200);
+                            }
+                        });
+                });
+            }
         });
     </script>
 </body>

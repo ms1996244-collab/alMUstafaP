@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>تعديل المقال | Al-Mustafa Programming</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="admin-page">
+    <div class="admin-container" style="max-width: 800px; margin: 0 auto;">
+
+        <div class="admin-header" style="margin-bottom: 30px;">
+            <h1 style="color: #17a2b8;"><i class="fas fa-edit"></i> تحديث المقال التقني</h1>
+        </div>
+
+        <a href="{{ url_for('admin') }}" class="back-btn" style="margin-bottom: 30px; display: inline-block;">
+            <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
+        </a>
+
+        <div class="admin-card" style="border-color: #17a2b8;">
+            <form action="{{ url_for('edit_article', id=article.id) }}" method="POST" class="admin-form">
+
+                <label style="color: var(--gray-text); margin-bottom: 10px; display: block;">عنوان المقال:</label>
+                <input type="text" name="title" value="{{ article.title }}" required style="margin-bottom: 20px;">
+
+                <label style="color: var(--gray-text); margin-bottom: 10px; display: block;">المقدمة المشوقة
+                    (Summary):</label>
+                <input type="text" name="summary" value="{{ article.summary }}" required style="margin-bottom: 20px;">
+
+                <label style="color: var(--gray-text); margin-bottom: 10px; display: block;">المحتوى الكامل (افصل بـ
+                    نقطة . لكل فقرة):</label>
+                <textarea name="content" rows="10" required
+                    style="margin-bottom: 20px;">{{ article.content }}</textarea>
+
+                <label style="color: var(--gray-text); margin-bottom: 10px; display: block;">رابط صورة المقال:</label>
+                <input type="text" name="image" value="{{ article.image }}" style="margin-bottom: 30px;">
+
+                <button type="submit" class="cta-button"
+                    style="width: 100%; background: rgba(23, 162, 184, 0.1) !important; color: #17a2b8 !important; border-color: #17a2b8;">
+                    حفظ التعديلات
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
