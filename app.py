@@ -3,7 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from datetime import datetime, date
 import hashlib
-from sqlalchemy import text
+import urllib.request
+import json
+from sqlalchemy import text, func
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.secret_key = 'al_mustafa_secure_2026_key'
@@ -43,6 +45,7 @@ class SiteVisitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ip_hash = db.Column(db.String(128), nullable=False)
     visit_date = db.Column(db.Date, nullable=False, default=date.today)
+    country = db.Column(db.String(100), default='غير معروف') # عمود الدولة الجديد
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -62,13 +65,13 @@ def login_required(f):
 
 with app.app_context():
     db.create_all()
-    
     update_queries = [
         "ALTER TABLE project ADD COLUMN is_visible BOOLEAN DEFAULT 1",
         "ALTER TABLE article ADD COLUMN is_visible BOOLEAN DEFAULT 1",
         "ALTER TABLE project ADD COLUMN views INTEGER DEFAULT 0",
         "ALTER TABLE article ADD COLUMN views INTEGER DEFAULT 0",
-        "ALTER TABLE article ADD COLUMN likes INTEGER DEFAULT 0"
+        "ALTER TABLE article ADD COLUMN likes INTEGER DEFAULT 0",
+        "ALTER TABLE site_visitor ADD COLUMN country VARCHAR(100) DEFAULT 'غير معروف'"
     ]
     for query in update_queries:
         try:
@@ -77,23 +80,34 @@ with app.app_context():
         except Exception:
             db.session.rollback()
 
-# --- خوارزمية تتبع المشاهدات (المحدثة والذكية) ---
+# --- خوارزمية جلب الدولة من الـ IP ---
+def get_country_from_ip(ip):
+    try:
+        # تجنب البحث عن الآيبيات المحلية للسيرفر
+        if ip.startswith('127.') or ip.startswith('192.168.') or ip.startswith('10.'):
+            return 'تصفح محلي'
+        # جلب اسم الدولة باللغة العربية مع مهلة ثانيتين فقط لعدم إبطاء الموقع
+        url = f"http://ip-api.com/json/{ip}?lang=ar"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=2) as response:
+            data = json.loads(response.read().decode())
+            if data.get('status') == 'success':
+                return data.get('country', 'غير معروف')
+    except Exception:
+        pass
+    return 'غير معروف'
+
 def update_unique_view(project_id=None, article_id=None):
     raw_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     if raw_ip:
-        # استخراج الآي بي النقي (العميل) فقط في حال وجود وسطاء
         clean_ip = raw_ip.split(',')[0].strip()
         ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
         today = date.today()
-        
         viewed = ViewTracker.query.filter_by(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today).first()
-        
         if not viewed:
             if project_id: target = Project.query.get(project_id)
             else: target = Article.query.get(article_id)
-            
             if target:
-                # الحماية من القيمة الفارغة (None) في قواعد البيانات القديمة
                 target.views = (target.views or 0) + 1
                 db.session.add(ViewTracker(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today))
                 db.session.commit()
@@ -108,7 +122,8 @@ def track_visitor():
             today = date.today()
             existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first()
             if not existing:
-                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today))
+                country_name = get_country_from_ip(clean_ip) # هنا نجلب الدولة!
+                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today, country=country_name))
                 db.session.commit()
 
 @app.route('/sitemap.xml')
@@ -143,9 +158,7 @@ def blog():
 def project_details(id):
     project = Project.query.get_or_404(id)
     if not project.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
-    
     update_unique_view(project_id=id)
-    
     prev_project = Project.query.filter(Project.id < id, Project.is_visible == True).order_by(Project.id.desc()).first()
     next_project = Project.query.filter(Project.id > id, Project.is_visible == True).order_by(Project.id.asc()).first()
     return render_template('project_details.html', project=project, prev_project=prev_project, next_project=next_project)
@@ -154,9 +167,7 @@ def project_details(id):
 def article_details(id):
     article = Article.query.get_or_404(id)
     if not article.is_visible and 'logged_in' not in session: return redirect(url_for('home'))
-    
     update_unique_view(article_id=id)
-    
     return render_template('article_details.html', article=article)
 
 @app.route('/like_article/<int:id>', methods=['POST'])
@@ -206,10 +217,14 @@ def admin():
     articles = Article.query.all()
     messages = Message.query.order_by(Message.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count()
+    
     total_visitors = SiteVisitor.query.count()
     today_visitors = SiteVisitor.query.filter_by(visit_date=date.today()).count()
     
-    return render_template('admin.html', projects=projects, articles=articles, messages=messages, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors)
+    # تجميع الزوار حسب الدولة (تحليل البيانات)
+    country_stats = db.session.query(SiteVisitor.country, func.count(SiteVisitor.id)).group_by(SiteVisitor.country).order_by(func.count(SiteVisitor.id).desc()).all()
+    
+    return render_template('admin.html', projects=projects, articles=articles, messages=messages, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors, country_stats=country_stats)
 
 @app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
 @login_required
