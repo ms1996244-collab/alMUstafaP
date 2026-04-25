@@ -62,13 +62,22 @@ def login_required(f):
 
 with app.app_context():
     db.create_all()
-    try:
-        db.session.execute(text("ALTER TABLE project ADD COLUMN views INTEGER DEFAULT 0"))
-        db.session.execute(text("ALTER TABLE article ADD COLUMN views INTEGER DEFAULT 0"))
-        db.session.execute(text("ALTER TABLE article ADD COLUMN likes INTEGER DEFAULT 0"))
-        db.session.commit()
-    except Exception:
-        pass
+    
+    # خوارزمية التحديث الذكي: معالجة كل عمود على حدة لتجنب توقف السيرفر
+    update_queries = [
+        "ALTER TABLE project ADD COLUMN is_visible BOOLEAN DEFAULT 1",
+        "ALTER TABLE article ADD COLUMN is_visible BOOLEAN DEFAULT 1",
+        "ALTER TABLE project ADD COLUMN views INTEGER DEFAULT 0",
+        "ALTER TABLE article ADD COLUMN views INTEGER DEFAULT 0",
+        "ALTER TABLE article ADD COLUMN likes INTEGER DEFAULT 0"
+    ]
+    
+    for query in update_queries:
+        try:
+            db.session.execute(text(query))
+            db.session.commit()
+        except Exception:
+            db.session.rollback() # إذا كان العمود موجوداً، تجاهل الخطأ وأكمل بسلام
 
 def update_unique_view(project_id=None, article_id=None):
     ip = request.headers.get('X-Forwarded-For', request.remote_addr)
