@@ -9,8 +9,48 @@
     <meta name="description"
         content="مصطفى - مطور برمجيات خبير متخصص في تطبيقات الموبايل الفاخرة، التحليل المالي وأنظمة التداول، يقدم خدماته للشركات والأفراد في العراق والشرق الأوسط.">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* تعديلات فخمة لحقل الهاتف ليتناسب مع النمط الزجاجي المظلم */
+        .iti {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .iti__flag {
+            background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags.png");
+        }
+
+        @media (min-resolution: 2x) {
+            .iti__flag {
+                background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags@2x.png");
+            }
+        }
+
+        .iti__country-list {
+            background-color: var(--dark-bg);
+            border: 1px solid var(--primary-gold);
+            color: var(--light-text);
+            text-align: left;
+            direction: ltr;
+        }
+
+        .iti__country-name {
+            color: var(--light-text);
+        }
+
+        .iti__dial-code {
+            color: var(--primary-gold);
+        }
+
+        .iti__country.iti__highlight {
+            background-color: rgba(212, 175, 55, 0.2);
+        }
+    </style>
 </head>
 
 <body>
@@ -19,6 +59,16 @@
         target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div id="toast-notification" class="toast-container show">
+        <div class="toast-content"><i class="fas fa-check-circle toast-icon"></i>
+            <p>{{ messages[0] }}</p>
+        </div>
+    </div>
+    {% endif %}
+    {% endwith %}
 
     <header class="navbar">
         <div class="logo">
@@ -93,8 +143,14 @@
         <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
             <input type="text" name="name" placeholder="الاسم الكريم" required>
             <input type="email" name="email" placeholder="البريد الإلكتروني" required>
-            <div class="phone-input-container"><input type="tel" id="phone" name="phone" required></div>
-            <textarea name="content" rows="5" placeholder="كيف يمكنني مساعدتك؟" required></textarea>
+
+            <div class="phone-input-container" dir="ltr">
+                <input type="tel" id="phone" name="phone" required
+                    style="text-align: left; background: rgba(255, 255, 255, 0.05); color: #fff;">
+            </div>
+
+            <textarea name="content" rows="5" placeholder="كيف يمكنني مساعدتك؟" required
+                style="margin-top: 15px;"></textarea>
             <button type="submit" class="cta-button">إرسال الرسالة</button>
         </form>
     </section>
@@ -103,13 +159,27 @@
         <p>&copy; 2026 Al-Mustafa Programming. All rights reserved.</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // تأثيرات الظهور
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-revealed'); });
             });
             document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+            // تفعيل مكتبة الهواتف بذكاء
+            const phoneInput = document.querySelector("#phone");
+            if (phoneInput) {
+                window.intlTelInput(phoneInput, {
+                    initialCountry: "iq", // العراق افتراضياً
+                    preferredCountries: ["iq", "sa", "ae", "qa", "kw", "bh", "om"], // التركيز على الخليج
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
+                    separateDialCode: true // إظهار مفتاح الدولة خارج الحقل بشكل فخم
+                });
+            }
         });
     </script>
 </body>
