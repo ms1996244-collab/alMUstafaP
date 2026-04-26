@@ -77,6 +77,7 @@ def login_required(f):
         if 'logged_in' not in session: return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
+
 with app.app_context():
     db.create_all() 
     # نظام التحديث التلقائي لقاعدة البيانات من الخلفية
@@ -96,6 +97,7 @@ with app.app_context():
         except Exception:
             # إذا كان العمود موجوداً بالفعل، سيتجاهل الكود الخطأ بسلام
             db.session.rollback()
+
 def get_country_from_ip(ip):
     try:
         if ip.startswith(('127.', '192.168.', '10.')): return 'تصفح محلي'
@@ -111,14 +113,17 @@ def update_unique_view(project_id=None, article_id=None):
     if raw_ip:
         clean_ip = raw_ip.split(',')[0].strip()
         ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
-        today = date.today()
-        viewed = ViewTracker.query.filter_by(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today).first()
+        
+        # ضبط التوقيت ليكون بتوقيت العراق (UTC + 3) للمشاهدات الفريدة
+        today_iraq = (datetime.utcnow() + timedelta(hours=3)).date()
+        
+        viewed = ViewTracker.query.filter_by(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today_iraq).first()
         if not viewed:
             if project_id: target = Project.query.get(project_id)
             else: target = Article.query.get(article_id)
             if target:
                 target.views = (target.views or 0) + 1
-                db.session.add(ViewTracker(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today))
+                db.session.add(ViewTracker(ip_hash=ip_hash, project_id=project_id, article_id=article_id, view_date=today_iraq))
                 db.session.commit()
 
 @app.before_request
@@ -128,9 +133,11 @@ def track_visitor():
         if raw_ip:
             clean_ip = raw_ip.split(',')[0].strip()
             ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
-            today = date.today()
             
-            existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today).first()
+            # ضبط التوقيت ليكون بتوقيت العراق (UTC + 3) لزوار الموقع
+            today_iraq = (datetime.utcnow() + timedelta(hours=3)).date()
+            
+            existing = SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today_iraq).first()
             if not existing:
                 # التقاط مصدر الزيارة (جوجل، لينكد إن، إلخ)
                 ref = request.referrer
@@ -143,7 +150,7 @@ def track_visitor():
                     else: source_name = ref # أي موقع آخر
 
                 country_name = get_country_from_ip(clean_ip)
-                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today, country=country_name, source=source_name))
+                db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today_iraq, country=country_name, source=source_name))
                 db.session.commit()
 
 @app.route('/sitemap.xml')
@@ -265,17 +272,21 @@ def admin():
     
     unread_count = Message.query.filter_by(is_read=False).count() + Lead.query.filter_by(is_read=False).count()
     
-    today = date.today()
-    yesterday = today - timedelta(days=1)
-    today_visitors = SiteVisitor.query.filter_by(visit_date=today).count()
-    yesterday_visitors = SiteVisitor.query.filter_by(visit_date=yesterday).count()
+    # ضبط التوقيت بتوقيت العراق للوحة الإدارة
+    today_iraq = (datetime.utcnow() + timedelta(hours=3)).date()
+    yesterday_iraq = today_iraq - timedelta(days=1)
+    
+    today_visitors = SiteVisitor.query.filter_by(visit_date=today_iraq).count()
+    yesterday_visitors = SiteVisitor.query.filter_by(visit_date=yesterday_iraq).count()
     total_visitors = SiteVisitor.query.count()
     
+    # تمرير إحصائيات مصادر الزيارات (كانت مفقودة في الكود القديم)
+    source_stats = db.session.query(SiteVisitor.source, func.count(SiteVisitor.id)).group_by(SiteVisitor.source).order_by(func.count(SiteVisitor.id).desc()).all()
     country_stats = db.session.query(SiteVisitor.country, func.count(SiteVisitor.id)).group_by(SiteVisitor.country).order_by(func.count(SiteVisitor.id).desc()).all()
     monthly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.extract('month', SiteVisitor.visit_date).label('month'), func.count(SiteVisitor.id)).group_by('year', 'month').order_by(text('year DESC, month DESC')).all()
     yearly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.count(SiteVisitor.id)).group_by('year').order_by(text('year DESC')).all()
 
-    return render_template('admin.html', projects=projects, articles=articles, messages=messages, leads=leads, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors, yesterday_visitors=yesterday_visitors, country_stats=country_stats, monthly_stats=monthly_stats, yearly_stats=yearly_stats)
+    return render_template('admin.html', projects=projects, articles=articles, messages=messages, leads=leads, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors, yesterday_visitors=yesterday_visitors, source_stats=source_stats, country_stats=country_stats, monthly_stats=monthly_stats, yearly_stats=yearly_stats)
 
 @app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
 @login_required
