@@ -1,23 +1,21 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ current_lang }}" dir="{{ t.dir }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ project.title }} | سجل الإنجازات - الشرق الأوسط</title>
-    <meta name="description" content="{{ project.description }}">
-    <meta name="keywords"
-        content="{{ project.technologies }}, برمجة تطبيقات في السعودية, تطبيقات الإمارات, الشرق الأوسط, Flutter, {{ project.title }}">
+    <title>{{ project.display_title }} | Al-Mustafa Programming</title>
+    <meta name="description" content="{{ project.display_desc }}">
+    <meta name="keywords" content="{{ project.technologies }}, Flutter, {{ project.display_title }}">
     <meta name="author" content="Mustafa Ali Jasim Alabid">
 
     <link rel="canonical" href="{{ request.base_url }}">
     <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
-    <link rel="alternate" hreflang="ar-SA" href="{{ request.base_url }}" />
-    <link rel="alternate" hreflang="ar-AE" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="en" href="{{ request.base_url }}" />
 
-    <meta property="og:title" content="{{ project.title }} | Al-Mustafa Programming">
-    <meta property="og:description" content="{{ project.description }}">
+    <meta property="og:title" content="{{ project.display_title }} | Al-Mustafa Programming">
+    <meta property="og:description" content="{{ project.display_desc }}">
     {% if project.icon.startswith('http') %}
     <meta property="og:image" content="{{ project.icon }}">
     {% endif %}
@@ -25,42 +23,39 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "{{ project.title }}",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Android, iOS, Web",
-      "description": "{{ project.description }}",
-      "author": {
-        "@type": "Person",
-        "name": "Mustafa Ali Jasim Alabid"
-      }
-    }
-    </script>
 </head>
 
 <body class="details-page-modern">
 
-    <a href="https://wa.me/9647821800086?text=مرحباً مصطفى، أطلعت على مشروع ({{ project.title }}) وأريد الاستفسار عن خدماتك."
-        class="whatsapp-float" target="_blank">
+    <a href="https://wa.me/9647821800086" class="whatsapp-float" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
 
     <header class="cinematic-hero">
         <div class="hero-glow"></div>
-        <a href="{{ url_for('home') }}" class="back-link-modern"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a>
-        <h1 class="project-title-huge">{{ project.title }}</h1>
-        <p class="project-subtitle-lead">{{ project.description }}</p>
+
+        <div
+            style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 20px 5%; position: relative; z-index: 10;">
+            <a href="{{ url_for('home', lang=current_lang) }}" class="back-link-modern" style="margin:0;"><i
+                    class="fas fa-arrow-{{ 'left' if current_lang == 'en' else 'right' }}"></i> {{ 'Back to Home' if
+                current_lang == 'en' else 'العودة للرئيسية' }}</a>
+
+            {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
+            <a href="{{ url_for('project_details', id=project.id, lang=switch_lang) }}" class="lang-btn"
+                style="background: rgba(212, 175, 55, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid var(--primary-gold); color: var(--light-text); text-decoration: none;"><i
+                    class="fas fa-globe"></i> {{ t.lang_switch }}</a>
+        </div>
+
+        <h1 class="project-title-huge">{{ project.display_title }}</h1>
+        <p class="project-subtitle-lead">{{ project.display_desc }}</p>
     </header>
 
     <main class="project-showcase">
         <div class="sticky-visual-column">
             <div class="mockup-glass-container">
                 {% if project.icon.startswith('http') %}
-                <img src="{{ project.icon }}" alt="{{ project.title }}" class="modern-mockup-img" loading="lazy">
+                <img src="{{ project.icon }}" alt="{{ project.display_title }}" class="modern-mockup-img"
+                    loading="lazy">
                 {% else %}
                 <i class="{{ project.icon }} modern-huge-icon"></i>
                 {% endif %}
@@ -69,10 +64,11 @@
 
         <div class="scrollable-info-column">
             <section class="info-block">
-                <h3 class="block-title"><i class="fas fa-bolt"></i> سجل الإنجازات(Case Study)</h3>
+                <h3 class="block-title"><i class="fas fa-bolt"></i> {{ 'Case Study' if current_lang == 'en' else 'سجل
+                    الإنجازات' }}</h3>
                 <div class="bento-grid">
-                    {% if project.full_details %}
-                    {% set sentences = project.full_details.split('.') %}
+                    {% if project.display_full %}
+                    {% set sentences = project.display_full.split('.') %}
                     {% for sentence in sentences %}
                     {% set clean_sentence = sentence.strip() %}
                     {% if clean_sentence|length > 15 %}
@@ -88,13 +84,15 @@
                     {% endif %}
                     {% endfor %}
                     {% else %}
-                    <p>لا توجد تفاصيل إضافية لهذا المشروع.</p>
+                    <p>{{ 'No additional details available.' if current_lang == 'en' else 'لا توجد تفاصيل إضافية لهذا
+                        المشروع.' }}</p>
                     {% endif %}
                 </div>
             </section>
 
             <section class="info-block tech-block-modern">
-                <h3 class="block-title"><i class="fas fa-microchip"></i> البنية التحتية (Tech Stack)</h3>
+                <h3 class="block-title"><i class="fas fa-microchip"></i> {{ 'Tech Stack' if current_lang == 'en' else
+                    'البنية التحتية' }}</h3>
                 <div class="tags-container">
                     {% if project.technologies %}
                     {% for tech in project.technologies.split(',') %}
@@ -108,28 +106,38 @@
 
     <div class="project-footer-premium">
         <div class="cta-banner-glass">
-            <h2>هل تبحث عن تجربة رقمية مماثلة؟</h2>
-            <p>دعنا نحول فكرتك إلى واقع برمجي بمعايير عالمية.</p>
-            <a href="{{ url_for('home') }}#contact" class="cta-button">تواصل معي الآن</a>
+            <h2>{{ 'Looking for a similar digital experience?' if current_lang == 'en' else 'هل تبحث عن تجربة رقمية
+                مماثلة؟' }}</h2>
+            <p>{{ 'Let us turn your idea into reality with world-class standards.' if current_lang == 'en' else 'دعنا
+                نحول فكرتك إلى واقع برمجي بمعايير عالمية.' }}</p>
+            <a href="{{ url_for('home', lang=current_lang) }}#contact" class="cta-button">{{ 'Contact Me Now' if
+                current_lang == 'en' else 'تواصل معي الآن' }}</a>
         </div>
 
         <div class="project-navigation">
             {% if prev_project %}
-            <a href="{{ url_for('project_details', id=prev_project.id) }}" class="nav-card prev-card">
-                <span class="nav-label"><i class="fas fa-chevron-right"></i> المشروع السابق</span>
-                <h4>{{ prev_project.title }}</h4>
+            <a href="{{ url_for('project_details', id=prev_project.id, lang=current_lang) }}"
+                class="nav-card prev-card">
+                <span class="nav-label"><i class="fas fa-chevron-{{ 'left' if current_lang == 'en' else 'right' }}"></i>
+                    {{ 'Previous Project' if current_lang == 'en' else 'المشروع السابق' }}</span>
+                <h4>{{ prev_project.title_en if current_lang == 'en' and prev_project.title_en else prev_project.title
+                    }}</h4>
             </a>
             {% else %}
             <div class="nav-card empty-card"></div>
             {% endif %}
 
-            <a href="{{ url_for('home') }}#portfolio" class="nav-center-btn" title="معرض الأعمال"><i
+            <a href="{{ url_for('home', lang=current_lang) }}#portfolio" class="nav-center-btn"
+                title="{{ 'Portfolio' if current_lang == 'en' else 'معرض الأعمال' }}"><i
                     class="fas fa-th-large"></i></a>
 
             {% if next_project %}
-            <a href="{{ url_for('project_details', id=next_project.id) }}" class="nav-card next-card">
-                <span class="nav-label">المشروع التالي <i class="fas fa-chevron-left"></i></span>
-                <h4>{{ next_project.title }}</h4>
+            <a href="{{ url_for('project_details', id=next_project.id, lang=current_lang) }}"
+                class="nav-card next-card">
+                <span class="nav-label">{{ 'Next Project' if current_lang == 'en' else 'المشروع التالي' }} <i
+                        class="fas fa-chevron-{{ 'right' if current_lang == 'en' else 'left' }}"></i></span>
+                <h4>{{ next_project.title_en if current_lang == 'en' and next_project.title_en else next_project.title
+                    }}</h4>
             </a>
             {% else %}
             <div class="nav-card empty-card"></div>

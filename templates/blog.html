@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ current_lang }}" dir="{{ t.dir }}">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المدونة التقنية | Al-Mustafa Programming</title>
+    <title>{{ t.nav_blog }} | Al-Mustafa Programming</title>
     <meta name="description"
         content="مقالات تقنية متخصصة في هندسة البرمجيات، تطوير تطبيقات فلاتر، وأنظمة التداول، بقلم المطور مصطفى. موجهة للمطورين ورواد الأعمال في الشرق الأوسط.">
 
@@ -12,6 +12,7 @@
     <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
     <link rel="alternate" hreflang="ar-SA" href="{{ request.base_url }}" />
     <link rel="alternate" hreflang="ar-AE" href="{{ request.base_url }}" />
+    <link rel="alternate" hreflang="en" href="{{ request.base_url }}" />
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -21,58 +22,68 @@
 
     <header class="navbar">
         <div class="logo">
-            <h1><a href="{{ url_for('home') }}">Al-Mustafa Programming</a></h1>
+            <h1><a href="{{ url_for('home', lang=current_lang) }}">Al-Mustafa</a></h1>
         </div>
         <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
-                <li><a href="{{ url_for('home') }}#home">الرئيسية</a></li>
-                <li><a href="{{ url_for('home') }}#portfolio">سجل الإنجازات</a></li>
-                <li><a href="{{ url_for('blog') }}"
-                        style="color: var(--light-text); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">المدونة
-                        التقنية</a></li>
-                <li><a href="{{ url_for('home') }}#contact">تواصل معي</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#home">{{ t.nav_home }}</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#portfolio">{{ t.nav_portfolio }}</a></li>
+                <li><a href="{{ url_for('blog', lang=current_lang) }}"
+                        style="color: var(--light-text); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">{{ t.nav_blog
+                        }}</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#contact">{{ t.nav_contact }}</a></li>
+
+                {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
+                <li><a href="{{ url_for('blog', lang=switch_lang) }}" class="lang-btn"
+                        style="background: rgba(212, 175, 55, 0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--primary-gold);"><i
+                            class="fas fa-globe"></i> {{ t.lang_switch }}</a></li>
             </ul>
         </nav>
     </header>
 
     <section class="portfolio" style="padding-top: 150px; min-height: 100vh;">
         <div class="section-title reveal-on-scroll">
-            <h2>المقالات التقنية</h2>
+            <h2>{{ 'Technical Articles' if current_lang == 'en' else 'المقالات التقنية' }}</h2>
             <div class="title-underline"></div>
-            <p style="color: var(--gray-text); margin-top: 20px; font-size: 1.1rem;">أفكار، حلول برمجية، وتجارب تقنية
-                عميقة.</p>
+            <p style="color: var(--gray-text); margin-top: 20px; font-size: 1.1rem;">{{ 'Deep technical insights,
+                software solutions, and experiences.' if current_lang == 'en' else 'أفكار، حلول برمجية، وتجارب تقنية
+                عميقة.' }}</p>
         </div>
 
         <div class="projects-grid">
             {% for article in articles %}
-            <a href="{{ url_for('article_details', id=article.id) }}" class="project-card-link reveal-on-scroll">
+            <a href="{{ url_for('article_details', id=article.id, lang=current_lang) }}"
+                class="project-card-link reveal-on-scroll">
                 <div class="project-card" style="border-color: rgba(23, 162, 184, 0.2);">
                     <div class="project-image" style="height: 200px;">
                         {% if article.image %}
-                        <img src="{{ article.image }}" alt="{{ article.title }}" loading="lazy">
+                        <img src="{{ article.image }}" alt="{{ article.display_title }}" loading="lazy">
                         {% else %}
                         <i class="fas fa-newspaper card-icon" style="color: #17a2b8; font-size: 5rem;"></i>
                         {% endif %}
                     </div>
                     <div class="project-info">
-                        <h3 style="font-size: 1.4rem;">{{ article.title }}</h3>
-                        <p style="color: #ccc; font-size: 1rem; line-height: 1.8;">{{ article.summary }}</p>
+                        <h3 style="font-size: 1.4rem;">{{ article.display_title }}</h3>
+                        <p style="color: #ccc; font-size: 1rem; line-height: 1.8;">{{ article.display_summary }}</p>
                         <span
-                            style="color: #17a2b8; font-size: 0.9rem; margin-top: 20px; display: inline-block; font-weight: bold;">اقرأ
-                            المقال كاملاً <i class="fas fa-arrow-left"></i></span>
+                            style="color: #17a2b8; font-size: 0.9rem; margin-top: 20px; display: inline-block; font-weight: bold;">
+                            {{ 'Read Full Article' if current_lang == 'en' else 'اقرأ المقال كاملاً' }} <i
+                                class="fas fa-arrow-{{ 'right' if current_lang == 'en' else 'left' }}"></i>
+                        </span>
                     </div>
                 </div>
             </a>
             {% else %}
-            <p style="text-align: center; width: 100%; color: var(--gray-text); font-size: 1.2rem;">سيتم نشر مقالات
-                تقنية قريباً... ابقَ على اطلاع!</p>
+            <p style="text-align: center; width: 100%; color: var(--gray-text); font-size: 1.2rem;">{{ 'Technical
+                articles will be published soon... Stay tuned!' if current_lang == 'en' else 'سيتم نشر مقالات تقنية
+                قريباً... ابقَ على اطلاع!' }}</p>
             {% endfor %}
         </div>
     </section>
 
     <footer class="footer">
-        <p>&copy; 2026 Al-Mustafa Programming. All rights reserved.</p>
+        <p>{{ t.footer }}</p>
     </footer>
 
     <script>

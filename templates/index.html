@@ -79,7 +79,6 @@
             text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
-        /* استخدام الخصائص المنطقية لحل مشكلة VS Code وجعل التصميم يتكيف تلقائياً مع اللغتين */
         .faq-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
@@ -129,7 +128,6 @@
             color: rgba(212, 175, 55, 0.1);
         }
 
-        /* زر اللغة */
         .lang-btn {
             background: rgba(212, 175, 55, 0.1);
             padding: 5px 15px !important;
@@ -149,18 +147,28 @@
         <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
-                <li><a href="#home">{{ t.nav_home }}</a></li>
-                <li><a href="#about">{{ t.nav_about }}</a></li>
-                <li><a href="#calculator">{{ t.nav_calc }}</a></li>
-                <li><a href="#portfolio">{{ t.nav_portfolio }}</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#home">{{ t.nav_home }}</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#about">{{ t.nav_about }}</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#calculator">{{ t.nav_calc }}</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#portfolio">{{ t.nav_portfolio }}</a></li>
                 <li><a href="{{ url_for('blog', lang=current_lang) }}">{{ t.nav_blog }}</a></li>
-                <li><a href="#contact">{{ t.nav_contact }}</a></li>
-                <li><a href="{{ url_for('home', lang='en' if current_lang == 'ar' else 'ar') }}" class="lang-btn"><i
-                            class="fas fa-globe"></i> {{ t.lang_switch }}</a></li>
+                <li><a href="{{ url_for('home', lang=current_lang) }}#contact">{{ t.nav_contact }}</a></li>
+
+                {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
+                {% if request.endpoint == 'project_details' %}
+                {% set switch_url = url_for('project_details', id=project.id, lang=switch_lang) %}
+                {% elif request.endpoint == 'article_details' %}
+                {% set switch_url = url_for('article_details', id=article.id, lang=switch_lang) %}
+                {% elif request.endpoint == 'blog' %}
+                {% set switch_url = url_for('blog', lang=switch_lang) %}
+                {% else %}
+                {% set switch_url = url_for('home', lang=switch_lang) %}
+                {% endif %}
+                <li><a href="{{ switch_url }}" class="lang-btn"><i class="fas fa-globe"></i> {{ t.lang_switch }}</a>
+                </li>
             </ul>
         </nav>
     </header>
-
     <section id="home" class="hero reveal-on-scroll">
         <div class="hero-content">
             <h2 class="hero-title">{{ t.hero_title }}</h2>
