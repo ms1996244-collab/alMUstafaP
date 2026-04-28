@@ -79,20 +79,14 @@
             text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
         }
 
+        /* استخدام الخصائص المنطقية لحل مشكلة VS Code وجعل التصميم يتكيف تلقائياً مع اللغتين */
         .faq-item {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             margin-bottom: 15px;
             border-radius: 10px;
             overflow: hidden;
-
-            text-align: {
-                    {
-                    'left' if current_lang=='en' else 'right'
-                }
-            }
-
-            ;
+            text-align: start;
         }
 
         .faq-question {
@@ -130,14 +124,7 @@
         .testi-card i.fa-quote-left {
             position: absolute;
             top: 20px;
-
-                {
-                    {
-                    'right' if current_lang=='en' else 'left'
-                }
-            }
-
-            : 20px;
+            inset-inline-start: 20px;
             font-size: 3rem;
             color: rgba(212, 175, 55, 0.1);
         }
@@ -238,13 +225,13 @@
         </div>
         <div class="testimonial-grid">
             <div class="testi-card">
-                <i class="fas fa-quote-{{ 'left' if current_lang == 'en' else 'right' }}"></i>
+                <i class="fas fa-quote-left"></i>
                 <p style="color: var(--light-text); line-height: 1.8; margin-bottom: 20px;">"احترافية عالية وتسليم في
                     الموعد. التطبيق يعمل بسلاسة تامة، والهندسة البرمجية تضمن التوسع."</p>
                 <h4 style="color: var(--primary-gold);">- مدير تنفيذي</h4>
             </div>
             <div class="testi-card">
-                <i class="fas fa-quote-{{ 'left' if current_lang == 'en' else 'right' }}"></i>
+                <i class="fas fa-quote-left"></i>
                 <p style="color: var(--light-text); line-height: 1.8; margin-bottom: 20px;">"واجهة المستخدم الفاخرة كانت
                     بالضبط ما نبحث عنه. تواصل ممتاز وشفافية في الأسعار."</p>
                 <h4 style="color: var(--primary-gold);">- رائد أعمال</h4>
@@ -263,14 +250,14 @@
                 class="project-card-link reveal-on-scroll">
                 <div class="project-card">
                     <div class="project-image">
-                        {% if project.icon.startswith('http') %}<img src="{{ project.icon }}" alt="{{ project.title }}"
-                            loading="lazy">
+                        {% if project.icon.startswith('http') %}<img src="{{ project.icon }}"
+                            alt="{{ project.display_title }}" loading="lazy">
                         {% else %}<i class="{{ project.icon }} card-icon"
                             style="font-size: 4rem; color: var(--primary-gold);"></i>{% endif %}
                     </div>
                     <div class="project-info">
-                        <h3>{{ project.title }}</h3>
-                        <p>{{ project.description }}</p>
+                        <h3>{{ project.display_title }}</h3>
+                        <p>{{ project.display_desc }}</p>
                     </div>
                 </div>
             </a>
