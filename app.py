@@ -79,7 +79,7 @@ class Lead(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
 
-# ================= دالة الحماية (المفقودة سابقاً) =================
+# ================= دالة الحماية =================
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -207,7 +207,6 @@ def track_visitor():
                 db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today_iraq, country=get_country_from_ip(clean_ip), source=source_name))
                 db.session.commit()
 
-# --- المسارات الرئيسية ---
 @app.route('/')
 @app.route('/<lang>/')
 def home(lang='ar'):
@@ -241,7 +240,6 @@ def admin():
             desc_ar = request.form['description']
             full_ar = request.form['full_details']
             
-            # أتمتة الترجمة للمشروع
             title_en = translator.translate(title_ar)
             desc_en = translator.translate(desc_ar)
             full_en = translator.translate(full_ar)
@@ -259,7 +257,6 @@ def admin():
             sum_ar = request.form['summary']
             cont_ar = request.form['content']
             
-            # أتمتة الترجمة للمقال
             title_en = translator.translate(title_ar)
             sum_en = translator.translate(sum_ar)
             cont_en = translator.translate(cont_ar)
@@ -328,6 +325,35 @@ def article_details(id, lang='ar'):
     article.display_content = article.content_en if lang == 'en' and article.content_en else article.content
     return render_template('article_details.html', article=article)
 
+# ================= الدوال المستعادة (Edit) =================
+@app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_project(id):
+    project = Project.query.get_or_404(id)
+    if request.method == 'POST':
+        project.title = request.form['title']
+        project.description = request.form['description']
+        project.full_details = request.form['full_details']
+        project.technologies = request.form['technologies']
+        project.icon = request.form['icon']
+        db.session.commit()
+        return redirect(url_for('admin'))
+    return render_template('edit_project.html', project=project)
+
+@app.route('/edit_article/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_article(id):
+    article = Article.query.get_or_404(id)
+    if request.method == 'POST':
+        article.title = request.form['title']
+        article.summary = request.form['summary']
+        article.content = request.form['content']
+        article.image = request.form.get('image', '')
+        db.session.commit()
+        return redirect(url_for('admin'))
+    return render_template('edit_article.html', article=article)
+
+# ================= بقية مسارات العمليات =================
 @app.route('/contact', methods=['POST'])
 def contact():
     new_msg = Message(name=request.form.get('name'), email=request.form.get('email'), phone=request.form.get('phone'), content=request.form.get('content'))
