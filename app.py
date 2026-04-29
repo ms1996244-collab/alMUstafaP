@@ -87,10 +87,14 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# ================= قاموس الترجمة المركزي =================
+## ================= قاموس الترجمة المركزي (مع تحسينات الـ SEO) =================
 TRANSLATIONS = {
     'ar': {
         'dir': 'rtl', 'lang_switch': 'EN', 'lang_code': 'en',
+        # --- SEO Meta Descriptions ---
+        'meta_desc_home': 'تبحث عن مبرمج فلاتر محترف؟ مصطفى علي، مهندس برمجيات متخصص في بناء تطبيقات الموبايل الفاخرة وأنظمة التداول الآلي (SMC) بمعايير Clean Architecture. اطلب تسعيرة مشروعك الآن.',
+        'meta_desc_blog': 'مدونة تقنية متخصصة في هندسة البرمجيات، تطوير تطبيقات Flutter، وبرمجة استراتيجيات التداول الذكية. مقالات وشروحات برمجية متقدمة للمطورين ورواد الأعمال.',
+        # ------------------------------
         'nav_home': 'الرئيسية', 'nav_about': 'عنا', 'nav_calc': 'حاسبة التكلفة',
         'nav_portfolio': 'سجل الإنجازات', 'nav_blog': 'المدونة', 'nav_contact': 'تواصل معي',
         'hero_title': 'تجارب رقمية فاخرة', 'hero_subtitle': 'هندسة برمجية متكاملة بمعايير عالمية للشرق الأوسط',
@@ -118,6 +122,10 @@ TRANSLATIONS = {
     },
     'en': {
         'dir': 'ltr', 'lang_switch': 'العربية', 'lang_code': 'ar',
+        # --- SEO Meta Descriptions ---
+        'meta_desc_home': 'Looking for an expert Flutter developer? Mustafa Ali specializes in luxury mobile apps and automated trading systems (SMC) using Clean Architecture. Get your quote now.',
+        'meta_desc_blog': 'A tech blog dedicated to software engineering, Flutter development, and smart trading strategies. Advanced insights for developers and entrepreneurs.',
+        # ------------------------------
         'nav_home': 'Home', 'nav_about': 'About Us', 'nav_calc': 'Cost Calculator',
         'nav_portfolio': 'Portfolio', 'nav_blog': 'Blog', 'nav_contact': 'Contact Me',
         'hero_title': 'Luxury Digital Experiences', 'hero_subtitle': 'World-class software engineering for the Middle East.',
@@ -141,6 +149,7 @@ TRANSLATIONS = {
         'contact_btn': 'Send', 'footer': '© 2026 Al-Mustafa Programming.'
     }
 }
+
 
 @app.context_processor
 def inject_translations():
