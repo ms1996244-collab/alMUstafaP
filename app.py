@@ -213,12 +213,41 @@ def track_visitor():
             clean_ip = raw_ip.split(',')[0].strip()
             ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
             today_iraq = (datetime.utcnow() + timedelta(hours=3)).date()
+            
             if not SiteVisitor.query.filter_by(ip_hash=ip_hash, visit_date=today_iraq).first():
                 ref = request.referrer
-                source_name = 'بحث Google' if ref and 'google' in ref else ('LinkedIn' if ref and 'linkedin' in ref else 'دخول مباشر')
+                
+                # 1. نظام الروابط الذكية (التقاط المصدر إذا أرسلته أنت في الرابط)
+                url_source = request.args.get('source') or request.args.get('utm_source')
+                
+                if url_source:
+                    source_name = f"رابط مخصص ({url_source})"
+                elif ref:
+                    ref_lower = ref.lower()
+                    if 'google' in ref_lower:
+                        source_name = 'بحث Google'
+                    elif 'bing' in ref_lower or 'yahoo' in ref_lower or 'duckduckgo' in ref_lower:
+                        source_name = 'محركات بحث أخرى'
+                    elif 'linkedin' in ref_lower:
+                        source_name = 'LinkedIn'
+                    elif 'facebook' in ref_lower or 'fb.com' in ref_lower:
+                        source_name = 'Facebook'
+                    elif 'twitter' in ref_lower or 't.co' in ref_lower or 'x.com' in ref_lower:
+                        source_name = 'Twitter / X'
+                    elif 'instagram' in ref_lower:
+                        source_name = 'Instagram'
+                    else:
+                        # استخراج اسم الموقع إذا جاء من مدونة أو موقع آخر
+                        try:
+                            domain = ref.split('/')[2]
+                            source_name = f"موقع آخر ({domain})"
+                        except:
+                            source_name = 'موقع آخر'
+                else:
+                    source_name = 'دخول مباشر / تطبيقات مراسلة'
+                    
                 db.session.add(SiteVisitor(ip_hash=ip_hash, visit_date=today_iraq, country=get_country_from_ip(clean_ip), source=source_name))
                 db.session.commit()
-
 @app.route('/')
 @app.route('/<lang>/')
 def home(lang='ar'):
