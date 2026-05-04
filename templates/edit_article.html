@@ -6,6 +6,27 @@
     <title>تعديل المقال | Al-Mustafa Programming</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .status-select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .datetime-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #17a2b8;
+            color: #fff;
+            border-radius: 8px;
+        }
+    </style>
 </head>
 
 <body class="admin-page">
@@ -35,15 +56,43 @@
                     style="margin-bottom: 20px;">{{ article.content }}</textarea>
 
                 <label style="color: var(--gray-text); margin-bottom: 10px; display: block;">رابط صورة المقال:</label>
-                <input type="text" name="image" value="{{ article.image }}" style="margin-bottom: 30px;">
+                <input type="text" name="image" value="{{ article.image }}" style="margin-bottom: 20px;">
+
+                <!-- حقول الجدولة وحالة النشر -->
+                <label style="color: #17a2b8; margin-bottom: 10px; display: block; font-weight: bold;"><i
+                        class="fas fa-clock"></i> حالة النشر:</label>
+                <select name="status" class="status-select" onchange="toggleDate(this)" style="border-color: #17a2b8;">
+                    <option value="published" {% if article.status=='published' %}selected{% endif %}>نشر فوري (مرئي
+                        للزوار)</option>
+                    <option value="draft" {% if article.status=='draft' %}selected{% endif %}>حفظ كمسودة (مخفي)</option>
+                    <option value="scheduled" {% if article.status=='scheduled' %}selected{% endif %}>جدولة النشر
+                        المستقبلي</option>
+                </select>
+
+                <input type="datetime-local" name="publish_at" class="datetime-input"
+                    value="{{ article.publish_at.strftime('%Y-%m-%dT%H:%M') if article.publish_at else '' }}" {% if
+                    article.status=='scheduled' %}style="display: block;" {% else %}style="display: none;" {% endif %}>
 
                 <button type="submit" class="cta-button"
-                    style="width: 100%; background: rgba(23, 162, 184, 0.1) !important; color: #17a2b8 !important; border-color: #17a2b8;">
+                    style="width: 100%; background: rgba(23, 162, 184, 0.1) !important; color: #17a2b8 !important; border-color: #17a2b8; margin-top: 10px;">
                     حفظ التعديلات
                 </button>
             </form>
         </div>
     </div>
+
+    <script>
+        function toggleDate(selectElement) {
+            let dateInput = selectElement.nextElementSibling;
+            if (selectElement.value === 'scheduled') {
+                dateInput.style.display = 'block';
+                dateInput.required = true;
+            } else {
+                dateInput.style.display = 'none';
+                dateInput.required = false;
+            }
+        }
+    </script>
 </body>
 
 </html>

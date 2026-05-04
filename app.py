@@ -21,7 +21,7 @@ ADMIN_PASSWORD_HASH = generate_password_hash('mustafa2026')
 
 translator = GoogleTranslator(source='ar', target='en')
 
-# --- الجداول المطورة لدعم اللغتين ---
+# --- الجداول المطورة لدعم اللغتين والجدولة ---
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
@@ -34,6 +34,9 @@ class Project(db.Model):
     icon = db.Column(db.String(200), default='fas fa-code')
     is_visible = db.Column(db.Boolean, default=True)
     views = db.Column(db.Integer, default=0)
+    # الحقول الجديدة
+    status = db.Column(db.String(20), default='published') # 'draft', 'published', 'scheduled'
+    publish_at = db.Column(db.DateTime, nullable=True)
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -48,6 +51,9 @@ class Article(db.Model):
     is_visible = db.Column(db.Boolean, default=True)
     views = db.Column(db.Integer, default=0)
     likes = db.Column(db.Integer, default=0)
+    # الحقول الجديدة
+    status = db.Column(db.String(20), default='published') # 'draft', 'published', 'scheduled'
+    publish_at = db.Column(db.DateTime, nullable=True)
 
 class ViewTracker(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -87,14 +93,12 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-## ================= قاموس الترجمة المركزي (مع تحسينات الـ SEO) =================
+# ================= قاموس الترجمة المركزي =================
 TRANSLATIONS = {
     'ar': {
         'dir': 'rtl', 'lang_switch': 'EN', 'lang_code': 'en',
-        # --- SEO Meta Descriptions ---
         'meta_desc_home': 'تبحث عن مبرمج فلاتر محترف؟ مصطفى علي، مهندس برمجيات متخصص في بناء تطبيقات الموبايل الفاخرة وأنظمة التداول الآلي (SMC) بمعايير Clean Architecture. اطلب تسعيرة مشروعك الآن.',
         'meta_desc_blog': 'مدونة تقنية متخصصة في هندسة البرمجيات، تطوير تطبيقات Flutter، وبرمجة استراتيجيات التداول الذكية. مقالات وشروحات برمجية متقدمة للمطورين ورواد الأعمال.',
-        # ------------------------------
         'nav_home': 'الرئيسية', 'nav_about': 'عنا', 'nav_calc': 'حاسبة التكلفة',
         'nav_portfolio': 'سجل الإنجازات', 'nav_blog': 'المدونة', 'nav_contact': 'تواصل معي',
         'hero_title': 'تجارب رقمية فاخرة', 'hero_subtitle': 'هندسة برمجية متكاملة بمعايير عالمية للشرق الأوسط',
@@ -122,10 +126,8 @@ TRANSLATIONS = {
     },
     'en': {
         'dir': 'ltr', 'lang_switch': 'العربية', 'lang_code': 'ar',
-        # --- SEO Meta Descriptions ---
         'meta_desc_home': 'Looking for an expert Flutter developer? Mustafa Ali specializes in luxury mobile apps and automated trading systems (SMC) using Clean Architecture. Get your quote now.',
         'meta_desc_blog': 'A tech blog dedicated to software engineering, Flutter development, and smart trading strategies. Advanced insights for developers and entrepreneurs.',
-        # ------------------------------
         'nav_home': 'Home', 'nav_about': 'About Us', 'nav_calc': 'Cost Calculator',
         'nav_portfolio': 'Portfolio', 'nav_blog': 'Blog', 'nav_contact': 'Contact Me',
         'hero_title': 'Luxury Digital Experiences', 'hero_subtitle': 'World-class software engineering for the Middle East.',
@@ -150,7 +152,6 @@ TRANSLATIONS = {
     }
 }
 
-
 @app.context_processor
 def inject_translations():
     lang = 'ar'
@@ -169,7 +170,12 @@ with app.app_context():
         "ALTER TABLE article ADD COLUMN title_en VARCHAR(150)",
         "ALTER TABLE article ADD COLUMN summary_en VARCHAR(300)",
         "ALTER TABLE article ADD COLUMN content_en TEXT",
-        "ALTER TABLE site_visitor ADD COLUMN source VARCHAR(255) DEFAULT 'دخول مباشر'"
+        "ALTER TABLE site_visitor ADD COLUMN source VARCHAR(255) DEFAULT 'دخول مباشر'",
+        # إضافة أعمدة الجدولة بأمان
+        "ALTER TABLE project ADD COLUMN status VARCHAR(20) DEFAULT 'published'",
+        "ALTER TABLE project ADD COLUMN publish_at DATETIME",
+        "ALTER TABLE article ADD COLUMN status VARCHAR(20) DEFAULT 'published'",
+        "ALTER TABLE article ADD COLUMN publish_at DATETIME"
     ]
     for query in update_queries:
         try:
@@ -220,7 +226,14 @@ def track_visitor():
 @app.route('/<lang>/')
 def home(lang='ar'):
     if lang not in ['ar', 'en']: return redirect(url_for('home'))
-    projects_raw = Project.query.filter_by(is_visible=True).all()
+    now_iraq = datetime.utcnow() + timedelta(hours=3)
+    
+    # جلب المشاريع المرئية والتي تكون منشورة أو مجدولة وحان وقتها
+    projects_raw = Project.query.filter(
+        Project.is_visible == True,
+        (Project.status == 'published') | ((Project.status == 'scheduled') & (Project.publish_at <= now_iraq))
+    ).all()
+    
     projects = []
     for p in projects_raw:
         p.display_title = p.title_en if lang == 'en' and p.title_en else p.title
@@ -231,7 +244,14 @@ def home(lang='ar'):
 @app.route('/blog')
 @app.route('/<lang>/blog')
 def blog(lang='ar'):
-    articles_raw = Article.query.filter_by(is_visible=True).order_by(Article.created_at.desc()).all()
+    now_iraq = datetime.utcnow() + timedelta(hours=3)
+    
+    # جلب المقالات المرئية والتي تكون منشورة أو مجدولة وحان وقتها
+    articles_raw = Article.query.filter(
+        Article.is_visible == True,
+        (Article.status == 'published') | ((Article.status == 'scheduled') & (Article.publish_at <= now_iraq))
+    ).order_by(Article.created_at.desc()).all()
+    
     articles = []
     for a in articles_raw:
         a.display_title = a.title_en if lang == 'en' and a.title_en else a.title
@@ -244,11 +264,19 @@ def blog(lang='ar'):
 def admin():
     if request.method == 'POST':
         form_type = request.form.get('form_type')
+        status = request.form.get('status', 'published')
+        publish_at_str = request.form.get('publish_at', '')
+        
+        # معالجة توقيت النشر (بتوقيت العراق المعتمد)
+        if status == 'scheduled' and publish_at_str:
+            publish_at = datetime.strptime(publish_at_str, '%Y-%m-%dT%H:%M')
+        else:
+            publish_at = datetime.utcnow() + timedelta(hours=3)
+
         if form_type == 'project':
             title_ar = request.form['title']
             desc_ar = request.form['description']
             full_ar = request.form['full_details']
-            
             title_en = translator.translate(title_ar)
             desc_en = translator.translate(desc_ar)
             full_en = translator.translate(full_ar)
@@ -257,7 +285,8 @@ def admin():
                 title=title_ar, title_en=title_en,
                 description=desc_ar, description_en=desc_en,
                 full_details=full_ar, full_details_en=full_en,
-                technologies=request.form['technologies'], icon=request.form['icon']
+                technologies=request.form['technologies'], icon=request.form['icon'],
+                status=status, publish_at=publish_at
             )
             db.session.add(new_project)
             
@@ -265,7 +294,6 @@ def admin():
             title_ar = request.form['title']
             sum_ar = request.form['summary']
             cont_ar = request.form['content']
-            
             title_en = translator.translate(title_ar)
             sum_en = translator.translate(sum_ar)
             cont_en = translator.translate(cont_ar)
@@ -274,17 +302,21 @@ def admin():
                 title=title_ar, title_en=title_en,
                 summary=sum_ar, summary_en=sum_en,
                 content=cont_ar, content_en=cont_en,
-                image=request.form['image']
+                image=request.form['image'],
+                status=status, publish_at=publish_at
             )
             db.session.add(new_article)
+            
         db.session.commit()
         return redirect(url_for('admin'))
     
-    projects = Project.query.all()
-    articles = Article.query.all()
+    # جلب البيانات لصفحة الأدمن
+    projects = Project.query.order_by(Project.id.desc()).all()
+    articles = Article.query.order_by(Article.id.desc()).all()
     messages = Message.query.order_by(Message.id.desc()).all()
     leads = Lead.query.order_by(Lead.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count() + Lead.query.filter_by(is_read=False).count()
+    
     today_iraq = (datetime.utcnow() + timedelta(hours=3)).date()
     yesterday_iraq = today_iraq - timedelta(days=1)
     today_visitors = SiteVisitor.query.filter_by(visit_date=today_iraq).count()
@@ -294,7 +326,9 @@ def admin():
     country_stats = db.session.query(SiteVisitor.country, func.count(SiteVisitor.id)).group_by(SiteVisitor.country).order_by(func.count(SiteVisitor.id).desc()).all()
     monthly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.extract('month', SiteVisitor.visit_date).label('month'), func.count(SiteVisitor.id)).group_by('year', 'month').order_by(text('year DESC, month DESC')).all()
     yearly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.count(SiteVisitor.id)).group_by('year').order_by(text('year DESC')).all()
-    return render_template('admin.html', projects=projects, articles=articles, messages=messages, leads=leads, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors, yesterday_visitors=yesterday_visitors, source_stats=source_stats, country_stats=country_stats, monthly_stats=monthly_stats, yearly_stats=yearly_stats)
+    
+    now_iraq = datetime.utcnow() + timedelta(hours=3)
+    return render_template('admin.html', projects=projects, articles=articles, messages=messages, leads=leads, unread=unread_count, total_visitors=total_visitors, today_visitors=today_visitors, yesterday_visitors=yesterday_visitors, source_stats=source_stats, country_stats=country_stats, monthly_stats=monthly_stats, yearly_stats=yearly_stats, now_iraq=now_iraq)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -345,6 +379,10 @@ def edit_project(id):
         project.full_details = request.form['full_details']
         project.technologies = request.form['technologies']
         project.icon = request.form['icon']
+        project.status = request.form.get('status', 'published')
+        publish_at_str = request.form.get('publish_at', '')
+        if project.status == 'scheduled' and publish_at_str:
+            project.publish_at = datetime.strptime(publish_at_str, '%Y-%m-%dT%H:%M')
         db.session.commit()
         return redirect(url_for('admin'))
     return render_template('edit_project.html', project=project)
@@ -358,6 +396,10 @@ def edit_article(id):
         article.summary = request.form['summary']
         article.content = request.form['content']
         article.image = request.form.get('image', '')
+        article.status = request.form.get('status', 'published')
+        publish_at_str = request.form.get('publish_at', '')
+        if article.status == 'scheduled' and publish_at_str:
+            article.publish_at = datetime.strptime(publish_at_str, '%Y-%m-%dT%H:%M')
         db.session.commit()
         return redirect(url_for('admin'))
     return render_template('edit_article.html', article=article)
@@ -412,8 +454,9 @@ def mark_read(type, id):
 
 @app.route('/sitemap.xml')
 def sitemap():
-    projects = Project.query.filter_by(is_visible=True).all()
-    articles = Article.query.filter_by(is_visible=True).all()
+    now_iraq = datetime.utcnow() + timedelta(hours=3)
+    projects = Project.query.filter(Project.is_visible == True, (Project.status == 'published') | ((Project.status == 'scheduled') & (Project.publish_at <= now_iraq))).all()
+    articles = Article.query.filter(Article.is_visible == True, (Article.status == 'published') | ((Article.status == 'scheduled') & (Article.publish_at <= now_iraq))).all()
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     xml += f'  <url><loc>{url_for("home", _external=True)}</loc><priority>1.0</priority></url>\n'
     for p in projects: xml += f'  <url><loc>{url_for("project_details", id=p.id, _external=True)}</loc></url>\n'

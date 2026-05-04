@@ -34,6 +34,26 @@
             flex: 1;
             min-width: 300px;
         }
+
+        .status-select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 8px;
+        }
+
+        .datetime-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--primary-gold);
+            color: #fff;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
@@ -56,9 +76,25 @@
                 <input type="text" name="technologies" value="{{ project.technologies }}" required>
 
                 <label style="color: var(--primary-gold); font-size: 0.9rem;">رابط الصورة المباشر أو الأيقونة</label>
-                <input type="text" id="icon" name="icon" value="{{ project.icon }}" required>
+                <input type="text" id="icon" name="icon" value="{{ project.icon }}" required
+                    style="margin-bottom: 20px;">
 
-                <button type="submit" class="cta-button">حفظ التعديلات النهائية</button>
+                <!-- حقول الجدولة وحالة النشر -->
+                <label style="color: var(--primary-gold); font-size: 0.9rem; font-weight: bold;"><i
+                        class="fas fa-clock"></i> حالة النشر</label>
+                <select name="status" class="status-select" onchange="toggleDate(this)">
+                    <option value="published" {% if project.status=='published' %}selected{% endif %}>نشر فوري (مرئي
+                        للزوار)</option>
+                    <option value="draft" {% if project.status=='draft' %}selected{% endif %}>حفظ كمسودة (مخفي)</option>
+                    <option value="scheduled" {% if project.status=='scheduled' %}selected{% endif %}>جدولة النشر
+                        المستقبلي</option>
+                </select>
+
+                <input type="datetime-local" name="publish_at" class="datetime-input"
+                    value="{{ project.publish_at.strftime('%Y-%m-%dT%H:%M') if project.publish_at else '' }}" {% if
+                    project.status=='scheduled' %}style="display: block;" {% else %}style="display: none;" {% endif %}>
+
+                <button type="submit" class="cta-button" style="margin-top: 15px;">حفظ التعديلات النهائية</button>
                 <a href="{{ url_for('admin') }}" class="back-btn"
                     style="display: block; text-align: center; margin-top: 10px;">إلغاء والعودة</a>
             </form>
@@ -107,6 +143,17 @@
         iInput.addEventListener('input', updateLivePreview);
 
         updateLivePreview(); // تشغيل عند فتح الصفحة
+
+        function toggleDate(selectElement) {
+            let dateInput = selectElement.nextElementSibling;
+            if (selectElement.value === 'scheduled') {
+                dateInput.style.display = 'block';
+                dateInput.required = true;
+            } else {
+                dateInput.style.display = 'none';
+                dateInput.required = false;
+            }
+        }
     </script>
 </body>
 
