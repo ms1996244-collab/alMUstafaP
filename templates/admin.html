@@ -44,7 +44,6 @@
             font-size: 1rem;
         }
 
-        /* تنسيقات حقول الجدولة الجديدة */
         .status-select {
             width: 100%;
             padding: 12px;
@@ -101,113 +100,98 @@
         </div>
         <a href="{{ url_for('home') }}" class="back-btn"><i class="fas fa-external-link-alt"></i> عرض الموقع</a>
 
-        <!-- شبكة الإحصائيات الحالية (كما هي) -->
+        <!-- الإحصائيات -->
         <div class="stats-grid">
             <div class="stat-card" style="border-bottom: 4px solid var(--primary-gold);">
                 <i class="fas fa-calendar-day"></i>
                 <h3>{{ today_visitors }}</h3>
-                <p>زوار اليوم (الآن)</p>
+                <p>زوار اليوم</p>
             </div>
             <div class="stat-card" style="border-bottom: 4px solid #f39c12;">
                 <i class="fas fa-history"></i>
                 <h3>{{ yesterday_visitors }}</h3>
-                <p>زوار يوم أمس</p>
+                <p>زوار أمس</p>
             </div>
             <div class="stat-card" style="border-bottom: 4px solid #17a2b8;">
                 <i class="fas fa-users"></i>
                 <h3>{{ total_visitors }}</h3>
-                <p>إجمالي زوار المنصة</p>
-            </div>
-            <div class="stat-card" style="border-bottom: 4px solid #4caf50;">
-                <i class="fas fa-chart-line"></i>
-                <h3>{{ monthly_stats[0][2] if monthly_stats else 0 }}</h3>
-                <p>زوار الشهر الحالي</p>
+                <p>إجمالي الزوار</p>
             </div>
         </div>
 
-        <!-- نماذج الإضافة المطورة مع الجدولة -->
+        <!-- نماذج الإضافة -->
         <div class="admin-grid">
             <div class="admin-card">
-                <h2>إضافة مشروع (سجل الإنجازات)</h2>
+                <h2>إضافة مشروع</h2>
                 <form action="{{ url_for('admin') }}" method="POST" class="admin-form">
                     <input type="hidden" name="form_type" value="project">
                     <input type="text" name="title" placeholder="اسم المشروع" required>
                     <input type="text" name="description" placeholder="وصف قصير" required>
-                    <textarea name="full_details" placeholder="التفاصيل الكاملة" rows="3" required></textarea>
-                    <input type="text" name="technologies" placeholder="التقنيات (مثال: Python, Flutter)" required>
-                    <input type="text" name="icon" placeholder="رابط الصورة (ImgBB)" required>
-
-                    <!-- حقول الجدولة -->
+                    <textarea name="full_details" placeholder="التفاصيل كاملة" rows="3" required></textarea>
+                    <input type="text" name="technologies" placeholder="التقنيات" required>
+                    <input type="text" name="icon" placeholder="رابط الأيقونة" required>
                     <select name="status" class="status-select" onchange="toggleDate(this)">
                         <option value="published">نشر فوري</option>
-                        <option value="draft">حفظ كمسودة (لن يظهر للزوار)</option>
-                        <option value="scheduled">جدولة النشر المستقبلي</option>
+                        <option value="draft">حفظ كمسودة</option>
+                        <option value="scheduled">جدولة النشر</option>
                     </select>
                     <input type="datetime-local" name="publish_at" class="datetime-input">
-
                     <button type="submit" class="cta-button">حفظ المشروع</button>
                 </form>
             </div>
 
             <div class="admin-card" style="border-color: #17a2b8;">
-                <h2 style="color: #17a2b8;">نشر مقال تقني جديد</h2>
+                <h2 style="color: #17a2b8;">نشر مقال</h2>
                 <form action="{{ url_for('admin') }}" method="POST" class="admin-form">
                     <input type="hidden" name="form_type" value="article">
                     <input type="text" name="title" placeholder="عنوان المقال" required>
-                    <input type="text" name="summary" placeholder="مقدمة مشوقة قصيرة" required>
-                    <textarea name="content" placeholder="محتوى المقال (يفصل بنقاط . للفقرات)" rows="4"
-                        required></textarea>
-                    <input type="text" name="image" placeholder="رابط صورة المقال (اختياري)">
-
-                    <!-- حقول الجدولة -->
-                    <select name="status" class="status-select" onchange="toggleDate(this)"
-                        style="border-color: #17a2b8;">
+                    <input type="text" name="summary" placeholder="مقدمة المقال" required>
+                    <textarea name="content" placeholder="المحتوى" rows="4" required></textarea>
+                    <input type="text" name="image" placeholder="رابط الصورة">
+                    <select name="status" class="status-select" onchange="toggleDate(this)">
                         <option value="published">نشر فوري</option>
                         <option value="draft">حفظ كمسودة</option>
-                        <option value="scheduled">جدولة النشر المستقبلي</option>
+                        <option value="scheduled">جدولة النشر</option>
                     </select>
                     <input type="datetime-local" name="publish_at" class="datetime-input">
-
-                    <button type="submit" class="cta-button"
-                        style="background: rgba(23, 162, 184, 0.1) !important; color: #17a2b8 !important; border-color: #17a2b8;">حفظ
+                    <button type="submit" class="cta-button" style="border-color: #17a2b8; color: #17a2b8;">نشر
                         المقال</button>
                 </form>
             </div>
         </div>
 
-        <!-- الجداول المحدثة لإظهار حالة النشر -->
+        <!-- الجداول مع استعادة المشاهدات -->
         <div class="admin-grid">
             <div class="admin-card projects-list" style="overflow-x: auto;">
                 <h2>إدارة المشاريع</h2>
                 <table>
                     <tr>
                         <th>المشروع</th>
-                        <th>حالة النشر</th>
-                        <th>الحالة العامة</th>
+                        <th>المشاهدات</th>
+                        <th>النشر</th>
+                        <th>الرؤية</th>
                         <th>إجراء</th>
                     </tr>
                     {% for project in projects %}
                     <tr>
                         <td>{{ project.title }}</td>
+                        <td style="color: var(--primary-gold); font-weight: bold;">{{ project.views }} <i
+                                class="fas fa-eye"></i></td>
                         <td>
                             {% if project.status == 'draft' %}<span class="badge badge-draft">مسودة</span>
-                            {% elif project.status == 'scheduled' %}
-                            {% if project.publish_at > now_iraq %}
+                            {% elif project.status == 'scheduled' and project.publish_at > now_iraq %}
                             <span class="badge badge-sch"
-                                title="سيُنشر في: {{ project.publish_at.strftime('%Y-%m-%d %H:%M') }}">مجدول <i
+                                title="مجدول لـ: {{ project.publish_at.strftime('%Y-%m-%d') }}">مجدول <i
                                     class="fas fa-clock"></i></span>
-                            {% else %}
-                            <span class="badge badge-pub">تم النشر آلياً</span>
-                            {% endif %}
                             {% else %}<span class="badge badge-pub">منشور</span>{% endif %}
                         </td>
                         <td>{% if project.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
-                                style="color: #888;">مخفي بالكامل</span>{% endif %}</td>
+                                style="color: #888;">مخفي</span>{% endif %}</td>
                         <td>
                             <a href="{{ url_for('edit_project', id=project.id) }}"
-                                style="color: #f39c12; margin-left: 10px;"><i class="fas fa-edit"></i></a>
+                                style="color: #f39c12; margin-left: 8px;"><i class="fas fa-edit"></i></a>
                             <a href="{{ url_for('toggle_visibility', type='project', id=project.id) }}"
-                                style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
+                                style="color: #17a2b8; margin-left: 8px;"><i class="fas fa-eye-slash"></i></a>
                             <a href="{{ url_for('delete_item', type='project', id=project.id) }}" class="delete-btn"><i
                                     class="fas fa-trash"></i></a>
                         </td>
@@ -221,32 +205,31 @@
                 <table>
                     <tr>
                         <th>المقال</th>
-                        <th>حالة النشر</th>
-                        <th>الحالة العامة</th>
+                        <th>القراءات</th>
+                        <th>النشر</th>
+                        <th>الرؤية</th>
                         <th>إجراء</th>
                     </tr>
                     {% for article in articles %}
                     <tr>
                         <td>{{ article.title }}</td>
+                        <td style="color: #17a2b8; font-weight: bold;">{{ article.views }} <i
+                                class="fas fa-book-reader"></i></td>
                         <td>
                             {% if article.status == 'draft' %}<span class="badge badge-draft">مسودة</span>
-                            {% elif article.status == 'scheduled' %}
-                            {% if article.publish_at > now_iraq %}
+                            {% elif article.status == 'scheduled' and article.publish_at > now_iraq %}
                             <span class="badge badge-sch"
-                                title="سيُنشر في: {{ article.publish_at.strftime('%Y-%m-%d %H:%M') }}">مجدول <i
+                                title="مجدول لـ: {{ article.publish_at.strftime('%Y-%m-%d') }}">مجدول <i
                                     class="fas fa-clock"></i></span>
-                            {% else %}
-                            <span class="badge badge-pub">تم النشر آلياً</span>
-                            {% endif %}
                             {% else %}<span class="badge badge-pub">منشور</span>{% endif %}
                         </td>
                         <td>{% if article.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
-                                style="color: #888;">مخفي بالكامل</span>{% endif %}</td>
+                                style="color: #888;">مخفي</span>{% endif %}</td>
                         <td>
                             <a href="{{ url_for('edit_article', id=article.id) }}"
-                                style="color: #f39c12; margin-left: 10px;"><i class="fas fa-edit"></i></a>
+                                style="color: #f39c12; margin-left: 8px;"><i class="fas fa-edit"></i></a>
                             <a href="{{ url_for('toggle_visibility', type='article', id=article.id) }}"
-                                style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
+                                style="color: #17a2b8; margin-left: 8px;"><i class="fas fa-eye-slash"></i></a>
                             <a href="{{ url_for('delete_item', type='article', id=article.id) }}" class="delete-btn"><i
                                     class="fas fa-trash"></i></a>
                         </td>
@@ -255,8 +238,6 @@
                 </table>
             </div>
         </div>
-
-        <!-- بقية محتوى الصفحة (الرسائل والطلبات) كما هي دون تغيير... -->
 
     </div>
 
