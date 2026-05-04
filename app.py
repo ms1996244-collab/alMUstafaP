@@ -34,8 +34,7 @@ class Project(db.Model):
     icon = db.Column(db.String(200), default='fas fa-code')
     is_visible = db.Column(db.Boolean, default=True)
     views = db.Column(db.Integer, default=0)
-    # الحقول الجديدة
-    status = db.Column(db.String(20), default='published') # 'draft', 'published', 'scheduled'
+    status = db.Column(db.String(20), default='published')
     publish_at = db.Column(db.DateTime, nullable=True)
 
 class Article(db.Model):
@@ -51,8 +50,7 @@ class Article(db.Model):
     is_visible = db.Column(db.Boolean, default=True)
     views = db.Column(db.Integer, default=0)
     likes = db.Column(db.Integer, default=0)
-    # الحقول الجديدة
-    status = db.Column(db.String(20), default='published') # 'draft', 'published', 'scheduled'
+    status = db.Column(db.String(20), default='published')
     publish_at = db.Column(db.DateTime, nullable=True)
 
 class ViewTracker(db.Model):
@@ -93,7 +91,7 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# ================= قاموس الترجمة المركزي =================
+## ================= قاموس الترجمة المركزي =================
 TRANSLATIONS = {
     'ar': {
         'dir': 'rtl', 'lang_switch': 'EN', 'lang_code': 'en',
@@ -171,7 +169,6 @@ with app.app_context():
         "ALTER TABLE article ADD COLUMN summary_en VARCHAR(300)",
         "ALTER TABLE article ADD COLUMN content_en TEXT",
         "ALTER TABLE site_visitor ADD COLUMN source VARCHAR(255) DEFAULT 'دخول مباشر'",
-        # إضافة أعمدة الجدولة بأمان
         "ALTER TABLE project ADD COLUMN status VARCHAR(20) DEFAULT 'published'",
         "ALTER TABLE project ADD COLUMN publish_at DATETIME",
         "ALTER TABLE article ADD COLUMN status VARCHAR(20) DEFAULT 'published'",
@@ -227,13 +224,7 @@ def track_visitor():
 def home(lang='ar'):
     if lang not in ['ar', 'en']: return redirect(url_for('home'))
     now_iraq = datetime.utcnow() + timedelta(hours=3)
-    
-    # جلب المشاريع المرئية والتي تكون منشورة أو مجدولة وحان وقتها
-    projects_raw = Project.query.filter(
-        Project.is_visible == True,
-        (Project.status == 'published') | ((Project.status == 'scheduled') & (Project.publish_at <= now_iraq))
-    ).all()
-    
+    projects_raw = Project.query.filter(Project.is_visible == True, (Project.status == 'published') | ((Project.status == 'scheduled') & (Project.publish_at <= now_iraq))).all()
     projects = []
     for p in projects_raw:
         p.display_title = p.title_en if lang == 'en' and p.title_en else p.title
@@ -245,13 +236,7 @@ def home(lang='ar'):
 @app.route('/<lang>/blog')
 def blog(lang='ar'):
     now_iraq = datetime.utcnow() + timedelta(hours=3)
-    
-    # جلب المقالات المرئية والتي تكون منشورة أو مجدولة وحان وقتها
-    articles_raw = Article.query.filter(
-        Article.is_visible == True,
-        (Article.status == 'published') | ((Article.status == 'scheduled') & (Article.publish_at <= now_iraq))
-    ).order_by(Article.created_at.desc()).all()
-    
+    articles_raw = Article.query.filter(Article.is_visible == True, (Article.status == 'published') | ((Article.status == 'scheduled') & (Article.publish_at <= now_iraq))).order_by(Article.created_at.desc()).all()
     articles = []
     for a in articles_raw:
         a.display_title = a.title_en if lang == 'en' and a.title_en else a.title
@@ -267,7 +252,6 @@ def admin():
         status = request.form.get('status', 'published')
         publish_at_str = request.form.get('publish_at', '')
         
-        # معالجة توقيت النشر (بتوقيت العراق المعتمد)
         if status == 'scheduled' and publish_at_str:
             publish_at = datetime.strptime(publish_at_str, '%Y-%m-%dT%H:%M')
         else:
@@ -277,6 +261,7 @@ def admin():
             title_ar = request.form['title']
             desc_ar = request.form['description']
             full_ar = request.form['full_details']
+            
             title_en = translator.translate(title_ar)
             desc_en = translator.translate(desc_ar)
             full_en = translator.translate(full_ar)
@@ -294,6 +279,7 @@ def admin():
             title_ar = request.form['title']
             sum_ar = request.form['summary']
             cont_ar = request.form['content']
+            
             title_en = translator.translate(title_ar)
             sum_en = translator.translate(sum_ar)
             cont_en = translator.translate(cont_ar)
@@ -306,11 +292,9 @@ def admin():
                 status=status, publish_at=publish_at
             )
             db.session.add(new_article)
-            
         db.session.commit()
         return redirect(url_for('admin'))
     
-    # جلب البيانات لصفحة الأدمن
     projects = Project.query.order_by(Project.id.desc()).all()
     articles = Article.query.order_by(Article.id.desc()).all()
     messages = Message.query.order_by(Message.id.desc()).all()
@@ -368,7 +352,6 @@ def article_details(id, lang='ar'):
     article.display_content = article.content_en if lang == 'en' and article.content_en else article.content
     return render_template('article_details.html', article=article)
 
-# ================= الدوال المستعادة (Edit) =================
 @app.route('/edit_project/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_project(id):
@@ -404,7 +387,6 @@ def edit_article(id):
         return redirect(url_for('admin'))
     return render_template('edit_article.html', article=article)
 
-# ================= بقية مسارات العمليات =================
 @app.route('/contact', methods=['POST'])
 def contact():
     new_msg = Message(name=request.form.get('name'), email=request.form.get('email'), phone=request.form.get('phone'), content=request.form.get('content'))
