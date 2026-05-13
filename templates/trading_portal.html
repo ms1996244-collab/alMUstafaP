@@ -26,9 +26,8 @@
         @media (max-width: 992px) {
             .portal-container {
                 grid-template-columns: 1fr;
+                /* عمود واحد للموبايل */
             }
-
-            /* عمود واحد للموبايل */
         }
 
         /* تنسيقات المتجر والمقالات */
@@ -152,8 +151,11 @@
                         { "description": "Gold", "proName": "OANDA:XAUUSD" },
                         { "description": "Bitcoin", "proName": "BINANCE:BTCUSDT" }
                     ],
-                        "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": true,
-                            "displayMode": "adaptive", "locale": "{{ current_lang }}"
+                        "showSymbolLogo": true,
+                            "colorTheme": "dark",
+                                "isTransparent": true,
+                                    "displayMode": "adaptive",
+                                        "locale": "{{ current_lang }}"
                 }
             </script>
     </div>
@@ -161,11 +163,12 @@
     <!-- النافبار المختصر -->
     <header class="navbar" style="position: relative; background: transparent;">
         <div class="logo">
-            <h1><a href="{{ url_for('tech.home', lang=current_lang) }}">Al-Mustafa Finance</a></h1>
+            <h1><a href="{{ url_for('home', lang=current_lang) }}">Al-Mustafa Finance</a></h1>
         </div>
         <nav>
             <ul class="nav-links">
-                <li><a href="{{ url_for('tech.home', lang=current_lang) }}"><i class="fas fa-arrow-left"></i> العودة
+                <!-- مسار العودة للرئيسية مصحح -->
+                <li><a href="{{ url_for('home', lang=current_lang) }}"><i class="fas fa-arrow-left"></i> العودة
                         للتقنية</a></li>
                 <li><a href="#" class="lang-btn">{{ t.lang_switch }}</a></li>
             </ul>
@@ -184,15 +187,19 @@
             <div class="mql-grid">
                 {% for prod in products %}
                 <div class="mql-card">
-                    {% if prod.icon %}<img src="{{ prod.icon }}" alt="icon"
-                        style="width: 60px; height: 60px; margin-bottom:15px;">
-                    {% else %}<i class="fas fa-cogs"></i>{% endif %}
+                    {% if prod.icon %}
+                    <img src="{{ prod.icon }}" alt="icon" style="width: 60px; height: 60px; margin-bottom:15px;">
+                    {% else %}
+                    <i class="fas fa-cogs"></i>
+                    {% endif %}
                     <h3 style="color: #fff; font-size: 1.2rem;">{{ prod.display_name }}</h3>
                     <p style="color: var(--gray-text); font-size: 0.9rem; height: 40px; overflow: hidden;">{{
                         prod.display_desc }}</p>
                     <div class="mql-price">{{ prod.price }}</div>
-                    <a href="{{ url_for('trading.mql_product_click', id=prod.id) }}" target="_blank" class="cta-button"
-                        style="padding: 8px 20px; font-size: 0.9rem; background: transparent; color: var(--primary-gold);">استعراض
+
+                    <!-- مسار الشراء مصحح -->
+                    <a href="{{ url_for('mql_product_click', id=prod.id) }}" target="_blank" class="cta-button"
+                        style="padding: 8px 20px; font-size: 0.9rem; background: transparent; color: var(--primary-gold); border: 1px solid var(--primary-gold);">استعراض
                         / شراء</a>
                 </div>
                 {% else %}
@@ -206,8 +213,9 @@
             </div>
             <div class="articles-container">
                 {% for article in articles %}
-                <!-- رابط صفحة المقال سيتم إنشاؤه لاحقاً، حالياً نعرض الملخص -->
-                <a href="#" class="article-list-item">
+                <!-- رابط صفحة المقال، تأكد أنك ستنشئ مسار 'trading_article_details' لاحقاً إذا لم تقم بذلك -->
+                <a href="{{ url_for('trading_article_details', id=article.id, lang=current_lang) }}"
+                    class="article-list-item">
                     <span
                         style="font-size: 0.8rem; color: #28a745; font-weight: bold; margin-bottom: 5px; display: block;">{{
                         article.created_at.strftime('%Y-%m-%d') }}</span>
@@ -244,9 +252,13 @@
                     <script type="text/javascript"
                         src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
                             {
-                                "feedMode": "all_symbols", "colorTheme": "dark",
-                                    "isTransparent": true, "displayMode": "regular",
-                                        "width": "100%", "height": 400, "locale": "{{ current_lang }}"
+                                "feedMode": "all_symbols",
+                                    "colorTheme": "dark",
+                                        "isTransparent": true,
+                                            "displayMode": "regular",
+                                                "width": "100%",
+                                                    "height": 400,
+                                                        "locale": "{{ current_lang }}"
                             }
                         </script>
                 </div>
@@ -260,13 +272,26 @@
                     <script type="text/javascript"
                         src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
                             {
-                                "colorTheme": "dark", "dateRange": "12M", "showChart": true,
-                                    "locale": "{{ current_lang }}", "width": "100%", "height": "100%",
-                                        "largeChartUrl": "", "isTransparent": true, "showSymbolLogo": true,
-                                            "showFloatingTooltip": false,
-                                                "tabs": [
-                                                    { "title": "Forex", "symbols": [{ "s": "FX:EURUSD", "d": "EUR to USD" }, { "s": "FX:GBPUSD", "d": "GBP to USD" }, { "s": "OANDA:XAUUSD", "d": "Gold" }] }
-                                                ]
+                                "colorTheme": "dark",
+                                    "dateRange": "12M",
+                                        "showChart": true,
+                                            "locale": "{{ current_lang }}",
+                                                "width": "100%",
+                                                    "height": "100%",
+                                                        "largeChartUrl": "",
+                                                            "isTransparent": true,
+                                                                "showSymbolLogo": true,
+                                                                    "showFloatingTooltip": false,
+                                                                        "tabs": [
+                                                                            {
+                                                                                "title": "Forex",
+                                                                                "symbols": [
+                                                                                    { "s": "FX:EURUSD", "d": "EUR to USD" },
+                                                                                    { "s": "FX:GBPUSD", "d": "GBP to USD" },
+                                                                                    { "s": "OANDA:XAUUSD", "d": "Gold" }
+                                                                                ]
+                                                                            }
+                                                                        ]
                             }
                         </script>
                 </div>
