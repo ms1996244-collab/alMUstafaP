@@ -4,250 +4,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بوابة التداول والأسواق المالية | Al-Mustafa</title>
+    <title>بوابة التداول العالمية | Al-Mustafa Finance</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             background-color: #07080a;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        /* التخطيط الشامل للبوابة */
-        .portal-container {
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            /* العمود الرئيسي ثم الجانبي */
-            gap: 30px;
-            max-width: 1400px;
-            margin: 40px auto;
+        /* شريط الأسعار العلوي المتحرك */
+        .ticker-wrapper {
+            width: 100%;
+            height: 46px;
+            background: #131722;
+            border-bottom: 1px solid #2a2e39;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* الهيكل الرئيسي بنسبة 70/30 */
+        .portal-layout {
+            display: flex;
+            flex-direction: row-reverse;
+            /* لضمان أن الـ 30% على اليمين في العربية */
+            max-width: 1600px;
+            margin: 30px auto;
+            gap: 25px;
             padding: 0 20px;
         }
 
-        @media (max-width: 992px) {
-            .portal-container {
-                grid-template-columns: 1fr;
-                /* عمود واحد للموبايل */
-            }
-        }
-
-        /* تنسيقات المتجر والمقالات */
-        .section-header {
-            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+        /* العمود الأيمن (30%) - الأسعار والأخبار */
+        .sidebar-right {
+            width: 30%;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .section-header h2 {
-            font-size: 1.8rem;
-            color: #fff;
-            margin: 0;
+        /* العمود الأيسر (70%) - المتجر والمقالات */
+        .main-left {
+            width: 70%;
         }
 
+        /* تنسيق المتجر ليكون متناسقاً */
         .mql-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .mql-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 20px;
-            transition: 0.3s;
+            background: #131722;
+            border: 1px solid #2a2e39;
+            border-radius: 12px;
+            padding: 25px;
             text-align: center;
+            transition: 0.3s;
         }
 
         .mql-card:hover {
-            border-color: var(--primary-gold);
+            border-color: #d4af37;
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
         }
 
-        .mql-card i {
-            font-size: 3rem;
-            color: #fd7e14;
-            margin-bottom: 15px;
+        /* صناديق الوديجت في الجانب */
+        .widget-box {
+            background: #131722;
+            border: 1px solid #2a2e39;
+            border-radius: 12px;
+            overflow: hidden;
+            padding: 10px;
         }
 
-        .mql-price {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-gold);
-            margin: 10px 0;
+        .widget-header {
+            font-size: 0.9rem;
+            color: #868993;
+            margin-bottom: 10px;
+            padding-right: 10px;
+            border-right: 3px solid #d4af37;
+        }
+
+        @media (max-width: 1024px) {
+            .portal-layout {
+                flex-direction: column;
+            }
+
+            .sidebar-right,
+            .main-left {
+                width: 100%;
+            }
         }
 
         .article-list-item {
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 4px solid #28a745;
+            background: #131722;
+            border-right: 4px solid #28a745;
             padding: 20px;
             margin-bottom: 15px;
             border-radius: 8px;
-            transition: 0.3s;
             display: block;
             text-decoration: none;
+            transition: 0.3s;
         }
 
         .article-list-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(-5px);
-        }
-
-        .article-list-item h3 {
-            color: #fff;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-        }
-
-        .article-list-item p {
-            color: var(--gray-text);
-            line-height: 1.6;
-        }
-
-        /* تنسيقات العمود الجانبي (Widgets & Ads) */
-        .sidebar-widget {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 30px;
-        }
-
-        .ad-banner {
-            display: block;
-            width: 100%;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.3s;
-        }
-
-        .ad-banner:hover {
-            opacity: 0.8;
-        }
-
-        .ad-banner img {
-            width: 100%;
-            height: auto;
-            display: block;
+            background: #1c212d;
+            transform: scale(1.01);
         }
     </style>
 </head>
 
 <body>
 
-    <!-- 1. شريط الأسعار المباشر العلوي (TradingView) -->
-    <div class="tradingview-widget-container" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
-        <div class="tradingview-widget-container__widget"></div>
-        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js"
-            async>
-                {
-                    "symbols": [
-                        { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
-                        { "proName": "FOREXCOM:NSXUSD", "title": "US 100" },
-                        { "proName": "FX_IDC:EURUSD", "title": "EUR to USD" },
-                        { "description": "Gold", "proName": "OANDA:XAUUSD" },
-                        { "description": "Bitcoin", "proName": "BINANCE:BTCUSDT" }
-                    ],
-                        "showSymbolLogo": true,
-                            "colorTheme": "dark",
-                                "isTransparent": true,
-                                    "displayMode": "adaptive",
-                                        "locale": "{{ current_lang }}"
-                }
-            </script>
+    <!-- 1. شريط الأسعار العلوي (Ticker Tape) - تم تصحيح الظهور -->
+    <div class="ticker-wrapper">
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript"
+                src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                    {
+                        "symbols": [
+                            { "proName": "OANDA:XAUUSD", "title": "الذهب" },
+                            { "proName": "FX_IDC:EURUSD", "title": "يورو/دولار" },
+                            { "proName": "BITSTAMP:BTCUSD", "title": "بيتكوين" },
+                            { "proName": "FOREXCOM:NSXUSD", "title": "نازداك 100" },
+                            { "proName": "FX:GBPUSD", "title": "باوند/دولار" }
+                        ],
+                            "showSymbolLogo": true,
+                                "colorTheme": "dark",
+                                    "isTransparent": true,
+                                        "displayMode": "adaptive",
+                                            "locale": "ar"
+                    }
+                </script>
+        </div>
     </div>
 
-    <!-- النافبار المختصر -->
-    <header class="navbar" style="position: relative; background: transparent;">
+    <!-- النافبار -->
+    <header class="navbar" style="position: static; background: #07080a; padding: 20px 5%;">
         <div class="logo">
-            <h1><a href="{{ url_for('home', lang=current_lang) }}">Al-Mustafa Finance</a></h1>
+            <h1><a href="/">Al-Mustafa Finance</a></h1>
         </div>
         <nav>
             <ul class="nav-links">
-                <!-- مسار العودة للرئيسية مصحح -->
-                <li><a href="{{ url_for('home', lang=current_lang) }}"><i class="fas fa-arrow-left"></i> العودة
-                        للتقنية</a></li>
+                <li><a href="/"><i class="fas fa-arrow-right"></i> العودة للرئيسية</a></li>
                 <li><a href="#" class="lang-btn">{{ t.lang_switch }}</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- الهيكل الرئيسي -->
-    <div class="portal-container">
+    <!-- الهيكل الرئيسي بنسبة 70/30 -->
+    <div class="portal-layout">
 
-        <!-- ================= العمود الرئيسي (70%) ================= -->
-        <main>
-            <!-- متجر المؤشرات والإكسبرتات -->
-            <div class="section-header">
-                <h2><i class="fas fa-robot" style="color: #fd7e14;"></i> MQL5 Store (مؤشرات وإكسبرتات)</h2>
-            </div>
-            <div class="mql-grid">
-                {% for prod in products %}
-                <div class="mql-card">
-                    {% if prod.icon %}
-                    <img src="{{ prod.icon }}" alt="icon" style="width: 60px; height: 60px; margin-bottom:15px;">
-                    {% else %}
-                    <i class="fas fa-cogs"></i>
-                    {% endif %}
-                    <h3 style="color: #fff; font-size: 1.2rem;">{{ prod.display_name }}</h3>
-                    <p style="color: var(--gray-text); font-size: 0.9rem; height: 40px; overflow: hidden;">{{
-                        prod.display_desc }}</p>
-                    <div class="mql-price">{{ prod.price }}</div>
+        <!-- ================= العمود الأيمن (30%) - الأسعار والأخبار والبروكرات ================= -->
+        <aside class="sidebar-right">
 
-                    <!-- مسار الشراء مصحح -->
-                    <a href="{{ url_for('mql_product_click', id=prod.id) }}" target="_blank" class="cta-button"
-                        style="padding: 8px 20px; font-size: 0.9rem; background: transparent; color: var(--primary-gold); border: 1px solid var(--primary-gold);">استعراض
-                        / شراء</a>
+            <!-- ويدجت الأسعار الحية -->
+            <div class="widget-box" style="height: 400px;">
+                <div class="widget-header">أسعار العملات والذهب</div>
+                <div class="tradingview-widget-container" style="height: calc(100% - 30px);">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript"
+                        src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+                            {
+                                "colorTheme": "dark",
+                                    "dateRange": "12M",
+                                        "showChart": false,
+                                            "locale": "ar",
+                                                "width": "100%",
+                                                    "height": "100%",
+                                                        "isTransparent": true,
+                                                            "showSymbolLogo": true,
+                                                                "tabs": [
+                                                                    {
+                                                                        "title": "الفوركس",
+                                                                        "symbols": [
+                                                                            { "s": "OANDA:XAUUSD" },
+                                                                            { "s": "FX:EURUSD" },
+                                                                            { "s": "FX:GBPUSD" },
+                                                                            { "s": "FX:USDJPY" }
+                                                                        ]
+                                                                    }
+                                                                ]
+                            }
+                        </script>
                 </div>
-                {% else %}
-                <p style="color: var(--gray-text);">سيتم إضافة المؤشرات قريباً...</p>
-                {% endfor %}
             </div>
 
-            <!-- التحليلات ومقالات التداول -->
-            <div class="section-header">
-                <h2><i class="fas fa-chart-pie" style="color: #28a745;"></i> تحليلات الأسواق و SMC</h2>
-            </div>
-            <div class="articles-container">
-                {% for article in articles %}
-                <!-- رابط صفحة المقال، تأكد أنك ستنشئ مسار 'trading_article_details' لاحقاً إذا لم تقم بذلك -->
-                <a href="{{ url_for('trading_article_details', id=article.id, lang=current_lang) }}"
-                    class="article-list-item">
-                    <span
-                        style="font-size: 0.8rem; color: #28a745; font-weight: bold; margin-bottom: 5px; display: block;">{{
-                        article.created_at.strftime('%Y-%m-%d') }}</span>
-                    <h3>{{ article.display_title }}</h3>
-                    <p>{{ article.display_summary }}</p>
-                </a>
-                {% else %}
-                <p style="color: var(--gray-text);">لا توجد تحليلات منشورة حالياً.</p>
-                {% endfor %}
-            </div>
-        </main>
+            <!-- إعلانات البروكرات -->
+            {% for broker in brokers %}
+            <a href="{{ broker.url }}" target="_blank" class="widget-box" style="display: block; padding: 0;">
+                <img src="{{ broker.image_url }}" alt="{{ broker.name }}"
+                    style="width: 100%; display: block; border-radius: 12px;">
+            </a>
+            {% endfor %}
 
-        <!-- ================= العمود الجانبي (30%) ================= -->
-        <aside>
-            <!-- مساحة إعلانات البروكرات -->
-            {% if brokers %}
-            <div class="sidebar-widget" style="padding: 10px;">
-                <h4
-                    style="color: #fff; text-align: center; margin-bottom: 10px; font-size: 0.9rem; color: var(--gray-text);">
-                    رعاة موثوقون (Brokers)</h4>
-                {% for broker in brokers %}
-                <a href="{{ broker.url }}" target="_blank" class="ad-banner">
-                    <img src="{{ broker.image_url }}" alt="{{ broker.name }}">
-                </a>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <!-- ويدجت الأخبار المالية المباشرة من TradingView -->
-            <div class="sidebar-widget" style="height: 400px;">
-                <!-- TradingView Widget BEGIN -->
-                <div class="tradingview-widget-container">
+            <!-- ويدجت الأخبار المباشرة -->
+            <div class="widget-box" style="height: 500px;">
+                <div class="widget-header">آخر أخبار الأسواق</div>
+                <div class="tradingview-widget-container" style="height: calc(100% - 30px);">
                     <div class="tradingview-widget-container__widget"></div>
                     <script type="text/javascript"
                         src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
@@ -257,46 +218,66 @@
                                         "isTransparent": true,
                                             "displayMode": "regular",
                                                 "width": "100%",
-                                                    "height": 400,
-                                                        "locale": "{{ current_lang }}"
-                            }
-                        </script>
-                </div>
-            </div>
-
-            <!-- ويدجت أسعار العملات المصغر -->
-            <div class="sidebar-widget" style="height: 350px;">
-                <!-- TradingView Widget BEGIN -->
-                <div class="tradingview-widget-container">
-                    <div class="tradingview-widget-container__widget"></div>
-                    <script type="text/javascript"
-                        src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-                            {
-                                "colorTheme": "dark",
-                                    "dateRange": "12M",
-                                        "showChart": true,
-                                            "locale": "{{ current_lang }}",
-                                                "width": "100%",
                                                     "height": "100%",
-                                                        "largeChartUrl": "",
-                                                            "isTransparent": true,
-                                                                "showSymbolLogo": true,
-                                                                    "showFloatingTooltip": false,
-                                                                        "tabs": [
-                                                                            {
-                                                                                "title": "Forex",
-                                                                                "symbols": [
-                                                                                    { "s": "FX:EURUSD", "d": "EUR to USD" },
-                                                                                    { "s": "FX:GBPUSD", "d": "GBP to USD" },
-                                                                                    { "s": "OANDA:XAUUSD", "d": "Gold" }
-                                                                                ]
-                                                                            }
-                                                                        ]
+                                                        "locale": "ar"
                             }
                         </script>
                 </div>
             </div>
         </aside>
+
+        <!-- ================= العمود الأيسر (70%) - المتجر والمقالات ================= -->
+        <main class="main-left">
+
+            <!-- متجر المؤشرات والإكسبرتات -->
+            <div class="section-header">
+                <h2><i class="fas fa-robot" style="color: #fd7e14;"></i> MQL5 Store</h2>
+            </div>
+
+            <div class="mql-grid">
+                {% for prod in products %}
+                <div class="mql-card">
+                    {% if prod.icon %}
+                    <img src="{{ prod.icon }}" alt="icon"
+                        style="width: 60px; height: 60px; margin-bottom:15px; border-radius: 8px;">
+                    {% else %}
+                    <i class="fas fa-cogs"
+                        style="font-size: 3rem; color: #fd7e14; margin-bottom: 15px; display: block;"></i>
+                    {% endif %}
+                    <h3 style="color: #fff; font-size: 1.2rem; margin: 10px 0;">{{ prod.display_name }}</h3>
+                    <p style="color: #868993; font-size: 0.9rem; height: 45px; overflow: hidden;">{{ prod.display_desc
+                        }}</p>
+                    <div class="mql-price" style="color: #d4af37; font-size: 1.5rem; margin: 15px 0;">{{ prod.price }}
+                    </div>
+                    <a href="{{ url_for('mql_product_click', id=prod.id) }}" target="_blank" class="cta-button"
+                        style="width: 100%; background: transparent; color: #d4af37; border: 1px solid #d4af37;">استعراض
+                        / شراء</a>
+                </div>
+                {% else %}
+                <p style="color: #868993; text-align: center; width: 100%;">سيتم إضافة المؤشرات قريباً...</p>
+                {% endfor %}
+            </div>
+
+            <!-- التحليلات ومقالات التداول -->
+            <div class="section-header">
+                <h2><i class="fas fa-chart-pie" style="color: #28a745;"></i> تحليلات الأسواق و SMC</h2>
+            </div>
+
+            <div class="articles-container">
+                {% for article in articles %}
+                <a href="{{ url_for('trading_article_details', id=article.id) }}" class="article-list-item">
+                    <span
+                        style="font-size: 0.8rem; color: #28a745; font-weight: bold; display: block; margin-bottom: 5px;">
+                        {{ article.created_at.strftime('%Y-%m-%d') }}
+                    </span>
+                    <h3>{{ article.display_title }}</h3>
+                    <p style="color: #868993; margin: 0;">{{ article.display_summary }}</p>
+                </a>
+                {% else %}
+                <p style="color: #868993; text-align: center; width: 100%;">لا توجد تحليلات منشورة حالياً.</p>
+                {% endfor %}
+            </div>
+        </main>
 
     </div>
 </body>
