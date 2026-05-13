@@ -15,10 +15,53 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* تنسيقات زر بوابة التداول في القائمة */
+        .nav-trading-btn {
+            color: var(--primary-gold) !important;
+            font-weight: bold;
+            border: 1px solid var(--primary-gold);
+            padding: 5px 15px !important;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .nav-trading-btn:hover {
+            background: var(--primary-gold);
+            color: #000 !important;
+        }
+
+        /* تنسيق القسم التشويقي لمدونة التداول */
+        .trading-promo-banner {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(7, 8, 10, 0.6) 100%);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 50px auto;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.1);
+        }
+
+        .trading-promo-banner h3 {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .trading-promo-banner p {
+            color: #ccc;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+    </style>
 </head>
 
 <body class="details-page-modern">
 
+    <!-- Navbar المحدث -->
     <header class="navbar">
         <div class="logo">
             <h1><a href="{{ url_for('home', lang=current_lang) }}">Al-Mustafa</a></h1>
@@ -28,6 +71,11 @@
             <ul class="nav-links" id="nav-links">
                 <li><a href="{{ url_for('home', lang=current_lang) }}#home">{{ t.nav_home }}</a></li>
                 <li><a href="{{ url_for('home', lang=current_lang) }}#portfolio">{{ t.nav_portfolio }}</a></li>
+
+                <!-- زر بوابة التداول -->
+                <li><a href="/trading" class="nav-trading-btn"><i class="fas fa-chart-line"></i> {{ t.nav_trading }}</a>
+                </li>
+
                 <li><a href="{{ url_for('blog', lang=current_lang) }}"
                         style="color: var(--light-text); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">{{ t.nav_blog
                         }}</a></li>
@@ -42,14 +90,35 @@
     </header>
 
     <section class="portfolio" style="padding-top: 150px; min-height: 100vh;">
+
+        <!-- عنوان الصفحة -->
         <div class="section-title reveal-on-scroll">
             <h2>{{ 'Technical Articles' if current_lang == 'en' else 'المقالات التقنية' }}</h2>
             <div class="title-underline"></div>
-            <p style="color: var(--gray-text); margin-top: 20px; font-size: 1.1rem;">{{ 'Deep technical insights,
-                software solutions, and experiences.' if current_lang == 'en' else 'أفكار، حلول برمجية، وتجارب تقنية
-                عميقة.' }}</p>
+            <p style="color: var(--gray-text); margin-top: 20px; font-size: 1.1rem;">
+                {{ 'Deep technical insights, software solutions, and experiences.' if current_lang == 'en' else 'أفكار،
+                حلول برمجية، وتجارب تقنية عميقة.' }}
+            </p>
         </div>
 
+        <!-- البانر التشويقي لمدونة التداول (CTA) -->
+        <div class="trading-promo-banner reveal-on-scroll">
+            <i class="fas fa-chart-candlestick" style="font-size: 3rem; color: #28a745; margin-bottom: 15px;"></i>
+            <h3>{{ 'Discover Financial Markets & SMC Analytics' if current_lang == 'en' else 'مهتم بالأسواق المالية
+                والتداول الآلي؟' }}</h3>
+            <p>
+                {{ 'In addition to programming articles, we offer an exclusive portal for MT5 automated systems and
+                daily market analysis.' if current_lang == 'en' else 'بالإضافة للمقالات البرمجية، قمنا بتخصيص بوابة
+                مستقلة لاستراتيجيات التداول الذكية (SMC) ومؤشرات MQL5 والتحليلات اليومية للأسواق.' }}
+            </p>
+            <a href="/trading" class="cta-button"
+                style="background: rgba(40, 167, 69, 0.2); border-color: #28a745; color: #28a745; padding: 12px 30px;">
+                <i class="fas fa-external-link-alt"></i> {{ 'Enter Trading Portal' if current_lang == 'en' else 'زيارة
+                بوابة التداول المالية' }}
+            </a>
+        </div>
+
+        <!-- شبكة المقالات التقنية -->
         <div class="projects-grid">
             {% for article in articles %}
             <a href="{{ url_for('article_details', id=article.id, lang=current_lang) }}"
@@ -74,9 +143,10 @@
                 </div>
             </a>
             {% else %}
-            <p style="text-align: center; width: 100%; color: var(--gray-text); font-size: 1.2rem;">{{ 'Technical
-                articles will be published soon... Stay tuned!' if current_lang == 'en' else 'سيتم نشر مقالات تقنية
-                قريباً... ابقَ على اطلاع!' }}</p>
+            <p style="text-align: center; width: 100%; color: var(--gray-text); font-size: 1.2rem;">
+                {{ 'Technical articles will be published soon... Stay tuned!' if current_lang == 'en' else 'سيتم نشر
+                مقالات تقنية قريباً... ابقَ على اطلاع!' }}
+            </p>
             {% endfor %}
         </div>
     </section>
