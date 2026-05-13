@@ -144,13 +144,12 @@
             <h1>لوحة الإدارة المركزية {% if unread > 0 %}<span class="notification-badge">{{ unread }} رسالة</span>{%
                 endif %}</h1>
             <div>
-                <!-- تصحيح مسارات الأزرار هنا -->
-                <a href="{{ url_for('home') }}" class="back-btn" style="margin-left: 10px;"><i class="fas fa-home"></i>
-                    الرئيسية</a>
-                <a href="{{ url_for('trading_portal') }}" class="back-btn"
+                <!-- الحل السحري: استخدام الروابط المباشرة لتجاوز مشكلة url_for -->
+                <a href="/" class="back-btn" style="margin-left: 10px;"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="/trading" class="back-btn"
                     style="background: rgba(23, 162, 184, 0.2); border-color: #17a2b8; color: #17a2b8; margin-left: 10px;"><i
                         class="fas fa-chart-line"></i> بوابة التداول</a>
-                <a href="{{ url_for('logout') }}" style="color: #ff4a4a; font-weight: bold; text-decoration: none;"><i
+                <a href="/logout" style="color: #ff4a4a; font-weight: bold; text-decoration: none;"><i
                         class="fas fa-sign-out-alt"></i> خروج</a>
             </div>
         </div>
@@ -505,4 +504,12 @@
     </script>
 </body>
 
-</html>
+</html> تمام اشتغلت الادمن
+الان صفحه التداول غير مضبطه حيث ان القسم الخاصه ب mql ماخذ مساحه كامله
+وكذالك الاخبار لا تضهر فيها اي شي والاسعار كذالك
+والصفحه كامله فيها مشكله كانها في الموبيل وليست لسطح المكتب .
+اريد ان تكون صفحه التداول مقسمه كالتالي : عند الدخول صفحه التداول يكون فيها قسمين من اليمين 30٪ للاسعار والبروكرات
+والاخبار المباشره الخاص ب التردينق فديو
+اما في اليسار وتكون نسبه 70٪ تكون للمتجر ويكون متناسق مع الصفحه لا ياخذ الصفحه كامل اما في الاسفل المتجر فتكون مقالات
+التداول والتحليلات
+وكذالك شريط الاسعار لا يضهر في الاعلا حاول حل هذه المشكله
