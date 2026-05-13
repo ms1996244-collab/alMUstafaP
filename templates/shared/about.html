@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ t.dir }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ t.nav_about }} | Al-Mustafa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .about-container {
+            max-width: 1000px;
+            margin: 150px auto 100px;
+            padding: 0 5%;
+            text-align: center;
+        }
+
+        .about-icon {
+            font-size: 5rem;
+            color: var(--primary-gold);
+            margin-bottom: 30px;
+        }
+
+        .about-text {
+            font-size: 1.2rem;
+            color: var(--gray-text);
+            line-height: 2;
+            text-align: justify;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 40px;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="navbar" style="background: rgba(7, 8, 10, 0.95);">
+        <div class="logo">
+            <h1><a href="/">Al-Mustafa Portal</a></h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/tech"><i class="fas fa-laptop-code"></i> بوابة التقنية</a></li>
+                <li><a href="/trading"><i class="fas fa-chart-line"></i> بوابة التداول</a></li>
+                <li><a href="/contact-us">{{ t.nav_contact }}</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="about-container">
+        <i class="fas fa-user-tie about-icon"></i>
+        <h1 class="project-title-huge">{{ t.about_title }}</h1>
+        <div class="about-text">
+            {{ t.about_text|safe }}
+            <br><br>
+            <p>نحن نجمع بين الدقة الهندسية في بناء تطبيقات الموبايل باستخدام Flutter، وبين الذكاء المالي في تطوير أنظمة
+                التداول الآلي (SMC & MQL5)، لنقدم لعملائنا أصولاً رقمية متكاملة تتفوق في السوق.</p>
+        </div>
+    </div>
+</body>
+
+</html>
