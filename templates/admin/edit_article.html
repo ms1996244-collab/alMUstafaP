@@ -36,12 +36,12 @@
             <h1 style="color: #17a2b8;"><i class="fas fa-edit"></i> تحديث المقال التقني</h1>
         </div>
 
-        <a href="{{ url_for('admin') }}" class="back-btn" style="margin-bottom: 30px; display: inline-block;">
+        <a href="{{ url_for('admin.dashboard') }}" class="back-btn" style="margin-bottom: 30px; display: inline-block;">
             <i class="fas fa-arrow-right"></i> العودة للوحة التحكم
         </a>
 
         <div class="admin-card" style="border-color: #17a2b8;">
-            <form action="{{ url_for('edit_article', id=article.id) }}" method="POST" class="admin-form">
+            <form action="{{ url_for('admin.edit_article', id=article.id) }}" method="POST" class="admin-form">
 
                 <label style="color: var(--gray-text); margin-bottom: 10px; display: block;">عنوان المقال:</label>
                 <input type="text" name="title" value="{{ article.title }}" required style="margin-bottom: 20px;">
@@ -58,7 +58,6 @@
                 <label style="color: var(--gray-text); margin-bottom: 10px; display: block;">رابط صورة المقال:</label>
                 <input type="text" name="image" value="{{ article.image }}" style="margin-bottom: 20px;">
 
-                <!-- حقول الجدولة وحالة النشر -->
                 <label style="color: #17a2b8; margin-bottom: 10px; display: block; font-weight: bold;"><i
                         class="fas fa-clock"></i> حالة النشر:</label>
                 <select name="status" class="status-select" onchange="toggleDate(this)" style="border-color: #17a2b8;">
