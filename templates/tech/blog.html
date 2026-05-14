@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ t.nav_tech.blog }} | Al-Mustafa Programming</title>
-    <meta name="description" content="{{ t.meta_desc_tech.blog }}">
+    <title>{{ t.nav_blog }} | Al-Mustafa Programming</title>
+    <meta name="description" content="{{ t.meta_desc_blog }}">
     <meta name="keywords" content="مدونة تقنية, برمجة تطبيقات, شرح Flutter, استراتيجيات تداول ذكية, مقالات برمجية">
     <link rel="canonical" href="{{ request.base_url }}">
     <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
@@ -69,7 +69,7 @@
         <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
-                <li><a href="{{ url_for('tech.home', lang=current_lang) }}#tech.home">{{ t.nav_tech.home }}</a></li>
+                <li><a href="{{ url_for('tech.home', lang=current_lang) }}#tech.home">{{ t.nav_home }}</a></li>
                 <li><a href="{{ url_for('tech.home', lang=current_lang) }}#portfolio">{{ t.nav_portfolio }}</a></li>
 
                 <!-- زر بوابة التداول -->
@@ -78,9 +78,9 @@
 
                 <li><a href="{{ url_for('tech.blog', lang=current_lang) }}"
                         style="color: var(--light-text); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">{{
-                        t.nav_tech.blog
+                        t.nav_blog
                         }}</a></li>
-                <li><a href="{{ url_for('tech.home', lang=current_lang) }}/tech.contact-us">{{ t.nav_tech.contact }}</a>
+                <li><a href="{{ url_for('tech.home', lang=current_lang) }}/tech.contact-us">{{ t.nav_contact }}</a>
                 </li>
 
                 {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}

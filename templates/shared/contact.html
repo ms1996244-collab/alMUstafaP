@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ t.nav_tech.contact }} | Al-Mustafa</title>
+    <title>{{ t.nav_contact }} | Al-Mustafa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -26,22 +26,22 @@
 
     <section class="tech.contact-section" style="margin-top: 100px; background: transparent;">
         <div class="section-title">
-            <h2>{{ t.tech.contact_title }}</h2>
+            <h2>{{ t.contact_title }}</h2>
             <div class="title-underline"></div>
             <p style="color: var(--gray-text); margin-top: 15px;">سواء كنت تبحث عن تطبيق برمجي أو نظام تداول، نحن هنا
                 للاستماع.</p>
         </div>
         <form action="{{ url_for('tech.tech.contact') }}" method="POST" class="tech.contact-form"
             style="background: rgba(255,255,255,0.02); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border);">
-            <input type="text" name="name" placeholder="{{ t.tech.contact_name }}" required>
-            <input type="email" name="email" placeholder="{{ t.tech.contact_email }}" required>
+            <input type="text" name="name" placeholder="{{ t.contact_name }}" required>
+            <input type="email" name="email" placeholder="{{ t.contact_email }}" required>
             <div class="phone-input-container" dir="ltr">
                 <input type="tel" id="phone" name="phone" required
                     style="text-align: left; background: rgba(0, 0, 0, 0.3); color: #fff; width: 100%;">
             </div>
-            <textarea name="content" rows="5" placeholder="{{ t.tech.contact_msg }}" required
+            <textarea name="content" rows="5" placeholder="{{ t.contact_msg }}" required
                 style="margin-top: 15px;"></textarea>
-            <button type="submit" class="cta-button" style="width: 100%;">{{ t.tech.contact_btn }}</button>
+            <button type="submit" class="cta-button" style="width: 100%;">{{ t.contact_btn }}</button>
         </form>
     </section>
 
