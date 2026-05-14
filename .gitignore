@@ -1,5 +1,13 @@
+# Environments
 venv/
+
+# Python Cache
 __pycache__/
+
+# Databases
 instance/
+*.db
 portfolio.db
+
+# Mac OS Files
 .DS_Store
