@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import text, func
 from functools import wraps
 
+# التسمية الصحيحة للـ Blueprint
 admin_bp = Blueprint('admin', __name__)
 
 # ================= بيانات الدخول والحماية =================
@@ -34,7 +35,6 @@ def dashboard():
         else:
             publish_at = datetime.utcnow() + timedelta(hours=3)
 
-        # 1. قسم التكنولوجيا
         if form_type == 'project':
             title_ar = request.form['title']
             desc_ar = request.form['description']
@@ -61,7 +61,6 @@ def dashboard():
             )
             db.session.add(new_article)
             
-        # 2. قسم التداول
         elif form_type == 'trading_article':
             title_ar = request.form['title']
             sum_ar = request.form['summary']
@@ -96,18 +95,15 @@ def dashboard():
         db.session.commit()
         return redirect(url_for('admin.dashboard'))
     
-    # جلب البيانات لعرضها في لوحة التحكم
     projects = Project.query.order_by(Project.id.desc()).all()
     articles = Article.query.order_by(Article.id.desc()).all()
     trading_articles = TradingArticle.query.order_by(TradingArticle.id.desc()).all()
     mql_products = MqlProduct.query.order_by(MqlProduct.id.desc()).all()
     broker_ads = BrokerAd.query.order_by(BrokerAd.display_order.asc()).all()
-    
     messages = Message.query.order_by(Message.id.desc()).all()
     leads = Lead.query.order_by(Lead.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count() + Lead.query.filter_by(is_read=False).count()
     
-    # الإحصائيات
     today_iraq = (datetime.utcnow() + timedelta(hours=3)).date()
     yesterday_iraq = today_iraq - timedelta(days=1)
     today_visitors = SiteVisitor.query.filter_by(visit_date=today_iraq).count()
@@ -117,10 +113,8 @@ def dashboard():
     country_stats = db.session.query(SiteVisitor.country, func.count(SiteVisitor.id)).group_by(SiteVisitor.country).order_by(func.count(SiteVisitor.id).desc()).all()
     monthly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.extract('month', SiteVisitor.visit_date).label('month'), func.count(SiteVisitor.id)).group_by('year', 'month').order_by(text('year DESC, month DESC')).all()
     yearly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.count(SiteVisitor.id)).group_by('year').order_by(text('year DESC')).all()
-    
     now_iraq = datetime.utcnow() + timedelta(hours=3)
     
-    # تم تصحيح مسار القالب هنا
     return render_template('admin/admin.html', 
                            projects=projects, articles=articles, 
                            trading_articles=trading_articles, mql_products=mql_products, broker_ads=broker_ads,
@@ -134,7 +128,6 @@ def login():
     if 'login_attempts' not in session: session['login_attempts'] = 0
     if session['login_attempts'] >= 5:
         flash("تم حظر محاولات الدخول مؤقتاً لأسباب أمنية.")
-        # تم تصحيح مسار القالب هنا
         return render_template('shared/login.html')
     if request.method == 'POST':
         if request.form['username'] == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, request.form['password']):
@@ -143,16 +136,14 @@ def login():
             return redirect(url_for('admin.dashboard'))
         session['login_attempts'] += 1
         flash("بيانات الدخول غير صحيحة")
-    # تم تصحيح مسار القالب هنا
     return render_template('shared/login.html')
 
 @admin_bp.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    # تم تصحيح المسار هنا (tech.home بدلاً من tech.tech.home)
     return redirect(url_for('tech.home'))
 
-# ================= عمليات التعديل (Edit) المفقودة =================
+# ================= عمليات التعديل (Edit) =================
 @admin_bp.route('/edit_project/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_project(id):
