@@ -134,7 +134,6 @@
 
 <body>
 
-    <!-- 1. شريط الأسعار العلوي (Ticker Tape) الثابت والمستقل -->
     <div class="ticker-wrapper">
         <div class="tradingview-widget-container">
             <div class="tradingview-widget-container__widget"></div>
@@ -158,7 +157,6 @@
         </div>
     </div>
 
-    <!-- النافبار -->
     <header class="navbar"
         style="position: sticky; background: rgba(7, 8, 10, 0.95); padding: 15px 5%; z-index: 999; border-bottom: 1px solid #2a2e39;">
         <div class="logo">
@@ -173,13 +171,10 @@
         </nav>
     </header>
 
-    <!-- الهيكل الرئيسي بنسبة 30/65 -->
     <div class="portal-layout">
 
-        <!-- ================= العمود الأيمن (30%) - الأسعار والأخبار والبروكرات ================= -->
         <aside class="sidebar-right">
 
-            <!-- ويدجت الأسعار الحية -->
             <div class="widget-box" style="height: 450px;">
                 <div class="widget-header">أسعار العملات والذهب الحية</div>
                 <div class="tradingview-widget-container" style="height: calc(100% - 40px);">
@@ -211,7 +206,6 @@
                 </div>
             </div>
 
-            <!-- إعلانات البروكرات الموثوقة -->
             {% if brokers %}
             <div class="widget-box">
                 <div class="widget-header">شركاء التداول (Brokers)</div>
@@ -225,7 +219,6 @@
             </div>
             {% endif %}
 
-            <!-- ويدجت الأخبار المباشرة (تم إصلاحه) -->
             <div class="widget-box" style="height: 500px;">
                 <div class="widget-header">آخر أخبار الأسواق المالية</div>
                 <div class="tradingview-widget-container" style="height: calc(100% - 40px);">
@@ -247,10 +240,8 @@
             </div>
         </aside>
 
-        <!-- ================= العمود الأيسر (65%) - المتجر والمقالات ================= -->
         <main class="main-left">
 
-            <!-- متجر المؤشرات والإكسبرتات -->
             <div class="section-header"
                 style="margin-bottom: 30px; border-bottom: 1px solid #2a2e39; padding-bottom: 15px;">
                 <h2 style="font-size: 2rem; color: #fff;"><i class="fas fa-robot" style="color: #fd7e14;"></i> MQL5
@@ -285,7 +276,6 @@
                 {% endfor %}
             </div>
 
-            <!-- التحليلات ومقالات التداول -->
             <div class="section-header"
                 style="margin-bottom: 30px; border-bottom: 1px solid #2a2e39; padding-bottom: 15px;">
                 <h2 style="font-size: 2rem; color: #fff;"><i class="fas fa-chart-pie" style="color: #28a745;"></i>
@@ -295,8 +285,7 @@
 
             <div class="articles-container">
                 {% for article in articles %}
-                <a href="{{ url_for('trading.trading_tech.article_details', id=article.id) }}"
-                    class="article-list-item">
+                <a href="{{ url_for('trading.trading_article_details', id=article.id) }}" class="article-list-item">
                     <span
                         style="font-size: 0.85rem; color: #28a745; font-weight: bold; display: block; margin-bottom: 8px;">
                         <i class="far fa-calendar-alt"></i> {{ article.created_at.strftime('%Y-%m-%d') }} | <i
