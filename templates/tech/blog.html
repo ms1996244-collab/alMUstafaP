@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ t.nav_blog }} | Al-Mustafa Programming</title>
-    <meta name="description" content="{{ t.meta_desc_blog }}">
+    <title>{{ t.nav_tech.blog }} | Al-Mustafa Programming</title>
+    <meta name="description" content="{{ t.meta_desc_tech.blog }}">
     <meta name="keywords" content="مدونة تقنية, برمجة تطبيقات, شرح Flutter, استراتيجيات تداول ذكية, مقالات برمجية">
     <link rel="canonical" href="{{ request.base_url }}">
     <link rel="alternate" hreflang="ar" href="{{ request.base_url }}" />
@@ -64,25 +64,27 @@
     <!-- Navbar المحدث -->
     <header class="navbar">
         <div class="logo">
-            <h1><a href="{{ url_for('home', lang=current_lang) }}">Al-Mustafa</a></h1>
+            <h1><a href="{{ url_for('tech.home', lang=current_lang) }}">Al-Mustafa</a></h1>
         </div>
         <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
-                <li><a href="{{ url_for('home', lang=current_lang) }}#home">{{ t.nav_home }}</a></li>
-                <li><a href="{{ url_for('home', lang=current_lang) }}#portfolio">{{ t.nav_portfolio }}</a></li>
+                <li><a href="{{ url_for('tech.home', lang=current_lang) }}#tech.home">{{ t.nav_tech.home }}</a></li>
+                <li><a href="{{ url_for('tech.home', lang=current_lang) }}#portfolio">{{ t.nav_portfolio }}</a></li>
 
                 <!-- زر بوابة التداول -->
                 <li><a href="/trading" class="nav-trading-btn"><i class="fas fa-chart-line"></i> {{ t.nav_trading }}</a>
                 </li>
 
-                <li><a href="{{ url_for('blog', lang=current_lang) }}"
-                        style="color: var(--light-text); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">{{ t.nav_blog
+                <li><a href="{{ url_for('tech.blog', lang=current_lang) }}"
+                        style="color: var(--light-text); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">{{
+                        t.nav_tech.blog
                         }}</a></li>
-                <li><a href="{{ url_for('home', lang=current_lang) }}/contact-us">{{ t.nav_contact }}</a></li>
+                <li><a href="{{ url_for('tech.home', lang=current_lang) }}/tech.contact-us">{{ t.nav_tech.contact }}</a>
+                </li>
 
                 {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
-                <li><a href="{{ url_for('blog', lang=switch_lang) }}" class="lang-btn"
+                <li><a href="{{ url_for('tech.blog', lang=switch_lang) }}" class="lang-btn"
                         style="background: rgba(212, 175, 55, 0.1); padding: 5px 15px; border-radius: 20px; border: 1px solid var(--primary-gold);"><i
                             class="fas fa-globe"></i> {{ t.lang_switch }}</a></li>
             </ul>
@@ -121,7 +123,7 @@
         <!-- شبكة المقالات التقنية -->
         <div class="projects-grid">
             {% for article in articles %}
-            <a href="{{ url_for('article_details', id=article.id, lang=current_lang) }}"
+            <a href="{{ url_for('tech.article_details', id=article.id, lang=current_lang) }}"
                 class="project-card-link reveal-on-scroll">
                 <div class="project-card" style="border-color: rgba(23, 162, 184, 0.2);">
                     <div class="project-image" style="height: 200px;">

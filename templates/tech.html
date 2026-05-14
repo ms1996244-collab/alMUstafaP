@@ -7,7 +7,7 @@
     <meta name="google-site-verification" content="dyA9LEGYcrA2S66IPog3ngx4Rh_UGNiIUBqilzJ7QSI" />
 
     <title>Al-Mustafa Programming | {{ t.hero_subtitle }}</title>
-    <meta name="description" content="{{ t.meta_desc_home }}">
+    <meta name="description" content="{{ t.meta_desc_tech.home }}">
     <meta name="keywords"
         content="مبرمج فلاتر, تطوير تطبيقات الموبايل, Clean Architecture, MQL5, SMC, تصميم تطبيقات فاخرة, Mustafa Ali, Flutter Developer">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
@@ -283,7 +283,7 @@
         /* =========================================
            تنسيق قسم المدونة التقنية (CTA)
            ========================================= */
-        .blog-cta-box {
+        .tech.blog-cta-box {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
             border: 1px solid var(--primary-gold);
             border-radius: 24px;
@@ -301,29 +301,29 @@
 
     <header class="navbar">
         <div class="logo">
-            <h1><a href="{{ url_for('home', lang=current_lang) }}">Al-Mustafa</a></h1>
+            <h1><a href="{{ url_for('tech.home', lang=current_lang) }}">Al-Mustafa</a></h1>
         </div>
         <div class="menu-btn" id="menu-btn"><i class="fas fa-bars"></i></div>
         <nav>
             <ul class="nav-links" id="nav-links">
-                <li><a href="#home">{{ t.nav_home }}</a></li>
+                <li><a href="#tech.home">{{ t.nav_tech.home }}</a></li>
                 <li><a href="#portfolio">{{ t.nav_portfolio }}</a></li>
                 <li><a href="/trading" class="nav-trading-btn"><i class="fas fa-chart-line"></i> {{ t.nav_trading }}</a>
                 </li>
-                <li><a href="#blog">{{ t.nav_blog }}</a></li>
+                <li><a href="#tech.blog">{{ t.nav_tech.blog }}</a></li>
                 <li><a href="#calculator">{{ t.nav_calc }}</a></li>
                 <li><a href="/about">{{ t.nav_about }}</a></li>
-                <li><a href="/contact-us">{{ t.nav_contact }}</a></li>
+                <li><a href="/tech.contact-us">{{ t.nav_tech.contact }}</a></li>
 
                 {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
-                {% if request.endpoint == 'project_details' %}
-                {% set switch_url = url_for('project_details', id=project.id, lang=switch_lang) %}
-                {% elif request.endpoint == 'article_details' %}
-                {% set switch_url = url_for('article_details', id=article.id, lang=switch_lang) %}
-                {% elif request.endpoint == 'blog' %}
-                {% set switch_url = url_for('blog', lang=switch_lang) %}
+                {% if request.endpoint == 'tech.project_details' %}
+                {% set switch_url = url_for('tech.project_details', id=project.id, lang=switch_lang) %}
+                {% elif request.endpoint == 'tech.article_details' %}
+                {% set switch_url = url_for('tech.article_details', id=article.id, lang=switch_lang) %}
+                {% elif request.endpoint == 'tech.blog' %}
+                {% set switch_url = url_for('tech.blog', lang=switch_lang) %}
                 {% else %}
-                {% set switch_url = url_for('home', lang=switch_lang) %}
+                {% set switch_url = url_for('tech.home', lang=switch_lang) %}
                 {% endif %}
                 <li><a href="{{ switch_url }}" class="lang-btn"><i class="fas fa-globe"></i> {{ t.lang_switch }}</a>
                 </li>
@@ -331,7 +331,7 @@
         </nav>
     </header>
 
-    <section id="home" class="hero reveal-on-scroll">
+    <section id="tech.home" class="hero reveal-on-scroll">
         <div class="hero-content">
             <h2 class="hero-title" style="background-clip: text; -webkit-background-clip: text;">{{ t.hero_title }}</h2>
             <p class="hero-subtitle">{{ t.hero_subtitle }}</p>
@@ -349,7 +349,7 @@
         <div class="horizontal-slider-container reveal-on-scroll">
             <div class="horizontal-slider">
                 {% for project in projects %}
-                <a href="{{ url_for('project_details', id=project.id, lang=current_lang) }}"
+                <a href="{{ url_for('tech.project_details', id=project.id, lang=current_lang) }}"
                     style="text-decoration: none;">
                     <div class="slider-card">
                         <div class="slider-image">
@@ -385,19 +385,19 @@
         </div>
     </section>
 
-    <section id="blog" class="portfolio reveal-on-scroll" style="padding: 60px 5%;">
+    <section id="tech.blog" class="portfolio reveal-on-scroll" style="padding: 60px 5%;">
         <div class="section-title">
-            <h2>{{ t.nav_blog }}</h2>
+            <h2>{{ t.nav_tech.blog }}</h2>
             <div class="title-underline"></div>
         </div>
-        <div class="blog-cta-box">
+        <div class="tech.blog-cta-box">
             <i class="fas fa-laptop-code" style="font-size: 4rem; color: var(--primary-gold); margin-bottom: 20px;"></i>
             <h3 style="color: #fff; font-size: 2rem; margin-bottom: 20px;">خلاصة الخبرة البرمجية والهندسية</h3>
             <p style="color: #ccc; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
                 اكتشف مقالات تقنية متخصصة وشروحات عميقة في Clean Architecture، بناء تطبيقات Flutter الفاخرة، وبرمجة
                 استراتيجيات التداول الذكية (SMC).
             </p>
-            <a href="{{ url_for('blog', lang=current_lang) }}" class="cta-button"
+            <a href="{{ url_for('tech.blog', lang=current_lang) }}" class="cta-button"
                 style="padding: 15px 40px; font-size: 1.1rem;"><i class="fas fa-book-reader"></i> تصفح المدونة
                 التقنية</a>
         </div>
@@ -431,7 +431,7 @@
                 <div class="price-result">$<span id="finalPrice">0</span></div>
 
                 <div style="margin-top: 30px;">
-                    <input type="text" id="leadContact" placeholder="{{ t.calc_input }}" class="calc-select"
+                    <input type="text" id="leadtech.contact" placeholder="{{ t.calc_input }}" class="calc-select"
                         style="max-width: 400px; display: inline-block; margin-left: 10px;">
                     <button onclick="submitLead()" class="cta-button">{{ t.calc_btn }}</button>
                 </div>
@@ -473,7 +473,7 @@
         </div>
     </section>
 
-    <section class="contact-section reveal-on-scroll" style="padding: 80px 5%;">
+    <section class="tech.contact-section reveal-on-scroll" style="padding: 80px 5%;">
         <div class="section-title">
             <h2>{{ t.faq_title }}</h2>
             <div class="title-underline"></div>
@@ -494,21 +494,21 @@
         </div>
     </section>
 
-    <section id="contact" class="contact-section reveal-on-scroll">
+    <section id="tech.contact" class="tech.contact-section reveal-on-scroll">
         <div class="section-title">
-            <h2>{{ t.contact_title }}</h2>
+            <h2>{{ t.tech.contact_title }}</h2>
             <div class="title-underline"></div>
         </div>
-        <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
-            <input type="text" name="name" placeholder="{{ t.contact_name }}" required>
-            <input type="email" name="email" placeholder="{{ t.contact_email }}" required>
+        <form action="{{ url_for('tech.contact') }}" method="POST" class="tech.contact-form">
+            <input type="text" name="name" placeholder="{{ t.tech.contact_name }}" required>
+            <input type="email" name="email" placeholder="{{ t.tech.contact_email }}" required>
             <div class="phone-input-container" dir="ltr">
                 <input type="tel" id="phone" name="phone" required
                     style="text-align: left; background: rgba(255, 255, 255, 0.05); color: #fff;">
             </div>
-            <textarea name="content" rows="5" placeholder="{{ t.contact_msg }}" required
+            <textarea name="content" rows="5" placeholder="{{ t.tech.contact_msg }}" required
                 style="margin-top: 15px;"></textarea>
-            <button type="submit" class="cta-button">{{ t.contact_btn }}</button>
+            <button type="submit" class="cta-button">{{ t.tech.contact_btn }}</button>
         </form>
     </section>
 
@@ -546,13 +546,13 @@
         }
 
         function submitLead() {
-            let contact = document.getElementById('leadContact').value;
+            let tech.contact = document.getElementById('leadtech.contact').value;
             let type = document.getElementById('appType').options[document.getElementById('appType').selectedIndex].text;
             let price = document.getElementById('finalPrice').innerText;
-            if (contact.length < 5) { alert("Please enter valid contact info / الرجاء إدخال بيانات تواصل صحيحة"); return; }
+            if (tech.contact.length < 5) { alert("Please enter valid tech.contact info / الرجاء إدخال بيانات تواصل صحيحة"); return; }
 
             let formData = new FormData();
-            formData.append('contact_info', contact);
+            formData.append('tech.contact_info', tech.contact);
             formData.append('app_type', type);
             formData.append('estimated_price', price);
 
@@ -561,7 +561,7 @@
                 .then(data => {
                     if (data.status === 'success') {
                         document.getElementById('leadSuccess').style.display = 'block';
-                        document.getElementById('leadContact').value = '';
+                        document.getElementById('leadtech.contact').value = '';
                     }
                 });
         }

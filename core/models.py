@@ -97,7 +97,7 @@ class Message(db.Model):
 
 class Lead(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    contact_info = db.Column(db.String(150), nullable=False)
+    contact_info = db.Column(db.String(150), nullable=False) # تم التصحيح هنا
     app_type = db.Column(db.String(100), nullable=False)
     estimated_price = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

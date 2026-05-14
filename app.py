@@ -9,10 +9,10 @@ from routes.admin_routes import admin_bp
 TRANSLATIONS = {
     'ar': {
         'dir': 'rtl', 'lang_switch': 'EN', 'lang_code': 'en',
-        'meta_desc_home': 'تبحث عن مبرمج فلاتر محترف؟ مصطفى علي، مهندس برمجيات متخصص في بناء تطبيقات الموبايل الفاخرة وأنظمة التداول الآلي (SMC).',
-        'meta_desc_blog': 'مدونة تقنية متخصصة في هندسة البرمجيات، تطوير تطبيقات Flutter، وبرمجة استراتيجيات التداول الذكية.',
-        'nav_home': 'الرئيسية', 'nav_about': 'عنا', 'nav_calc': 'حاسبة التكلفة',
-        'nav_portfolio': 'سجل الإنجازات', 'nav_blog': 'المدونة', 'nav_contact': 'تواصل معي',
+        'meta_desc_tech.home': 'تبحث عن مبرمج فلاتر محترف؟ مصطفى علي، مهندس برمجيات متخصص في بناء تطبيقات الموبايل الفاخرة وأنظمة التداول الآلي (SMC).',
+        'meta_desc_tech.blog': 'مدونة تقنية متخصصة في هندسة البرمجيات، تطوير تطبيقات Flutter، وبرمجة استراتيجيات التداول الذكية.',
+        'nav_tech.home': 'الرئيسية', 'nav_about': 'عنا', 'nav_calc': 'حاسبة التكلفة',
+        'nav_portfolio': 'سجل الإنجازات', 'nav_tech.blog': 'المدونة', 'nav_tech.contact': 'تواصل معي',
         'nav_trading': 'بوابة التداول',
         'hero_title': 'تجارب رقمية فاخرة', 'hero_subtitle': 'هندسة برمجية متكاملة بمعايير عالمية',
         'hero_cta': 'احسب تكلفة تطبيقك الآن', 'calc_title': 'حاسبة تكلفة التطبيقات الذكية',
@@ -33,16 +33,16 @@ TRANSLATIONS = {
         'faq_2_a': 'نعتمد على إطار عمل Flutter و Python للواجهة الخلفية.',
         'faq_3_q': 'هل هناك دعم فني بعد التسليم؟',
         'faq_3_a': 'نقدم فترة دعم فني مجانية بعد التسليم.',
-        'contact_title': 'تواصل معي المباشر', 'contact_name': 'الاسم الكريم',
-        'contact_email': 'البريد الإلكتروني', 'contact_msg': 'كيف يمكنني مساعدتك؟',
-        'contact_btn': 'إرسال الرسالة', 'footer': '© 2026 Al-Mustafa Programming. All rights reserved.'
+        'tech.contact_title': 'تواصل معي المباشر', 'tech.contact_name': 'الاسم الكريم',
+        'tech.contact_email': 'البريد الإلكتروني', 'tech.contact_msg': 'كيف يمكنني مساعدتك؟',
+        'tech.contact_btn': 'إرسال الرسالة', 'footer': '© 2026 Al-Mustafa Programming. All rights reserved.'
     },
     'en': {
         'dir': 'ltr', 'lang_switch': 'العربية', 'lang_code': 'ar',
-        'meta_desc_home': 'Looking for an expert Flutter developer? Mustafa Ali specializes in luxury mobile apps and SMC.',
-        'meta_desc_blog': 'A tech blog dedicated to software engineering and smart trading strategies.',
-        'nav_home': 'Home', 'nav_about': 'About Us', 'nav_calc': 'Cost Calculator',
-        'nav_portfolio': 'Portfolio', 'nav_blog': 'Blog', 'nav_contact': 'Contact Me',
+        'meta_desc_tech.home': 'Looking for an expert Flutter developer? Mustafa Ali specializes in luxury mobile apps and SMC.',
+        'meta_desc_tech.blog': 'A tech tech.blog dedicated to software engineering and smart trading strategies.',
+        'nav_tech.home': 'tech.home', 'nav_about': 'About Us', 'nav_calc': 'Cost Calculator',
+        'nav_portfolio': 'Portfolio', 'nav_tech.blog': 'tech.blog', 'nav_tech.contact': 'tech.contact Me',
         'nav_trading': 'Trading Portal',
         'hero_title': 'Luxury Digital Experiences', 'hero_subtitle': 'World-class software engineering',
         'hero_cta': 'Calculate Your App Cost Now', 'calc_title': 'Smart App Cost Calculator',
@@ -53,16 +53,16 @@ TRANSLATIONS = {
         'calc_design_1': 'Standard', 'calc_design_2': 'Luxury UI/UX',
         'calc_design_3': 'Extra Pages...', 'calc_est': 'The estimated cost starts from:',
         'calc_input': 'Email or phone for the offer', 'calc_btn': 'Request Quote',
-        'calc_success': 'Request received! We will contact you.',
+        'calc_success': 'Request received! We will tech.contact you.',
         'about_title': 'Why Al-Mustafa?',
         'about_text': 'We build digital assets using Flutter and Clean Architecture.',
         'partners_title': 'Partners', 'faq_title': 'FAQ',
         'faq_1_q': 'App store deployment?', 'faq_1_a': 'Yes, we handle App Store & Play Store publishing.',
         'faq_2_q': 'Technologies used?', 'faq_2_a': 'Flutter for cross-platform apps and Python/Flask for backend.',
         'faq_3_q': 'Technical support?', 'faq_3_a': 'We offer post-delivery support.',
-        'contact_title': 'Contact Me', 'contact_name': 'Name',
-        'contact_email': 'Email', 'contact_msg': 'Message',
-        'contact_btn': 'Send', 'footer': '© 2026 Al-Mustafa Programming.'
+        'tech.contact_title': 'tech.contact Me', 'tech.contact_name': 'Name',
+        'tech.contact_email': 'Email', 'tech.contact_msg': 'Message',
+        'tech.contact_btn': 'Send', 'footer': '© 2026 Al-Mustafa Programming.'
     }
 }
 

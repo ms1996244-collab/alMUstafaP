@@ -273,12 +273,12 @@ a {
 }
 
 /* --- 5. نماذج الإدخال (Forms) و صفحة الدخول --- */
-.contact-section {
+.tech.contact-section {
     padding: 100px 8%;
     background: rgba(5, 4, 4, 0.8);
 }
 
-.contact-form {
+.tech.contact-form {
     max-width: 600px;
     margin: 0 auto;
     display: flex;
@@ -286,8 +286,8 @@ a {
     gap: 25px;
 }
 
-.contact-form input,
-.contact-form textarea,
+.tech.contact-form input,
+.tech.contact-form textarea,
 .admin-form input,
 .admin-form textarea {
     width: 100%;
@@ -302,8 +302,8 @@ a {
     backdrop-filter: blur(10px);
 }
 
-.contact-form input:focus,
-.contact-form textarea:focus,
+.tech.contact-form input:focus,
+.tech.contact-form textarea:focus,
 .admin-form input:focus,
 .admin-form textarea:focus {
     outline: none;

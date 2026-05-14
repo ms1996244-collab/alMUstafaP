@@ -69,8 +69,8 @@ def track_visitor():
 # --- مسار البوابة المركزية (The Grand Hub) ---
 @tech_bp.route('/')
 @tech_bp.route('/<lang>/')
-def home(lang='ar'):
-    if lang not in ['ar', 'en']: return redirect(url_for('tech.home'))
+def tech.home(lang='ar'):
+    if lang not in ['ar', 'en']: return redirect(url_for('tech.tech.home'))
     return render_template('hub/index.html') # المسار المحدث
 
 # --- مسار بوابة التقنية ---
@@ -87,9 +87,9 @@ def tech_portal(lang='ar'):
         projects.append(p)
     return render_template('tech/tech.html', projects=projects) # المسار المحدث
 
-@tech_bp.route('/blog')
-@tech_bp.route('/<lang>/blog')
-def blog(lang='ar'):
+@tech_bp.route('/tech.blog')
+@tech_bp.route('/<lang>/tech.blog')
+def tech.blog(lang='ar'):
     now_iraq = datetime.utcnow() + timedelta(hours=3)
     articles_raw = Article.query.filter(Article.is_visible == True, (Article.status == 'published') | ((Article.status == 'scheduled') & (Article.publish_at <= now_iraq))).order_by(Article.created_at.desc()).all()
     articles = []
@@ -97,33 +97,33 @@ def blog(lang='ar'):
         a.display_title = a.title_en if lang == 'en' and a.title_en else a.title
         a.display_summary = a.summary_en if lang == 'en' and a.summary_en else a.summary
         articles.append(a)
-    return render_template('tech/blog.html', articles=articles) # المسار المحدث
+    return render_template('tech/tech.blog.html', articles=articles) # المسار المحدث
 
 @tech_bp.route('/project/<int:id>')
 @tech_bp.route('/<lang>/project/<int:id>')
-def project_details(id, lang='ar'):
+def tech.project_details(id, lang='ar'):
     project = Project.query.get_or_404(id)
     update_unique_view(project_id=id)
     project.display_title = project.title_en if lang == 'en' and project.title_en else project.title
     project.display_full = project.full_details_en if lang == 'en' and project.full_details_en else project.full_details
-    return render_template('tech/project_details.html', project=project) # المسار المحدث
+    return render_template('tech/tech.project_details.html', project=project) # المسار المحدث
 
 @tech_bp.route('/article/<int:id>')
 @tech_bp.route('/<lang>/article/<int:id>')
-def article_details(id, lang='ar'):
+def tech.article_details(id, lang='ar'):
     article = Article.query.get_or_404(id)
     update_unique_view(article_id=id)
     article.display_title = article.title_en if lang == 'en' and article.title_en else article.title
     article.display_content = article.content_en if lang == 'en' and article.content_en else article.content
-    return render_template('tech/article_details.html', article=article) # المسار المحدث
+    return render_template('tech/tech.article_details.html', article=article) # المسار المحدث
 
-@tech_bp.route('/contact', methods=['POST'])
-def contact():
+@tech_bp.route('/tech.contact', methods=['POST'])
+def tech.contact():
     new_msg = Message(name=request.form.get('name'), email=request.form.get('email'), phone=request.form.get('phone'), content=request.form.get('content'))
     db.session.add(new_msg)
     db.session.commit()
     flash("Message Sent! وصلت رسالتك.")
-    return redirect(url_for('tech.home'))
+    return redirect(url_for('tech.tech.home'))
 
 @tech_bp.route('/like_article/<int:id>', methods=['POST'])
 def like_article(id):
@@ -134,7 +134,7 @@ def like_article(id):
 
 @tech_bp.route('/submit_lead', methods=['POST'])
 def submit_lead():
-    new_lead = Lead(contact_info=request.form.get('contact_info'), app_type=request.form.get('app_type'), estimated_price=request.form.get('estimated_price'))
+    new_lead = Lead(tech.contact_info=request.form.get('tech.contact_info'), app_type=request.form.get('app_type'), estimated_price=request.form.get('estimated_price'))
     db.session.add(new_lead)
     db.session.commit()
     return jsonify({'status': 'success'})
@@ -151,11 +151,11 @@ def about(lang='ar'):
     if lang not in ['ar', 'en']: return redirect(url_for('tech.about'))
     return render_template('shared/about.html')
 
-@tech_bp.route('/contact-us')
-@tech_bp.route('/<lang>/contact-us')
-def contact_page(lang='ar'):
-    if lang not in ['ar', 'en']: return redirect(url_for('tech.contact_page'))
-    return render_template('shared/contact.html')
+@tech_bp.route('/tech.contact-us')
+@tech_bp.route('/<lang>/tech.contact-us')
+def tech.contact_page(lang='ar'):
+    if lang not in ['ar', 'en']: return redirect(url_for('tech.tech.contact_page'))
+    return render_template('shared/tech.contact.html')
 
 @tech_bp.route('/sitemap.xml')
 def sitemap():
@@ -163,8 +163,8 @@ def sitemap():
     projects = Project.query.filter(Project.is_visible == True, (Project.status == 'published') | ((Project.status == 'scheduled') & (Project.publish_at <= now_iraq))).all()
     articles = Article.query.filter(Article.is_visible == True, (Article.status == 'published') | ((Article.status == 'scheduled') & (Article.publish_at <= now_iraq))).all()
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    xml += f'  <url><loc>{url_for("tech.home", _external=True)}</loc><priority>1.0</priority></url>\n'
-    for p in projects: xml += f'  <url><loc>{url_for("tech.project_details", id=p.id, _external=True)}</loc></url>\n'
-    for a in articles: xml += f'  <url><loc>{url_for("tech.article_details", id=a.id, _external=True)}</loc></url>\n'
+    xml += f'  <url><loc>{url_for("tech.tech.home", _external=True)}</loc><priority>1.0</priority></url>\n'
+    for p in projects: xml += f'  <url><loc>{url_for("tech.tech.project_details", id=p.id, _external=True)}</loc></url>\n'
+    for a in articles: xml += f'  <url><loc>{url_for("tech.tech.article_details", id=a.id, _external=True)}</loc></url>\n'
     xml += '</urlset>'
     return Response(xml, mimetype='application/xml')

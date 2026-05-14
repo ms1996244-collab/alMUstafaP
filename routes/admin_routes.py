@@ -149,7 +149,7 @@ def login():
 @admin_bp.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    return redirect(url_for('tech.home'))
+    return redirect(url_for('tech.tech.home'))
 
 # ================= عمليات الحذف والإخفاء والقراءة =================
 @admin_bp.route('/toggle_visibility/<string:type>/<int:id>')

@@ -36,12 +36,13 @@
 
         <div
             style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 20px 5%; position: relative; z-index: 10;">
-            <a href="{{ url_for('home', lang=current_lang) }}" class="back-link-modern" style="margin:0;"><i
-                    class="fas fa-arrow-{{ 'left' if current_lang == 'en' else 'right' }}"></i> {{ 'Back to Home' if
+            <a href="{{ url_for('tech.home', lang=current_lang) }}" class="back-link-modern" style="margin:0;"><i
+                    class="fas fa-arrow-{{ 'left' if current_lang == 'en' else 'right' }}"></i> {{ 'Back to tech.home'
+                if
                 current_lang == 'en' else 'العودة للرئيسية' }}</a>
 
             {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
-            <a href="{{ url_for('project_details', id=project.id, lang=switch_lang) }}" class="lang-btn"
+            <a href="{{ url_for('tech.project_details', id=project.id, lang=switch_lang) }}" class="lang-btn"
                 style="background: rgba(212, 175, 55, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid var(--primary-gold); color: var(--light-text); text-decoration: none;"><i
                     class="fas fa-globe"></i> {{ t.lang_switch }}</a>
         </div>
@@ -110,13 +111,14 @@
                 مماثلة؟' }}</h2>
             <p>{{ 'Let us turn your idea into reality with world-class standards.' if current_lang == 'en' else 'دعنا
                 نحول فكرتك إلى واقع برمجي بمعايير عالمية.' }}</p>
-            <a href="{{ url_for('home', lang=current_lang) }}/contact-us" class="cta-button">{{ 'Contact Me Now' if
+            <a href="{{ url_for('tech.home', lang=current_lang) }}/tech.contact-us" class="cta-button">{{ 'tech.contact
+                Me Now' if
                 current_lang == 'en' else 'تواصل معي الآن' }}</a>
         </div>
 
         <div class="project-navigation">
             {% if prev_project %}
-            <a href="{{ url_for('project_details', id=prev_project.id, lang=current_lang) }}"
+            <a href="{{ url_for('tech.project_details', id=prev_project.id, lang=current_lang) }}"
                 class="nav-card prev-card">
                 <span class="nav-label"><i class="fas fa-chevron-{{ 'left' if current_lang == 'en' else 'right' }}"></i>
                     {{ 'Previous Project' if current_lang == 'en' else 'المشروع السابق' }}</span>
@@ -127,12 +129,12 @@
             <div class="nav-card empty-card"></div>
             {% endif %}
 
-            <a href="{{ url_for('home', lang=current_lang) }}#portfolio" class="nav-center-btn"
+            <a href="{{ url_for('tech.home', lang=current_lang) }}#portfolio" class="nav-center-btn"
                 title="{{ 'Portfolio' if current_lang == 'en' else 'معرض الأعمال' }}"><i
                     class="fas fa-th-large"></i></a>
 
             {% if next_project %}
-            <a href="{{ url_for('project_details', id=next_project.id, lang=current_lang) }}"
+            <a href="{{ url_for('tech.project_details', id=next_project.id, lang=current_lang) }}"
                 class="nav-card next-card">
                 <span class="nav-label">{{ 'Next Project' if current_lang == 'en' else 'المشروع التالي' }} <i
                         class="fas fa-chevron-{{ 'right' if current_lang == 'en' else 'left' }}"></i></span>

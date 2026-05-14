@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, observerOptions);
 
     // تحديد كل العناصر التي نريد تطبيق تأثير الظهور عليها
-    const elementsToAnimate = document.querySelectorAll('.project-card, .section-title, .hero-content, .contact-form, .admin-card, .details-container');
+    const elementsToAnimate = document.querySelectorAll('.project-card, .section-title, .hero-content, .tech.contact-form, .admin-card, .details-container');
 
     elementsToAnimate.forEach(el => {
         el.classList.add('hidden-element'); // إخفاء العناصر مبدئياً

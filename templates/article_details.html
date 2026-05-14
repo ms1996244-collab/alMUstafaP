@@ -170,12 +170,13 @@
 
     <div class="article-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-            <a href="{{ url_for('blog', lang=current_lang) }}" class="back-link-modern" style="margin:0;"><i
-                    class="fas fa-arrow-{{ 'left' if current_lang == 'en' else 'right' }}"></i> {{ 'Back to Blog' if
+            <a href="{{ url_for('tech.blog', lang=current_lang) }}" class="back-link-modern" style="margin:0;"><i
+                    class="fas fa-arrow-{{ 'left' if current_lang == 'en' else 'right' }}"></i> {{ 'Back to tech.blog'
+                if
                 current_lang == 'en' else 'العودة للمدونة' }}</a>
 
             {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
-            <a href="{{ url_for('article_details', id=article.id, lang=switch_lang) }}" class="lang-btn"
+            <a href="{{ url_for('tech.article_details', id=article.id, lang=switch_lang) }}" class="lang-btn"
                 style="background: rgba(212, 175, 55, 0.1); padding: 8px 20px; border-radius: 20px; border: 1px solid var(--primary-gold); color: var(--light-text); text-decoration: none;"><i
                     class="fas fa-globe"></i> {{ t.lang_switch }}</a>
         </div>
@@ -242,7 +243,8 @@
                 مشابهاً؟' }}</h2>
             <p>{{ 'I am here to provide technical consultation or build a full system for your business.' if
                 current_lang == 'en' else 'أنا هنا لتقديم استشارة تقنية أو بناء نظام متكامل لعملك.' }}</p>
-            <a href="{{ url_for('home', lang=current_lang) }}/contact-us" class="cta-button">{{ 'Contact Me Now' if
+            <a href="{{ url_for('tech.home', lang=current_lang) }}/tech.contact-us" class="cta-button">{{ 'tech.contact
+                Me Now' if
                 current_lang == 'en' else 'تواصل معي الآن' }}</a>
         </div>
     </div>

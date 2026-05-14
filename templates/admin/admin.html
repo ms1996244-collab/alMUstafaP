@@ -145,7 +145,7 @@
                 endif %}</h1>
             <div>
                 <!-- الحل السحري: استخدام الروابط المباشرة لتجاوز مشكلة url_for -->
-                <a href="/" class="back-btn" style="margin-left: 10px;"><i class="fas fa-home"></i> الرئيسية</a>
+                <a href="/" class="back-btn" style="margin-left: 10px;"><i class="fas fa-tech.home"></i> الرئيسية</a>
                 <a href="/trading" class="back-btn"
                     style="background: rgba(23, 162, 184, 0.2); border-color: #17a2b8; color: #17a2b8; margin-left: 10px;"><i
                         class="fas fa-chart-line"></i> بوابة التداول</a>
@@ -460,7 +460,7 @@
                         {% for lead in leads %}
                         <div class="msg-box {% if not lead.is_read %}unread-box{% endif %}"
                             style="border-left: 4px solid #4caf50;">
-                            <strong><i class="fas fa-address-book"></i> التواصل: {{ lead.contact_info }}</strong>
+                            <strong><i class="fas fa-address-book"></i> التواصل: {{ lead.tech.contact_info }}</strong>
                             <p style="margin-top: 10px; color: #fff;">التطبيق: <span style="color: #17a2b8;">{{
                                     lead.app_type }}</span> | الميزانية: <span style="color: var(--primary-gold);">${{
                                     lead.estimated_price }}</span></p>

@@ -295,7 +295,8 @@
 
             <div class="articles-container">
                 {% for article in articles %}
-                <a href="{{ url_for('trading.trading_article_details', id=article.id) }}" class="article-list-item">
+                <a href="{{ url_for('trading.trading_tech.article_details', id=article.id) }}"
+                    class="article-list-item">
                     <span
                         style="font-size: 0.85rem; color: #28a745; font-weight: bold; display: block; margin-bottom: 8px;">
                         <i class="far fa-calendar-alt"></i> {{ article.created_at.strftime('%Y-%m-%d') }} | <i
