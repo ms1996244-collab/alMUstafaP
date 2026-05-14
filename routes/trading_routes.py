@@ -1,4 +1,3 @@
-from ctypes.wintypes import LANGID
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from core.models import TradingArticle, MqlProduct, BrokerAd, ViewTracker, db
 import hashlib
@@ -57,16 +56,16 @@ def trading_portal(lang='ar'):
         
     broker_ads = BrokerAd.query.filter_by(is_visible=True).order_by(BrokerAd.display_order.asc()).all()
 
-    return render_template('trading/trading_portal.html', articles=trading_articles, products=mql_products, brokers=broker_ads) # المسار المحدث
+    return render_template('trading/trading_portal.html', articles=trading_articles, products=mql_products, brokers=broker_ads)
 
 @trading_bp.route('/trading_article/<int:id>')
 @trading_bp.route('/<lang>/trading_article/<int:id>')
-def trading_tech.article_details(id, lang='ar'):
+def trading_article_details(id, lang='ar'):
     article = TradingArticle.query.get_or_404(id)
     update_trading_view(trading_article_id=id)
-    article.display_title = article.title_en if LANGID == 'en' and article.title_en else article.title
+    article.display_title = article.title_en if lang == 'en' and article.title_en else article.title
     article.display_content = article.content_en if lang == 'en' and article.content_en else article.content
-    return render_template('trading/trading_tech.article_details.html', article=article) # المسار المحدث
+    return render_template('trading/trading_article_details.html', article=article)
 
 @trading_bp.route('/mql_product/<int:id>/click')
 def mql_product_click(id):
