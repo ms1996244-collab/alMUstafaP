@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from core.models import Project, Article, TradingArticle, MqlProduct, BrokerAd, Message, Lead, SiteVisitor, db
 from core import translator
 from datetime import datetime, timedelta
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import text, func
 from functools import wraps
 
@@ -10,9 +10,6 @@ admin_bp = Blueprint('admin', __name__)
 
 # ================= بيانات الدخول والحماية =================
 ADMIN_USERNAME = 'admin'
-# لتسهيل الأمر هنا، نضع الـ hash المباشر أو يمكنك استيراده.
-# في الإنتاج يفضل وضعه في ملف بيئة (environment variables)
-from werkzeug.security import generate_password_hash
 ADMIN_PASSWORD_HASH = generate_password_hash('mustafa2026')
 
 def login_required(f):
@@ -123,7 +120,8 @@ def dashboard():
     
     now_iraq = datetime.utcnow() + timedelta(hours=3)
     
-    return render_template('admin.html', 
+    # تم تصحيح مسار القالب هنا
+    return render_template('admin/admin.html', 
                            projects=projects, articles=articles, 
                            trading_articles=trading_articles, mql_products=mql_products, broker_ads=broker_ads,
                            messages=messages, leads=leads, unread=unread_count, 
@@ -136,7 +134,8 @@ def login():
     if 'login_attempts' not in session: session['login_attempts'] = 0
     if session['login_attempts'] >= 5:
         flash("تم حظر محاولات الدخول مؤقتاً لأسباب أمنية.")
-        return render_template('login.html')
+        # تم تصحيح مسار القالب هنا
+        return render_template('shared/login.html')
     if request.method == 'POST':
         if request.form['username'] == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, request.form['password']):
             session['logged_in'] = True
@@ -144,12 +143,48 @@ def login():
             return redirect(url_for('admin.dashboard'))
         session['login_attempts'] += 1
         flash("بيانات الدخول غير صحيحة")
-    return render_template('login.html')
+    # تم تصحيح مسار القالب هنا
+    return render_template('shared/login.html')
 
 @admin_bp.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    return redirect(url_for('tech.tech.home'))
+    # تم تصحيح المسار هنا (tech.home بدلاً من tech.tech.home)
+    return redirect(url_for('tech.home'))
+
+# ================= عمليات التعديل (Edit) المفقودة =================
+@admin_bp.route('/edit_project/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_project(id):
+    project = Project.query.get_or_404(id)
+    if request.method == 'POST':
+        project.title = request.form['title']
+        project.description = request.form['description']
+        project.full_details = request.form['full_details']
+        project.technologies = request.form['technologies']
+        project.icon = request.form['icon']
+        project.status = request.form.get('status', 'published')
+        publish_at_str = request.form.get('publish_at', '')
+        if project.status == 'scheduled' and publish_at_str: project.publish_at = datetime.strptime(publish_at_str, '%Y-%m-%dT%H:%M')
+        db.session.commit()
+        return redirect(url_for('admin.dashboard'))
+    return render_template('admin/edit_project.html', project=project)
+
+@admin_bp.route('/edit_article/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_article(id):
+    article = Article.query.get_or_404(id)
+    if request.method == 'POST':
+        article.title = request.form['title']
+        article.summary = request.form['summary']
+        article.content = request.form['content']
+        article.image = request.form.get('image', '')
+        article.status = request.form.get('status', 'published')
+        publish_at_str = request.form.get('publish_at', '')
+        if article.status == 'scheduled' and publish_at_str: article.publish_at = datetime.strptime(publish_at_str, '%Y-%m-%dT%H:%M')
+        db.session.commit()
+        return redirect(url_for('admin.dashboard'))
+    return render_template('admin/edit_article.html', article=article)
 
 # ================= عمليات الحذف والإخفاء والقراءة =================
 @admin_bp.route('/toggle_visibility/<string:type>/<int:id>')
