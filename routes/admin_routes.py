@@ -6,7 +6,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy import text, func
 from functools import wraps
 
-# التسمية الصحيحة للـ Blueprint
 admin_bp = Blueprint('admin', __name__)
 
 # ================= بيانات الدخول والحماية =================
@@ -100,6 +99,7 @@ def dashboard():
     trading_articles = TradingArticle.query.order_by(TradingArticle.id.desc()).all()
     mql_products = MqlProduct.query.order_by(MqlProduct.id.desc()).all()
     broker_ads = BrokerAd.query.order_by(BrokerAd.display_order.asc()).all()
+    
     messages = Message.query.order_by(Message.id.desc()).all()
     leads = Lead.query.order_by(Lead.id.desc()).all()
     unread_count = Message.query.filter_by(is_read=False).count() + Lead.query.filter_by(is_read=False).count()
@@ -113,6 +113,7 @@ def dashboard():
     country_stats = db.session.query(SiteVisitor.country, func.count(SiteVisitor.id)).group_by(SiteVisitor.country).order_by(func.count(SiteVisitor.id).desc()).all()
     monthly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.extract('month', SiteVisitor.visit_date).label('month'), func.count(SiteVisitor.id)).group_by('year', 'month').order_by(text('year DESC, month DESC')).all()
     yearly_stats = db.session.query(func.extract('year', SiteVisitor.visit_date).label('year'), func.count(SiteVisitor.id)).group_by('year').order_by(text('year DESC')).all()
+    
     now_iraq = datetime.utcnow() + timedelta(hours=3)
     
     return render_template('admin/admin.html', 
@@ -176,6 +177,22 @@ def edit_article(id):
         db.session.commit()
         return redirect(url_for('admin.dashboard'))
     return render_template('admin/edit_article.html', article=article)
+
+@admin_bp.route('/edit_trading_article/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_trading_article(id):
+    article = TradingArticle.query.get_or_404(id)
+    if request.method == 'POST':
+        article.title = request.form['title']
+        article.summary = request.form['summary']
+        article.content = request.form['content']
+        article.image = request.form.get('image', '')
+        article.status = request.form.get('status', 'published')
+        publish_at_str = request.form.get('publish_at', '')
+        if article.status == 'scheduled' and publish_at_str: article.publish_at = datetime.strptime(publish_at_str, '%Y-%m-%dT%H:%M')
+        db.session.commit()
+        return redirect(url_for('admin.dashboard'))
+    return render_template('admin/edit_trading_article.html', article=article)
 
 # ================= عمليات الحذف والإخفاء والقراءة =================
 @admin_bp.route('/toggle_visibility/<string:type>/<int:id>')
