@@ -112,44 +112,58 @@
             display: none;
         }
 
-        .badge {
-            padding: 4px 8px;
+        /* أزرار الإدارة الجديدة */
+        .action-btn {
+            padding: 6px 12px;
             border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-left: 5px;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .btn-edit {
+            background: rgba(23, 162, 184, 0.2);
+            color: #17a2b8;
+            border: 1px solid #17a2b8;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .badge-visible {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 0.8rem;
-            font-weight: bold;
         }
 
-        .badge-draft {
-            background: rgba(255, 255, 255, 0.1);
-            color: #ccc;
-        }
-
-        .badge-pub {
-            background: rgba(76, 175, 80, 0.2);
-            color: #4caf50;
-        }
-
-        .badge-sch {
-            background: rgba(243, 156, 18, 0.2);
-            color: #f39c12;
+        .badge-hidden {
+            background: rgba(108, 117, 125, 0.2);
+            color: #6c757d;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 
 <body class="admin-page">
     <div class="admin-container">
-        <!-- الرأس والإحصائيات العامة -->
         <div class="admin-header"
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h1>لوحة الإدارة المركزية {% if unread > 0 %}<span class="notification-badge">{{ unread }} رسالة</span>{%
                 endif %}</h1>
             <div>
-                <!-- الحل السحري: استخدام الروابط المباشرة لتجاوز مشكلة url_for -->
-                <a href="/" class="back-btn" style="margin-left: 10px;"><i class="fas fa-tech.home"></i> الرئيسية</a>
+                <a href="/" class="back-btn" style="margin-left: 10px;"><i class="fas fa-home"></i> الرئيسية</a>
                 <a href="/trading" class="back-btn"
                     style="background: rgba(23, 162, 184, 0.2); border-color: #17a2b8; color: #17a2b8; margin-left: 10px;"><i
                         class="fas fa-chart-line"></i> بوابة التداول</a>
-                <a href="/admin.logout" style="color: #ff4a4a; font-weight: bold; text-decoration: none;"><i
+                <a href="{{ url_for('admin.logout') }}"
+                    style="color: #ff4a4a; font-weight: bold; text-decoration: none;"><i
                         class="fas fa-sign-out-alt"></i> خروج</a>
             </div>
         </div>
@@ -174,7 +188,6 @@
             </div>
         </div>
 
-        <!-- أزرار التبويبات -->
         <div class="tabs-container">
             <button class="tab-btn active" onclick="switchTab('tech-tab')"><i class="fas fa-laptop-code"></i> إدارة قسم
                 التكنولوجيا</button>
@@ -184,10 +197,8 @@
                 الجغرافية</button>
         </div>
 
-        <!-- ======================= تبويب التكنولوجيا ======================= -->
         <div id="tech-tab" class="tab-content active">
             <div class="admin-grid">
-                <!-- إضافة مشروع -->
                 <div class="admin-card">
                     <h2>إضافة مشروع (سجل الإنجازات)</h2>
                     <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
@@ -196,7 +207,7 @@
                         <input type="text" name="description" placeholder="وصف قصير" required>
                         <textarea name="full_details" placeholder="التفاصيل الكاملة" rows="3" required></textarea>
                         <input type="text" name="technologies" placeholder="التقنيات (مثال: Python, Flutter)" required>
-                        <input type="text" name="icon" placeholder="رابط الصورة" required>
+                        <input type="text" name="icon" placeholder="رابط الصورة أو أيقونة FontAwesome" required>
                         <select name="status" onchange="toggleDate(this)">
                             <option value="published">نشر فوري</option>
                             <option value="draft">مسودة مخفية</option>
@@ -207,14 +218,14 @@
                     </form>
                 </div>
 
-                <!-- إضافة مقال تقني -->
                 <div class="admin-card" style="border-color: #17a2b8;">
                     <h2 style="color: #17a2b8;">نشر مقال تقني</h2>
                     <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
                         <input type="hidden" name="form_type" value="article">
                         <input type="text" name="title" placeholder="عنوان المقال" required>
                         <input type="text" name="summary" placeholder="مقدمة قصيرة" required>
-                        <textarea name="content" placeholder="المحتوى" rows="4" required></textarea>
+                        <textarea name="content" placeholder="المحتوى (افصل بنقطة . للفقرات)" rows="4"
+                            required></textarea>
                         <input type="text" name="image" placeholder="رابط الصورة">
                         <select name="status" onchange="toggleDate(this)" style="border-color: #17a2b8;">
                             <option value="published">نشر فوري</option>
@@ -229,29 +240,29 @@
                 </div>
             </div>
 
-            <!-- جداول التكنولوجيا -->
             <div class="admin-grid">
                 <div class="admin-card projects-list" style="overflow-x: auto;">
                     <h2>إدارة المشاريع</h2>
                     <table>
                         <tr>
                             <th>المشروع</th>
-                            <th>المشاهدات</th>
                             <th>الحالة</th>
                             <th>إجراء</th>
                         </tr>
                         {% for project in projects %}
                         <tr>
                             <td>{{ project.title }}</td>
-                            <td style="color: var(--primary-gold);">{{ project.views }} <i class="fas fa-eye"></i></td>
-                            <td>{% if project.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
-                                    style="color: #888;">مخفي</span>{% endif %}</td>
+                            <td><span
+                                    class="{% if project.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{%
+                                    if project.is_visible %}مرئي{% else %}مخفي{% endif %}</span></td>
                             <td>
-                                <!-- تصحيح مسارات الأزرار هنا -->
-                                <a href="{{ url_for('toggle_visibility', type='project', id=project.id) }}"
+                                <a href="{{ url_for('admin.edit_project', id=project.id) }}"
+                                    class="action-btn btn-edit"><i class="fas fa-edit"></i></a>
+                                <a href="{{ url_for('admin.toggle_visibility', type='project', id=project.id) }}"
                                     style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
-                                <a href="{{ url_for('delete_item', type='project', id=project.id) }}"
-                                    class="delete-btn"><i class="fas fa-trash"></i></a>
+                                <a href="{{ url_for('admin.delete_item', type='project', id=project.id) }}"
+                                    class="delete-btn" onclick="return confirm('تأكيد الحذف؟');"><i
+                                        class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -262,22 +273,23 @@
                     <table>
                         <tr>
                             <th>المقال</th>
-                            <th>القراءات</th>
                             <th>الحالة</th>
                             <th>إجراء</th>
                         </tr>
                         {% for article in articles %}
                         <tr>
                             <td>{{ article.title }}</td>
-                            <td style="color: #17a2b8;">{{ article.views }} <i class="fas fa-book-reader"></i></td>
-                            <td>{% if article.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
-                                    style="color: #888;">مخفي</span>{% endif %}</td>
+                            <td><span
+                                    class="{% if article.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{%
+                                    if article.is_visible %}مرئي{% else %}مخفي{% endif %}</span></td>
                             <td>
-                                <!-- تصحيح مسارات الأزرار هنا -->
-                                <a href="{{ url_for('toggle_visibility', type='article', id=article.id) }}"
+                                <a href="{{ url_for('admin.edit_article', id=article.id) }}"
+                                    class="action-btn btn-edit"><i class="fas fa-edit"></i></a>
+                                <a href="{{ url_for('admin.toggle_visibility', type='article', id=article.id) }}"
                                     style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
-                                <a href="{{ url_for('delete_item', type='article', id=article.id) }}"
-                                    class="delete-btn"><i class="fas fa-trash"></i></a>
+                                <a href="{{ url_for('admin.delete_item', type='article', id=article.id) }}"
+                                    class="delete-btn" onclick="return confirm('تأكيد الحذف؟');"><i
+                                        class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -286,10 +298,8 @@
             </div>
         </div>
 
-        <!-- ======================= تبويب التداول ======================= -->
         <div id="trading-tab" class="tab-content">
             <div class="admin-grid">
-                <!-- إضافة مقال تداول -->
                 <div class="admin-card" style="border-color: #28a745;">
                     <h2 style="color: #28a745;"><i class="fas fa-newspaper"></i> تحليل مالي / مقال تداول</h2>
                     <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
@@ -311,7 +321,6 @@
                     </form>
                 </div>
 
-                <!-- إضافة مؤشر MQL5 -->
                 <div class="admin-card" style="border-color: #fd7e14;">
                     <h2 style="color: #fd7e14;"><i class="fas fa-robot"></i> إضافة منتج لمتجر MQL5</h2>
                     <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
@@ -328,29 +337,28 @@
                 </div>
             </div>
 
-            <!-- جداول التداول -->
             <div class="admin-grid">
                 <div class="admin-card projects-list" style="overflow-x: auto;">
                     <h2>التحليلات والمقالات المالية</h2>
                     <table>
                         <tr>
                             <th>التحليل</th>
-                            <th>القراءات</th>
                             <th>الحالة</th>
                             <th>إجراء</th>
                         </tr>
                         {% for t_art in trading_articles %}
                         <tr>
                             <td>{{ t_art.title }}</td>
-                            <td style="color: #28a745;">{{ t_art.views }} <i class="fas fa-chart-line"></i></td>
-                            <td>{% if t_art.is_visible %}<span style="color: #4caf50;">مرئي</span>{% else %}<span
-                                    style="color: #888;">مخفي</span>{% endif %}</td>
+                            <td><span class="{% if t_art.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{%
+                                    if t_art.is_visible %}مرئي{% else %}مخفي{% endif %}</span></td>
                             <td>
-                                <!-- تصحيح مسارات الأزرار هنا -->
-                                <a href="{{ url_for('toggle_visibility', type='trading_article', id=t_art.id) }}"
+                                <a href="{{ url_for('admin.edit_trading_article', id=t_art.id) }}"
+                                    class="action-btn btn-edit"><i class="fas fa-edit"></i></a>
+                                <a href="{{ url_for('admin.toggle_visibility', type='trading_article', id=t_art.id) }}"
                                     style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
-                                <a href="{{ url_for('delete_item', type='trading_article', id=t_art.id) }}"
-                                    class="delete-btn"><i class="fas fa-trash"></i></a>
+                                <a href="{{ url_for('admin.delete_item', type='trading_article', id=t_art.id) }}"
+                                    class="delete-btn" onclick="return confirm('تأكيد الحذف؟');"><i
+                                        class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -362,20 +370,15 @@
                     <table>
                         <tr>
                             <th>المنتج</th>
-                            <th>النقرات</th>
-                            <th>السعر</th>
                             <th>إجراء</th>
                         </tr>
                         {% for prod in mql_products %}
                         <tr>
                             <td>{{ prod.name }}</td>
-                            <td style="color: #fd7e14;">{{ prod.views }} <i class="fas fa-mouse-pointer"></i></td>
-                            <td>{{ prod.price }}</td>
                             <td>
-                                <!-- تصحيح مسارات الأزرار هنا -->
-                                <a href="{{ url_for('toggle_visibility', type='mql_product', id=prod.id) }}"
+                                <a href="{{ url_for('admin.toggle_visibility', type='mql_product', id=prod.id) }}"
                                     style="color: #17a2b8; margin-left: 10px;"><i class="fas fa-eye-slash"></i></a>
-                                <a href="{{ url_for('delete_item', type='mql_product', id=prod.id) }}"
+                                <a href="{{ url_for('admin.delete_item', type='mql_product', id=prod.id) }}"
                                     class="delete-btn"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
@@ -396,7 +399,6 @@
             </div>
         </div>
 
-        <!-- ======================= تبويب الإحصائيات الجغرافية والرسائل ======================= -->
         <div id="stats-tab" class="tab-content">
             <div class="admin-grid">
                 <div class="admin-card" style="overflow-x: auto;">
@@ -435,7 +437,6 @@
                 </div>
             </div>
 
-            <!-- الرسائل والـ Leads -->
             <div class="admin-grid" style="margin-top: 40px;">
                 <div class="admin-card">
                     <h2><i class="fas fa-envelope-open-text" style="color: #17a2b8;"></i> صندوق الوارد (رسائل الاتصال)
@@ -446,8 +447,7 @@
                             <strong><i class="fas fa-user-circle"></i> {{ msg.name }} | <i class="fas fa-phone"></i> {{
                                 msg.phone }} | <i class="fas fa-envelope"></i> {{ msg.email }}</strong>
                             <p style="margin-top: 10px; font-size: 1.1rem; line-height: 1.6;">{{ msg.content }}</p>
-                            <!-- تصحيح مسار الزر هنا -->
-                            {% if not msg.is_read %}<a href="{{ url_for('mark_read', type='msg', id=msg.id) }}"
+                            {% if not msg.is_read %}<a href="{{ url_for('admin.mark_read', type='msg', id=msg.id) }}"
                                 class="cta-button" style="padding: 8px 20px; font-size: 0.9rem; margin-top: 10px;"><i
                                     class="fas fa-check"></i> مقروء</a>{% endif %}
                         </div>
@@ -460,16 +460,15 @@
                         {% for lead in leads %}
                         <div class="msg-box {% if not lead.is_read %}unread-box{% endif %}"
                             style="border-left: 4px solid #4caf50;">
-                            <strong><i class="fas fa-address-book"></i> التواصل: {{ lead.tech.contact_info }}</strong>
+                            <strong><i class="fas fa-address-book"></i> التواصل: {{ lead.contact_info }}</strong>
                             <p style="margin-top: 10px; color: #fff;">التطبيق: <span style="color: #17a2b8;">{{
                                     lead.app_type }}</span> | الميزانية: <span style="color: var(--primary-gold);">${{
                                     lead.estimated_price }}</span></p>
-                            <!-- تصحيح مسارات الأزرار هنا -->
-                            {% if not lead.is_read %}<a href="{{ url_for('mark_read', type='lead', id=lead.id) }}"
+                            {% if not lead.is_read %}<a href="{{ url_for('admin.mark_read', type='lead', id=lead.id) }}"
                                 class="cta-button"
                                 style="padding: 8px 20px; font-size: 0.9rem; background: rgba(76, 175, 80, 0.2); color: #4caf50; border-color: #4caf50; margin-top: 10px;"><i
                                     class="fas fa-check"></i> تمت المتابعة</a>{% endif %}
-                            <a href="{{ url_for('delete_item', type='lead', id=lead.id) }}"
+                            <a href="{{ url_for('admin.delete_item', type='lead', id=lead.id) }}"
                                 style="color: #ff4a4a; margin-right: 15px;"><i class="fas fa-trash"></i> حذف</a>
                         </div>
                         {% endfor %}
@@ -504,12 +503,4 @@
     </script>
 </body>
 
-</html> تمام اشتغلت الادمن
-الان صفحه التداول غير مضبطه حيث ان القسم الخاصه ب mql ماخذ مساحه كامله
-وكذالك الاخبار لا تضهر فيها اي شي والاسعار كذالك
-والصفحه كامله فيها مشكله كانها في الموبيل وليست لسطح المكتب .
-اريد ان تكون صفحه التداول مقسمه كالتالي : عند الدخول صفحه التداول يكون فيها قسمين من اليمين 30٪ للاسعار والبروكرات
-والاخبار المباشره الخاص ب التردينق فديو
-اما في اليسار وتكون نسبه 70٪ تكون للمتجر ويكون متناسق مع الصفحه لا ياخذ الصفحه كامل اما في الاسفل المتجر فتكون مقالات
-التداول والتحليلات
-وكذالك شريط الاسعار لا يضهر في الاعلا حاول حل هذه المشكله
+</html>
