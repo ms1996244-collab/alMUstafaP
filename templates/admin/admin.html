@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>لوحة التحكم الشاملة | Al-Mustafa Portal</title>
+    <title>لوحة الإدارة المركزية | Al-Mustafa Portal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* الإحصائيات السريعة */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -39,23 +40,24 @@
             font-size: 1rem;
         }
 
-        /* تصميم نظام التبويبات الفاخر */
+        /* نظام التبويبات */
         .tabs-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 40px;
             border-bottom: 2px solid rgba(255, 255, 255, 0.05);
             padding-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--glass-border);
             color: var(--gray-text);
-            padding: 15px 40px;
+            padding: 12px 30px;
             border-radius: 50px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: 0.3s;
             font-weight: bold;
@@ -70,7 +72,7 @@
             background: rgba(212, 175, 55, 0.1);
             border-color: var(--primary-gold);
             color: var(--primary-gold);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
         }
 
         .tab-content {
@@ -94,7 +96,7 @@
             }
         }
 
-        /* حقول الإدخال */
+        /* النماذج وحقول الإدخال */
         .admin-form input,
         .admin-form textarea,
         .admin-form select {
@@ -105,6 +107,14 @@
             border: 1px solid var(--glass-border);
             color: #fff;
             border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .admin-form input[type="file"] {
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            padding: 10px;
+            border: 1px dashed var(--primary-gold);
         }
 
         .datetime-input {
@@ -112,7 +122,19 @@
             display: none;
         }
 
-        /* أزرار وتنسيقات الجداول المتقدمة */
+        .search-bar {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary-gold);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            outline: none;
+        }
+
+        /* الجداول والأزرار */
         .management-table {
             width: 100%;
             border-collapse: collapse;
@@ -142,6 +164,11 @@
             margin-left: 5px;
             display: inline-block;
             transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
         }
 
         .btn-edit {
@@ -162,16 +189,14 @@
             border: 1px solid #dc3545;
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-        }
-
+        /* الشارات (Badges) */
         .badge-visible {
             background: rgba(40, 167, 69, 0.2);
             color: #28a745;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.8rem;
+            font-weight: bold;
         }
 
         .badge-hidden {
@@ -180,6 +205,7 @@
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 0.8rem;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -188,149 +214,121 @@
     <div class="admin-container">
         <div class="admin-header"
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>لوحة الإدارة المركزية {% if unread > 0 %}<span class="notification-badge">{{ unread }} رسالة</span>{%
-                endif %}</h1>
+            <h1>لوحة الإدارة المركزية</h1>
             <div>
                 <a href="/" class="back-btn" style="margin-left: 10px;"><i class="fas fa-home"></i> الرئيسية</a>
                 <a href="/trading" class="back-btn"
                     style="background: rgba(23, 162, 184, 0.2); border-color: #17a2b8; color: #17a2b8; margin-left: 10px;"><i
                         class="fas fa-chart-line"></i> بوابة التداول</a>
                 <a href="{{ url_for('admin.logout') }}"
-                    style="color: #ff4a4a; font-weight: bold; text-decoration: none;"><i
+                    style="color: #ff4a4a; font-weight: bold; text-decoration: none; padding: 10px;"><i
                         class="fas fa-sign-out-alt"></i> خروج</a>
             </div>
         </div>
 
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div
+            style="background: rgba(40,167,69,0.1); border: 1px solid #28a745; color: #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+            <i class="fas fa-check-circle"></i> {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
         <div class="stats-grid">
-            <div class="stat-card" style="border-bottom: 4px solid var(--primary-gold);"><i
-                    class="fas fa-calendar-day"></i>
-                <h3>{{ today_visitors }}</h3>
-                <p>زوار اليوم</p>
+            <div class="stat-card" style="border-bottom: 4px solid var(--primary-gold);"><i class="fas fa-users"></i>
+                <h3>{{ total_visitors }}</h3>
+                <p>إجمالي الزوار</p>
             </div>
             <div class="stat-card" style="border-bottom: 4px solid #f39c12;"><i class="fas fa-history"></i>
                 <h3>{{ yesterday_visitors }}</h3>
                 <p>زوار أمس</p>
             </div>
-            <div class="stat-card" style="border-bottom: 4px solid #17a2b8;"><i class="fas fa-users"></i>
-                <h3>{{ total_visitors }}</h3>
-                <p>إجمالي الزوار</p>
+            <div class="stat-card" style="border-bottom: 4px solid #17a2b8;"><i class="fas fa-calendar-day"></i>
+                <h3>{{ today_visitors }}</h3>
+                <p>زوار اليوم</p>
             </div>
             <div class="stat-card" style="border-bottom: 4px solid #4caf50;"><i class="fas fa-envelope-open-text"></i>
                 <h3>{{ unread }}</h3>
-                <p>رسائل غير مقروءة</p>
+                <p>رسائل جديدة</p>
             </div>
         </div>
 
         <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('tech-tab')"><i class="fas fa-laptop-code"></i> إدارة قسم
-                التكنولوجيا</button>
-            <button class="tab-btn" onclick="switchTab('trading-tab')"><i class="fas fa-chart-candlestick"></i> إدارة
-                بوابة التداول</button>
-            <button class="tab-btn" onclick="switchTab('stats-tab')"><i class="fas fa-chart-pie"></i> التحليلات
-                الجغرافية</button>
-            <button class="tab-btn" onclick="switchTab('posts-tab')"><i class="fas fa-tasks"></i> إدارة
+            <button class="tab-btn active" onclick="switchTab('add-content-tab')"><i class="fas fa-plus-circle"></i>
+                إضافة محتوى</button>
+            <button class="tab-btn" onclick="switchTab('manage-posts-tab')"><i class="fas fa-tasks"></i> إدارة
                 المنشورات</button>
+            <button class="tab-btn" onclick="switchTab('stats-tab')"><i class="fas fa-chart-pie"></i> الإحصائيات
+                والرسائل</button>
+            <button class="tab-btn" onclick="switchTab('settings-tab')"><i class="fas fa-shield-alt"></i> إعدادات
+                الأمان</button>
         </div>
 
-        <div id="tech-tab" class="tab-content active">
-            <div class="admin-grid">
-                <div class="admin-card">
-                    <h2>إضافة مشروع (سجل الإنجازات)</h2>
-                    <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
-                        <input type="hidden" name="form_type" value="project">
-                        <input type="text" name="title" placeholder="اسم المشروع" required>
-                        <input type="text" name="description" placeholder="وصف قصير" required>
-                        <textarea name="full_details" placeholder="التفاصيل الكاملة" rows="3" required></textarea>
-                        <input type="text" name="technologies" placeholder="التقنيات (مثال: Python, Flutter)" required>
-                        <input type="text" name="icon" placeholder="رابط الصورة أو أيقونة FontAwesome" required>
-                        <select name="status" onchange="toggleDate(this)">
-                            <option value="published">نشر فوري</option>
-                            <option value="draft">مسودة مخفية</option>
-                            <option value="scheduled">جدولة مستقبلية</option>
-                        </select>
-                        <input type="datetime-local" name="publish_at" class="datetime-input">
-                        <button type="submit" class="cta-button">حفظ المشروع</button>
-                    </form>
-                </div>
+        <div id="add-content-tab" class="tab-content active">
+            <div class="admin-card"
+                style="max-width: 800px; margin: 0 auto; border-top: 3px solid var(--primary-gold);">
+                <h2><i class="fas fa-pen-nib"></i> نشر محتوى جديد</h2>
+                <form action="{{ url_for('admin.dashboard') }}" method="POST" enctype="multipart/form-data"
+                    class="admin-form">
 
-                <div class="admin-card" style="border-color: #17a2b8;">
-                    <h2 style="color: #17a2b8;">نشر مقال تقني</h2>
-                    <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
-                        <input type="hidden" name="form_type" value="article">
-                        <input type="text" name="title" placeholder="عنوان المقال" required>
-                        <input type="text" name="summary" placeholder="مقدمة قصيرة" required>
-                        <textarea name="content" placeholder="المحتوى (افصل بنقطة . للفقرات)" rows="4"
-                            required></textarea>
-                        <input type="text" name="image" placeholder="رابط الصورة">
-                        <select name="status" onchange="toggleDate(this)" style="border-color: #17a2b8;">
-                            <option value="published">نشر فوري</option>
-                            <option value="draft">مسودة مخفية</option>
-                            <option value="scheduled">جدولة مستقبلية</option>
-                        </select>
-                        <input type="datetime-local" name="publish_at" class="datetime-input">
-                        <button type="submit" class="cta-button"
-                            style="background: rgba(23,162,184,0.1); color: #17a2b8; border-color: #17a2b8;">نشر
-                            المقال</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+                    <label style="color: var(--primary-gold); display: block; margin-bottom: 8px;">نوع المحتوى:</label>
+                    <select name="form_type" required>
+                        <option value="project">مشروع تقني (Portfolio)</option>
+                        <option value="article">مقال تقني (Tech Blog)</option>
+                        <option value="trading_article">تحليل تداول (SMC)</option>
+                        <option value="mql_product">منتج MQL5</option>
+                        <option value="broker_ad">شريك تداول (Broker)</option>
+                    </select>
 
-        <div id="trading-tab" class="tab-content">
-            <div class="admin-grid">
-                <div class="admin-card" style="border-color: #28a745;">
-                    <h2 style="color: #28a745;"><i class="fas fa-newspaper"></i> تحليل مالي / مقال تداول</h2>
-                    <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
-                        <input type="hidden" name="form_type" value="trading_article">
-                        <input type="text" name="title" placeholder="عنوان التحليل (مثال: تحليل الذهب)" required>
-                        <input type="text" name="summary" placeholder="مقدمة التحليل" required>
-                        <textarea name="content" placeholder="التفاصيل الفنية (SMC، دعوم، مقاومات)" rows="4"
-                            required></textarea>
-                        <input type="text" name="image" placeholder="رابط الشارت (صورة)">
-                        <select name="status" onchange="toggleDate(this)" style="border-color: #28a745;">
-                            <option value="published">نشر فوري</option>
-                            <option value="draft">مسودة</option>
-                            <option value="scheduled">جدولة</option>
-                        </select>
-                        <input type="datetime-local" name="publish_at" class="datetime-input">
-                        <button type="submit" class="cta-button"
-                            style="background: rgba(40,167,69,0.1); color: #28a745; border-color: #28a745;">نشر
-                            التحليل</button>
-                    </form>
-                </div>
+                    <input type="text" name="title" placeholder="العنوان الرئيسي / اسم المشروع / اسم الشركة" required>
+                    <input type="text" name="description"
+                        placeholder="الوصف القصير / ملخص المقال / رابط الإحالة للشريك">
+                    <textarea name="full_details" placeholder="المحتوى الكامل (افصل بنقطة . للفقرات) أو شرح المنتج"
+                        rows="5"></textarea>
 
-                <div class="admin-card" style="border-color: #fd7e14;">
-                    <h2 style="color: #fd7e14;"><i class="fas fa-robot"></i> إضافة منتج لمتجر MQL5</h2>
-                    <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form">
-                        <input type="hidden" name="form_type" value="mql_product">
-                        <input type="text" name="name" placeholder="اسم الإكسبرت أو المؤشر" required>
-                        <textarea name="description" placeholder="شرح عمل المؤشر ومميزاته" rows="3" required></textarea>
-                        <input type="text" name="price" placeholder="السعر (مثال: $50 أو مجاني)" required>
-                        <input type="text" name="mql_url" placeholder="رابط صفحة الشراء في موقع MQL5" required>
-                        <input type="text" name="icon" placeholder="رابط صورة المنتج (أيقونة)">
-                        <button type="submit" class="cta-button"
-                            style="background: rgba(253,126,20,0.1); color: #fd7e14; border-color: #fd7e14;">إضافة
-                            للمتجر</button>
-                    </form>
-                </div>
-            </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" name="technologies" placeholder="التقنيات (للمشاريع: Flutter, Python...)"
+                            style="width: 50%;">
+                        <input type="text" name="price" placeholder="السعر (لمنتجات MQL5: $50 أو مجاني)"
+                            style="width: 50%;">
+                    </div>
 
-            <div class="admin-card" style="margin-top: 20px;">
-                <h3>إضافة بانر إعلاني (بروكر)</h3>
-                <form action="{{ url_for('admin.dashboard') }}" method="POST" class="admin-form"
-                    style="display: flex; gap: 10px; margin-top: 15px;">
-                    <input type="hidden" name="form_type" value="broker_ad">
-                    <input type="text" name="name" placeholder="اسم الشركة" required style="width: 25%;">
-                    <input type="text" name="url" placeholder="رابط الإحالة (IB)" required style="width: 30%;">
-                    <input type="text" name="image_url" placeholder="رابط صورة البانر" required style="width: 30%;">
-                    <button type="submit" class="cta-button" style="width: 15%; padding: 10px;">إضافة</button>
+                    <input type="text" name="url" placeholder="الرابط الخارجي (رابط الشراء أو رابط بروكر التداول)">
+
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                        <label style="color: var(--gray-text); display: block; margin-bottom: 10px;"><i
+                                class="fas fa-image"></i> صورة المحتوى (ارفع من جهازك الماك أو ضع رابط):</label>
+                        <input type="file" name="image_file" accept="image/*">
+                        <p style="text-align: center; color: #888; margin: 5px 0; font-size: 0.9rem;">— أو استخدم رابط
+                            مباشر —</p>
+                        <input type="text" name="icon" placeholder="رابط صورة (URL) أو أيقونة FontAwesome"
+                            style="margin-bottom: 0;">
+                    </div>
+
+                    <label style="color: var(--primary-gold); display: block; margin-bottom: 8px;"><i
+                            class="fas fa-clock"></i> حالة النشر:</label>
+                    <select name="status" onchange="toggleDate(this)" style="border-color: #17a2b8;">
+                        <option value="published">نشر فوري (مرئي للزوار)</option>
+                        <option value="draft">مسودة (مخفي)</option>
+                        <option value="scheduled">جدولة مستقبلية</option>
+                    </select>
+                    <input type="datetime-local" name="publish_at" class="datetime-input">
+
+                    <button type="submit" class="cta-button" style="margin-top: 15px;"><i
+                            class="fas fa-paper-plane"></i> حفظ ونشر</button>
                 </form>
             </div>
         </div>
 
-        <div id="posts-tab" class="tab-content">
-            <div class="admin-card" style="border-top: 3px solid var(--primary-gold);">
-                <h2><i class="fas fa-tasks"></i> إدارة جميع المنشورات والمشاريع</h2>
+        <div id="manage-posts-tab" class="tab-content">
+            <div class="admin-card">
+                <h2><i class="fas fa-sliders-h"></i> التحكم الشامل بالمنشورات</h2>
+
+                <input type="text" id="searchInput" class="search-bar"
+                    placeholder="🔍 ابحث بالاسم في جميع الجداول أدناه..." onkeyup="filterTables()">
 
                 <h3 style="margin-top: 20px; color: var(--primary-gold);"><i class="fas fa-code"></i> المشاريع التقنية
                 </h3>
@@ -345,11 +343,8 @@
                     <tr>
                         <td>{{ project.title }}</td>
                         <td>{{ project.views }} <i class="fas fa-eye" style="color: var(--primary-gold);"></i></td>
-                        <td>
-                            <span class="{% if project.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">
-                                {% if project.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}
-                            </span>
-                        </td>
+                        <td><span class="{% if project.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{%
+                                if project.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}</span></td>
                         <td>
                             <a href="{{ url_for('admin.toggle_visibility', type='project', id=project.id) }}"
                                 class="action-btn btn-toggle"><i class="fas fa-eye-slash"></i> إخفاء/إظهار</a>
@@ -363,7 +358,7 @@
                     {% endfor %}
                 </table>
 
-                <h3 style="margin-top: 40px; color: #17a2b8;"><i class="fas fa-laptop-code"></i> منشورات التقنية</h3>
+                <h3 style="margin-top: 40px; color: #17a2b8;"><i class="fas fa-laptop-code"></i> المقالات التقنية</h3>
                 <table class="management-table">
                     <tr>
                         <th>العنوان</th>
@@ -375,11 +370,8 @@
                     <tr>
                         <td>{{ article.title }}</td>
                         <td>{{ article.views }} <i class="fas fa-book-reader" style="color: #17a2b8;"></i></td>
-                        <td>
-                            <span class="{% if article.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">
-                                {% if article.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}
-                            </span>
-                        </td>
+                        <td><span class="{% if article.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{%
+                                if article.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}</span></td>
                         <td>
                             <a href="{{ url_for('admin.toggle_visibility', type='article', id=article.id) }}"
                                 class="action-btn btn-toggle"><i class="fas fa-eye-slash"></i> إخفاء/إظهار</a>
@@ -393,7 +385,7 @@
                     {% endfor %}
                 </table>
 
-                <h3 style="margin-top: 40px; color: #28a745;"><i class="fas fa-chart-line"></i> منشورات التداول (SMC)
+                <h3 style="margin-top: 40px; color: #28a745;"><i class="fas fa-chart-line"></i> تحليلات التداول (SMC)
                 </h3>
                 <table class="management-table">
                     <tr>
@@ -406,11 +398,8 @@
                     <tr>
                         <td>{{ t_article.title }}</td>
                         <td>{{ t_article.views }} <i class="fas fa-chart-line" style="color: #28a745;"></i></td>
-                        <td>
-                            <span class="{% if t_article.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">
-                                {% if t_article.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}
-                            </span>
-                        </td>
+                        <td><span class="{% if t_article.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{%
+                                if t_article.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}</span></td>
                         <td>
                             <a href="{{ url_for('admin.toggle_visibility', type='trading_article', id=t_article.id) }}"
                                 class="action-btn btn-toggle"><i class="fas fa-eye-slash"></i> إخفاء/إظهار</a>
@@ -428,22 +417,21 @@
                 <table class="management-table">
                     <tr>
                         <th>المنتج</th>
-                        <th>النقرات</th>
+                        <th>السعر</th>
                         <th>الحالة</th>
                         <th>إجراءات الإدارة</th>
                     </tr>
                     {% for prod in mql_products %}
                     <tr>
                         <td>{{ prod.name }}</td>
-                        <td>{{ prod.views }} <i class="fas fa-mouse-pointer" style="color: #fd7e14;"></i></td>
-                        <td>
-                            <span class="{% if prod.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">
-                                {% if prod.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}
-                            </span>
-                        </td>
+                        <td>{{ prod.price }}</td>
+                        <td><span class="{% if prod.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{% if
+                                prod.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}</span></td>
                         <td>
                             <a href="{{ url_for('admin.toggle_visibility', type='mql_product', id=prod.id) }}"
                                 class="action-btn btn-toggle"><i class="fas fa-eye-slash"></i> إخفاء/إظهار</a>
+                            <a href="{{ url_for('admin.edit_mql_product', id=prod.id) }}" class="action-btn btn-edit"><i
+                                    class="fas fa-edit"></i> تعديل</a>
                             <a href="{{ url_for('admin.delete_item', type='mql_product', id=prod.id) }}"
                                 class="action-btn btn-delete" onclick="return confirm('تأكيد الحذف؟');"><i
                                     class="fas fa-trash"></i> حذف</a>
@@ -452,8 +440,8 @@
                     {% endfor %}
                 </table>
 
-                <h3 style="margin-top: 40px; color: #6f42c1;"><i class="fas fa-handshake"></i> شركاء التداول والبانرات
-                    (Brokers)</h3>
+                <h3 style="margin-top: 40px; color: #6f42c1;"><i class="fas fa-handshake"></i> شركاء التداول (Brokers)
+                </h3>
                 <table class="management-table">
                     <tr>
                         <th>اسم الشركة</th>
@@ -466,18 +454,16 @@
                         <td>{{ ad.name }}</td>
                         <td style="font-size: 0.8rem; color: #888; direction: ltr; text-align: left;">{{ ad.url[:35]
                             }}...</td>
-                        <td>
-                            <span class="{% if ad.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">
-                                {% if ad.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}
-                            </span>
-                        </td>
+                        <td><span class="{% if ad.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">{% if
+                                ad.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}</span></td>
                         <td>
                             <a href="{{ url_for('admin.toggle_visibility', type='broker_ad', id=ad.id) }}"
                                 class="action-btn btn-toggle"><i class="fas fa-eye-slash"></i> إخفاء/إظهار</a>
+                            <a href="{{ url_for('admin.edit_broker_ad', id=ad.id) }}" class="action-btn btn-edit"><i
+                                    class="fas fa-edit"></i> تعديل</a>
                             <a href="{{ url_for('admin.delete_item', type='broker_ad', id=ad.id) }}"
-                                class="action-btn btn-delete"
-                                onclick="return confirm('تأكيد الحذف النهائي للشريك؟');"><i class="fas fa-trash"></i>
-                                حذف</a>
+                                class="action-btn btn-delete" onclick="return confirm('تأكيد الحذف النهائي؟');"><i
+                                    class="fas fa-trash"></i> حذف</a>
                         </td>
                     </tr>
                     {% else %}
@@ -493,34 +479,30 @@
             <div class="admin-grid">
                 <div class="admin-card" style="overflow-x: auto;">
                     <h2><i class="fas fa-globe-asia" style="color: #17a2b8;"></i> التوزع الجغرافي للزوار</h2>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                        <tr style="background: rgba(255, 255, 255, 0.05);">
-                            <th style="padding: 15px; text-align: right;">الدولة</th>
-                            <th style="padding: 15px; text-align: right;">الزوار</th>
+                    <table class="management-table">
+                        <tr>
+                            <th>الدولة</th>
+                            <th>الزوار</th>
                         </tr>
                         {% for country, count in country_stats %}
                         <tr>
-                            <td style="padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03);">{{ country }}
-                            </td>
-                            <td
-                                style="padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); color: var(--primary-gold);">
-                                {{ count }}</td>
+                            <td>{{ country }}</td>
+                            <td style="color: var(--primary-gold);">{{ count }}</td>
                         </tr>
                         {% endfor %}
                     </table>
                 </div>
                 <div class="admin-card" style="overflow-x: auto;">
                     <h2><i class="fas fa-link" style="color: #4caf50;"></i> مصادر الزيارات</h2>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                        <tr style="background: rgba(255, 255, 255, 0.05);">
-                            <th style="padding: 15px; text-align: right;">المصدر</th>
-                            <th style="padding: 15px; text-align: right;">الزوار</th>
+                    <table class="management-table">
+                        <tr>
+                            <th>المصدر</th>
+                            <th>الزوار</th>
                         </tr>
                         {% for src, count in source_stats %}
                         <tr>
-                            <td style="padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03);">{{ src }}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.03); color: #4caf50;">
-                                {{ count }}</td>
+                            <td>{{ src }}</td>
+                            <td style="color: #4caf50;">{{ count }}</td>
                         </tr>
                         {% endfor %}
                     </table>
@@ -567,6 +549,30 @@
             </div>
         </div>
 
+        <div id="settings-tab" class="tab-content">
+            <div class="admin-card" style="border-top: 3px solid #ff4a4a; max-width: 500px; margin: 0 auto;">
+                <h2 style="color: #ff4a4a; text-align: center;"><i class="fas fa-shield-alt"></i> إعدادات حماية اللوحة
+                </h2>
+                <p style="text-align: center; color: var(--gray-text); margin-bottom: 20px; font-size: 0.9rem;">قم
+                    بتحديث بيانات تسجيل الدخول الخاصة بك لحماية النظام.</p>
+
+                <form action="{{ url_for('admin.update_settings') }}" method="POST" class="admin-form">
+                    <label style="color: #fff; margin-bottom: 5px; display: block;">اسم المستخدم الجديد:</label>
+                    <input type="text" name="new_username" placeholder="مثال: mustafa_admin" required
+                        style="border-color: #ff4a4a;">
+
+                    <label style="color: #fff; margin-bottom: 5px; display: block; margin-top: 10px;">كلمة المرور
+                        الجديدة:</label>
+                    <input type="password" name="new_password" placeholder="أدخل كلمة مرور قوية" required
+                        style="border-color: #ff4a4a;">
+
+                    <button type="submit" class="cta-button"
+                        style="background: rgba(255,74,74,0.1) !important; color: #ff4a4a !important; border: 1px solid #ff4a4a; width: 100%; margin-top: 15px;"><i
+                            class="fas fa-save"></i> تحديث الإعدادات</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -574,7 +580,6 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
         }
@@ -589,6 +594,24 @@
                 dateInput.style.display = 'none';
                 dateInput.required = false;
             }
+        }
+
+        // دالة البحث الذكي داخل جداول الإدارة
+        function filterTables() {
+            let input = document.getElementById("searchInput").value.toUpperCase();
+            let tables = document.querySelectorAll(".management-table");
+
+            tables.forEach(table => {
+                let tr = table.getElementsByTagName("tr");
+                for (let i = 1; i < tr.length; i++) {
+                    let rowContent = tr[i].textContent || tr[i].innerText;
+                    if (rowContent.toUpperCase().indexOf(input) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            });
         }
     </script>
 </body>

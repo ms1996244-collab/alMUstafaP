@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <title>تعديل MQL5</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-form input,
+        .admin-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #fd7e14;
+            color: #fff;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body class="admin-page">
+    <div class="admin-container" style="max-width: 600px;">
+        <h2 style="color: #fd7e14;">تعديل المنتج: {{ prod.name }}</h2>
+        <form action="{{ url_for('admin.edit_mql_product', id=prod.id) }}" method="POST" enctype="multipart/form-data"
+            class="admin-form">
+            <input type="text" name="name" value="{{ prod.name }}" required>
+            <textarea name="description" rows="4" required>{{ prod.description }}</textarea>
+            <input type="text" name="price" value="{{ prod.price }}" required>
+            <input type="text" name="mql_url" value="{{ prod.mql_url }}" required>
+            <label style="color: #ccc;">الصورة الحالية: {{ prod.icon }}</label>
+            <input type="text" name="icon" value="{{ prod.icon }}" placeholder="تعديل الرابط">
+            <input type="file" name="image_file" accept="image/*">
+            <button type="submit" class="cta-button"
+                style="background: rgba(253,126,20,0.1); color: #fd7e14; border-color: #fd7e14;">حفظ</button>
+        </form>
+    </div>
+</body>
+
+</html>

@@ -33,7 +33,7 @@ class Article(db.Model):
     status = db.Column(db.String(20), default='published')
     publish_at = db.Column(db.DateTime, nullable=True)
 
-# ================= 2. جداول قسم التداول والأسواق المالية (الجديدة) =================
+# ================= 2. جداول قسم التداول والأسواق المالية =================
 class TradingArticle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
@@ -97,8 +97,14 @@ class Message(db.Model):
 
 class Lead(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    contact_info = db.Column(db.String(150), nullable=False) # تم التصحيح هنا
+    contact_info = db.Column(db.String(150), nullable=False)
     app_type = db.Column(db.String(100), nullable=False)
     estimated_price = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_read = db.Column(db.Boolean, default=False)
+
+# ================= 4. نظام الأمان والإعدادات (جديد) =================
+class AdminSettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), nullable=False, unique=True)
+    password_hash = db.Column(db.String(255), nullable=False)
