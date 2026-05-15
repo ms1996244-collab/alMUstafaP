@@ -429,6 +429,7 @@
                     <tr>
                         <th>المنتج</th>
                         <th>النقرات</th>
+                        <th>الحالة</th>
                         <th>إجراءات الإدارة</th>
                     </tr>
                     {% for prod in mql_products %}
@@ -436,12 +437,52 @@
                         <td>{{ prod.name }}</td>
                         <td>{{ prod.views }} <i class="fas fa-mouse-pointer" style="color: #fd7e14;"></i></td>
                         <td>
+                            <span class="{% if prod.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">
+                                {% if prod.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}
+                            </span>
+                        </td>
+                        <td>
                             <a href="{{ url_for('admin.toggle_visibility', type='mql_product', id=prod.id) }}"
                                 class="action-btn btn-toggle"><i class="fas fa-eye-slash"></i> إخفاء/إظهار</a>
                             <a href="{{ url_for('admin.delete_item', type='mql_product', id=prod.id) }}"
                                 class="action-btn btn-delete" onclick="return confirm('تأكيد الحذف؟');"><i
                                     class="fas fa-trash"></i> حذف</a>
                         </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+                <h3 style="margin-top: 40px; color: #6f42c1;"><i class="fas fa-handshake"></i> شركاء التداول والبانرات
+                    (Brokers)</h3>
+                <table class="management-table">
+                    <tr>
+                        <th>اسم الشركة</th>
+                        <th>الرابط</th>
+                        <th>الحالة</th>
+                        <th>إجراءات الإدارة</th>
+                    </tr>
+                    {% for ad in broker_ads %}
+                    <tr>
+                        <td>{{ ad.name }}</td>
+                        <td style="font-size: 0.8rem; color: #888; direction: ltr; text-align: left;">{{ ad.url[:35]
+                            }}...</td>
+                        <td>
+                            <span class="{% if ad.is_visible %}badge-visible{% else %}badge-hidden{% endif %}">
+                                {% if ad.is_visible %}نشط/مرئي{% else %}مخفي{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.toggle_visibility', type='broker_ad', id=ad.id) }}"
+                                class="action-btn btn-toggle"><i class="fas fa-eye-slash"></i> إخفاء/إظهار</a>
+                            <a href="{{ url_for('admin.delete_item', type='broker_ad', id=ad.id) }}"
+                                class="action-btn btn-delete"
+                                onclick="return confirm('تأكيد الحذف النهائي للشريك؟');"><i class="fas fa-trash"></i>
+                                حذف</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">لا يوجد شركاء أو بانرات مسجلة.</td>
                     </tr>
                     {% endfor %}
                 </table>
