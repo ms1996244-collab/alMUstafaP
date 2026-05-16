@@ -1,17 +1,18 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify
-from core.models import TradingArticle, MqlProduct, BrokerAd, ViewTracker, db
+from core.models import TradingArticle, MqlProduct, BrokerAd, ViewTracker, TradingNews, db
 import hashlib
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta
 
 trading_bp = Blueprint('trading', __name__)
 
-def update_trading_view(trading_article_id=None, mql_product_id=None):
+def update_trading_view(trading_article_id=None, mql_product_id=None, news_id=None):
     raw_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     if raw_ip:
         clean_ip = raw_ip.split(',')[0].strip()
         ip_hash = hashlib.sha256(clean_ip.encode('utf-8')).hexdigest()
         today_iraq = (datetime.utcnow() + timedelta(hours=3)).date()
         
+        # تحقق من المشاهدة لتجنب التكرار
         viewed = ViewTracker.query.filter_by(
             ip_hash=ip_hash, 
             trading_article_id=trading_article_id,
@@ -23,15 +24,17 @@ def update_trading_view(trading_article_id=None, mql_product_id=None):
             target = None
             if trading_article_id: target = TradingArticle.query.get(trading_article_id)
             elif mql_product_id: target = MqlProduct.query.get(mql_product_id)
+            elif news_id: target = TradingNews.query.get(news_id)
             
             if target:
                 target.views = (target.views or 0) + 1
-                db.session.add(ViewTracker(
+                new_view = ViewTracker(
                     ip_hash=ip_hash, 
                     trading_article_id=trading_article_id,
                     mql_product_id=mql_product_id,
                     view_date=today_iraq
-                ))
+                )
+                db.session.add(new_view)
                 db.session.commit()
 
 @trading_bp.route('/trading')
@@ -55,8 +58,11 @@ def trading_portal(lang='ar'):
         mql_products.append(p)
         
     broker_ads = BrokerAd.query.filter_by(is_visible=True).order_by(BrokerAd.display_order.asc()).all()
+    
+    # جلب الأخبار الحصرية
+    news = TradingNews.query.filter_by(is_visible=True).order_by(TradingNews.created_at.desc()).limit(10).all()
 
-    return render_template('trading/trading_portal.html', articles=trading_articles, products=mql_products, brokers=broker_ads)
+    return render_template('trading/trading_portal.html', articles=trading_articles, products=mql_products, brokers=broker_ads, news=news)
 
 @trading_bp.route('/trading_article/<int:id>')
 @trading_bp.route('/<lang>/trading_article/<int:id>')
@@ -79,3 +85,13 @@ def like_trading_article(id):
     article.likes = (article.likes or 0) + 1
     db.session.commit()
     return jsonify({'status': 'success', 'likes': article.likes})
+
+# مسار عرض الأخبار الحصرية الجديد
+@trading_bp.route('/news/<int:id>')
+@trading_bp.route('/<lang>/news/<int:id>')
+def news_details(id, lang='ar'):
+    news_item = TradingNews.query.get_or_404(id)
+    update_trading_view(news_id=id)
+    news_item.display_title = news_item.title_en if lang == 'en' and news_item.title_en else news_item.title
+    news_item.display_content = news_item.content_en if lang == 'en' and news_item.content_en else news_item.content
+    return render_template('trading/news_details.html', news=news_item)

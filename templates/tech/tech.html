@@ -4,81 +4,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="dyA9LEGYcrA2S66IPog3ngx4Rh_UGNiIUBqilzJ7QSI" />
-
     <title>Al-Mustafa Programming | {{ t.hero_subtitle }}</title>
     <meta name="description" content="{{ t.meta_desc_home }}">
-    <meta name="keywords"
-        content="مبرمج فلاتر, تطوير تطبيقات الموبايل, Clean Architecture, MQL5, SMC, تصميم تطبيقات فاخرة, Mustafa Ali, Flutter Developer">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
     <style>
-        /* إعدادات إدخال رقم الهاتف */
+        /* إصلاح إعدادات رقم الهاتف وفورم التواصل */
         .iti {
             width: 100%;
             margin-bottom: 15px;
-        }
-
-        .iti__flag {
-            background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags.png");
-        }
-
-        @media (min-resolution: 2x) {
-            .iti__flag {
-                background-image: url("https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/img/flags@2x.png");
-            }
+            display: block;
         }
 
         .iti__country-list {
-            background-color: var(--dark-bg);
+            background-color: #111;
             border: 1px solid var(--primary-gold);
-            color: var(--light-text);
+            color: #fff;
             text-align: left;
             direction: ltr;
-        }
-
-        .iti__country-name {
-            color: var(--light-text);
-        }
-
-        .iti__dial-code {
-            color: var(--primary-gold);
+            border-radius: 8px;
         }
 
         .iti__country.iti__highlight {
             background-color: rgba(212, 175, 55, 0.2);
         }
 
-        /* الحاسبة */
-        .calculator-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--primary-gold);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
+        .iti__dial-code {
+            color: var(--primary-gold);
         }
 
-        .calc-select {
+        .phone-input-container input {
+            padding-left: 55px !important;
+            height: 50px;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 8px;
+            outline: none;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            text-align: left;
+        }
+
+        .phone-input-container input:focus {
+            border-color: var(--primary-gold) !important;
+        }
+
+        .contact-form input[type="text"],
+        .contact-form input[type="email"],
+        .contact-form textarea {
             width: 100%;
             padding: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--glass-border);
             color: #fff;
-            border-radius: 10px;
-            font-size: 1.1rem;
+            border-radius: 8px;
+            outline: none;
+            font-family: inherit;
         }
 
-        .price-result {
-            font-size: 2.5rem;
-            color: var(--primary-gold);
-            font-weight: bold;
-            margin: 20px 0;
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            border-color: var(--primary-gold);
         }
 
         /* قسم الأسئلة الشائعة والآراء */
@@ -138,9 +127,7 @@
             border: 1px solid var(--primary-gold);
         }
 
-        /* =========================================
-           تنسيقات العرض السينمائي الأفقي للمشاريع
-           ========================================= */
+        /* السلايدر و CTA */
         .horizontal-slider-container {
             position: relative;
             width: 100%;
@@ -156,7 +143,6 @@
             scroll-behavior: smooth;
         }
 
-        /* تجميل شريط التمرير */
         .horizontal-slider::-webkit-scrollbar {
             height: 8px;
         }
@@ -252,9 +238,6 @@
             }
         }
 
-        /* =========================================
-           تنسيق قسم بوابة التداول (الجديد)
-           ========================================= */
         .trading-promo-box {
             background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(7, 8, 10, 0.8) 100%);
             border: 1px solid #28a745;
@@ -280,9 +263,6 @@
             color: #000 !important;
         }
 
-        /* =========================================
-           تنسيق قسم المدونة التقنية (CTA)
-           ========================================= */
         .blog-cta-box {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
             border: 1px solid var(--primary-gold);
@@ -297,8 +277,6 @@
 </head>
 
 <body>
-    <a href="https://wa.me/9647821800086" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
-
     <header class="navbar">
         <div class="logo">
             <h1><a href="{{ url_for('tech.home', lang=current_lang) }}">Al-Mustafa</a></h1>
@@ -311,8 +289,7 @@
                 <li><a href="/trading" class="nav-trading-btn"><i class="fas fa-chart-line"></i> {{ t.nav_trading }}</a>
                 </li>
                 <li><a href="#blog">{{ t.nav_blog }}</a></li>
-                <li><a href="#calculator">{{ t.nav_calc }}</a></li>
-                <li><a href="/about">{{ t.nav_about }}</a></li>
+                <li><a href="{{ url_for('tech.home', lang=current_lang) }}#about">{{ t.nav_about }}</a></li>
                 <li><a href="/contact-us">{{ t.nav_contact }}</a></li>
 
                 {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
@@ -322,6 +299,8 @@
                 {% set switch_url = url_for('tech.article_details', id=article.id, lang=switch_lang) %}
                 {% elif request.endpoint == 'tech.blog' %}
                 {% set switch_url = url_for('tech.blog', lang=switch_lang) %}
+                {% elif request.endpoint == 'tech.tech_portal' %}
+                {% set switch_url = url_for('tech.tech_portal', lang=switch_lang) %}
                 {% else %}
                 {% set switch_url = url_for('tech.home', lang=switch_lang) %}
                 {% endif %}
@@ -375,10 +354,9 @@
         <div class="trading-promo-box">
             <i class="fas fa-chart-pie" style="font-size: 4rem; color: #28a745; margin-bottom: 20px;"></i>
             <h2 style="color: #fff; font-size: 2.2rem; margin-bottom: 20px;">بوابة التداول والأنظمة الذكية</h2>
-            <p style="color: #ccc; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
-                نطور إكسبرتات ومؤشرات <strong>MQL5</strong> مخصصة، ونقدم تحليلات يومية حية للذهب والأسواق العالمية بناءً
-                على استراتيجيات SMC والسيولة.
-            </p>
+            <p style="color: #ccc; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">نطور إكسبرتات ومؤشرات
+                <strong>MQL5</strong> مخصصة، ونقدم تحليلات يومية حية للذهب والأسواق العالمية بناءً على استراتيجيات SMC
+                والسيولة.</p>
             <a href="/trading" class="cta-button"
                 style="background: #28a745; border-color: #28a745; padding: 15px 40px; font-size: 1.1rem;"><i
                     class="fas fa-external-link-alt"></i> دخول بوابة التداول المباشرة</a>
@@ -393,62 +371,12 @@
         <div class="blog-cta-box">
             <i class="fas fa-laptop-code" style="font-size: 4rem; color: var(--primary-gold); margin-bottom: 20px;"></i>
             <h3 style="color: #fff; font-size: 2rem; margin-bottom: 20px;">خلاصة الخبرة البرمجية والهندسية</h3>
-            <p style="color: #ccc; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
-                اكتشف مقالات تقنية متخصصة وشروحات عميقة في Clean Architecture، بناء تطبيقات Flutter الفاخرة، وبرمجة
-                استراتيجيات التداول الذكية (SMC).
-            </p>
+            <p style="color: #ccc; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">اكتشف مقالات تقنية متخصصة
+                وشروحات عميقة في Clean Architecture، بناء تطبيقات Flutter الفاخرة، وبرمجة استراتيجيات التداول الذكية
+                (SMC).</p>
             <a href="{{ url_for('tech.blog', lang=current_lang) }}" class="cta-button"
                 style="padding: 15px 40px; font-size: 1.1rem;"><i class="fas fa-book-reader"></i> تصفح المدونة
                 التقنية</a>
-        </div>
-    </section>
-
-    <section id="calculator" class="portfolio reveal-on-scroll" style="padding: 80px 5%;">
-        <div class="section-title">
-            <h2>{{ t.calc_title }}</h2>
-            <div class="title-underline"></div>
-            <p style="color: var(--gray-text); margin-top: 15px;">{{ t.calc_subtitle }}</p>
-        </div>
-
-        <div class="calculator-card">
-            <select id="appType" class="calc-select" onchange="calculatePrice()">
-                <option value="0">{{ t.calc_type_0 }}</option>
-                <option value="1200">{{ t.calc_type_1 }}</option>
-                <option value="1000">{{ t.calc_type_2 }}</option>
-                <option value="2000">{{ t.calc_type_3 }}</option>
-                <option value="3000">{{ t.calc_type_4 }}</option>
-            </select>
-
-            <select id="appDesign" class="calc-select" onchange="calculatePrice()">
-                <option value="0">{{ t.calc_design_0 }}</option>
-                <option value="0">{{ t.calc_design_1 }}</option>
-                <option value="500">{{ t.calc_design_2 }}</option>
-                <option value="200">{{ t.calc_design_3 }}</option>
-            </select>
-
-            <div id="priceDisplay" style="display: none;">
-                <p style="color: var(--light-text); font-size: 1.2rem;">{{ t.calc_est }}</p>
-                <div class="price-result">$<span id="finalPrice">0</span></div>
-
-                <div style="margin-top: 30px;">
-                    <input type="text" id="leadContact" placeholder="{{ t.calc_input }}" class="calc-select"
-                        style="max-width: 400px; display: inline-block; margin-left: 10px;">
-                    <button onclick="submitLead()" class="cta-button">{{ t.calc_btn }}</button>
-                </div>
-                <p id="leadSuccess" style="color: #4caf50; display: none; margin-top: 15px;">{{ t.calc_success }}</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="portfolio reveal-on-scroll" style="padding: 50px 8%;">
-        <div class="section-title">
-            <h2>{{ t.about_title }}</h2>
-            <div class="title-underline"></div>
-        </div>
-        <div class="calculator-card" style="max-width: 900px; padding: 40px; box-shadow: none;">
-            <p style="font-size: 1.2rem; color: var(--gray-text); line-height: 2;">
-                {{ t.about_text|safe }}
-            </p>
         </div>
     </section>
 
@@ -499,16 +427,15 @@
             <h2>{{ t.contact_title }}</h2>
             <div class="title-underline"></div>
         </div>
-        <form action="{{ url_for('tech.contact') }}" method="POST" class="contact-form">
+        <form action="{{ url_for('tech.contact') }}" method="POST" class="contact-form"
+            style="max-width: 600px; margin: 0 auto;">
             <input type="text" name="name" placeholder="{{ t.contact_name }}" required>
             <input type="email" name="email" placeholder="{{ t.contact_email }}" required>
             <div class="phone-input-container" dir="ltr">
-                <input type="tel" id="phone" name="phone" required
-                    style="text-align: left; background: rgba(255, 255, 255, 0.05); color: #fff;">
+                <input type="tel" id="phone" name="phone" required>
             </div>
-            <textarea name="content" rows="5" placeholder="{{ t.contact_msg }}" required
-                style="margin-top: 15px;"></textarea>
-            <button type="submit" class="cta-button">{{ t.contact_btn }}</button>
+            <textarea name="content" rows="5" placeholder="{{ t.contact_msg }}" required></textarea>
+            <button type="submit" class="cta-button" style="width: 100%;">{{ t.contact_btn }}</button>
         </form>
     </section>
 
@@ -534,37 +461,6 @@
                 });
             }
         });
-
-        function calculatePrice() {
-            let basePrice = parseInt(document.getElementById('appType').value);
-            let designPrice = parseInt(document.getElementById('appDesign').value);
-            if (basePrice > 0) {
-                document.getElementById('priceDisplay').style.display = 'block';
-                let total = basePrice + designPrice;
-                document.getElementById('finalPrice').innerText = total.toLocaleString();
-            } else { document.getElementById('priceDisplay').style.display = 'none'; }
-        }
-
-        function submitLead() {
-            let contactVal = document.getElementById('leadContact').value;
-            let type = document.getElementById('appType').options[document.getElementById('appType').selectedIndex].text;
-            let price = document.getElementById('finalPrice').innerText;
-            if (contactVal.length < 5) { alert("Please enter valid contact info / الرجاء إدخال بيانات تواصل صحيحة"); return; }
-
-            let formData = new FormData();
-            formData.append('contact_info', contactVal);
-            formData.append('app_type', type);
-            formData.append('estimated_price', price);
-
-            fetch('/submit_lead', { method: 'POST', body: formData })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        document.getElementById('leadSuccess').style.display = 'block';
-                        document.getElementById('leadContact').value = '';
-                    }
-                });
-        }
 
         function toggleFaq(element) {
             let answer = element.nextElementSibling;

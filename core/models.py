@@ -69,6 +69,16 @@ class BrokerAd(db.Model):
     image_url = db.Column(db.String(250), nullable=False)
     is_visible = db.Column(db.Boolean, default=True)
     display_order = db.Column(db.Integer, default=0)
+    
+class TradingNews(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    title_en = db.Column(db.String(200))
+    content = db.Column(db.Text, nullable=False)
+    content_en = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_visible = db.Column(db.Boolean, default=True)
+    views = db.Column(db.Integer, default=0)
 
 # ================= 3. جداول التتبع والرسائل =================
 class ViewTracker(db.Model):

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news.display_title }} | الأخبار الحصرية</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+        crossorigin="anonymous"></script>
+
+    <style>
+        .article-container {
+            max-width: 800px;
+            margin: 80px auto 100px;
+            padding: 0 5%;
+        }
+
+        .article-title {
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: right;
+            line-height: 1.5;
+        }
+
+        .article-meta-info {
+            color: #d4af37;
+            display: block;
+            margin-bottom: 30px;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .article-body p {
+            font-size: 1.2rem;
+            line-height: 2;
+            color: #d1d1d1;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        /* حاوية الإعلانات (AdSense) */
+        .ad-container {
+            margin: 30px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed #555;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .ad-label {
+            display: block;
+            font-size: 0.75rem;
+            color: #777;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body class="details-page-modern" style="background-color: #07080a;">
+
+    <header class="navbar"
+        style="background: rgba(7, 8, 10, 0.95); padding: 15px 5%; border-bottom: 1px solid #2a2e39;">
+        <div class="logo">
+            <h1 style="color: #d4af37;"><a href="/trading" style="color: inherit;">Al-Mustafa Finance</a></h1>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="/trading"><i class="fas fa-arrow-right"></i> {{ 'Back to Trading' if current_lang == 'en'
+                        else 'العودة لبوابة التداول' }}</a></li>
+                {% set switch_lang = 'en' if current_lang == 'ar' else 'ar' %}
+                <li><a href="{{ url_for('trading.news_details', id=news.id, lang=switch_lang) }}" class="lang-btn"
+                        style="border: 1px solid #d4af37; padding: 5px 15px; border-radius: 20px; color: #d4af37; text-decoration: none;">
+                        <i class="fas fa-globe"></i> {{ 'English' if current_lang == 'ar' else 'العربية' }}
+                    </a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="article-container">
+        <h1 class="article-title">{{ news.display_title }}</h1>
+        <span class="article-meta-info"><i class="far fa-clock"></i> نُشر في: {{ news.created_at.strftime('%Y-%m-%d
+            %H:%M') }} | <i class="fas fa-eye"></i> {{ news.views }} قراءة</span>
+
+        <div class="article-body">
+            {% set paragraphs = news.display_content.split('.') %}
+            {% for para in paragraphs %}
+            {% if para.strip()|length > 10 %}
+            <p>{{ para.strip() }}.</p>
+
+            {% if loop.index == 2 %}
+            <div class="ad-container">
+                <span class="ad-label">إعلان ممول</span>
+                <ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-layout="in-article"
+                    data-ad-format="fluid" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="YYYYYYYYYY"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="ad-container">
+            <span class="ad-label">مساحة إعلانية</span>
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="ZZZZZZZZZZ" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+    </div>
+</body>
+
+</html>

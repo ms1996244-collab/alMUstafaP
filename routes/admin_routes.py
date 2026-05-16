@@ -147,7 +147,7 @@ def login():
 @admin_bp.route('/logout')
 def logout():
     session.pop('logged_in', None)
-    return redirect(url_for('tech.home'))
+    return redirect(url_for('admin.login'))
 
 @admin_bp.route('/admin/settings', methods=['POST'])
 @login_required
