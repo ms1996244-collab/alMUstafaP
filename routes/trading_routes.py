@@ -95,3 +95,8 @@ def news_details(id, lang='ar'):
     news_item.display_title = news_item.title_en if lang == 'en' and news_item.title_en else news_item.title
     news_item.display_content = news_item.content_en if lang == 'en' and news_item.content_en else news_item.content
     return render_template('trading/news_details.html', news=news_item)
+
+@trading_bp.route('/live-chart')
+@trading_bp.route('/<lang>/live-chart')
+def live_chart(lang='ar'):
+    return render_template('trading/live_chart.html')

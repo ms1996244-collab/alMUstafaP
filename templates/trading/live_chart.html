@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الشارت الاحترافي | Al-Mustafa Finance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #07080a;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .chart-header {
+            background: rgba(7, 8, 10, 0.95);
+            padding: 15px 5%;
+            border-bottom: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chart-container {
+            width: 100vw;
+            height: calc(100vh - 70px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="chart-header">
+        <div class="logo">
+            <h1 style="color: #d4af37; margin: 0; font-size: 1.5rem;"><i class="fas fa-chart-line"></i> Al-Mustafa
+                Finance</h1>
+        </div>
+        <div>
+            <a href="/trading" class="cta-button"
+                style="padding: 8px 15px; font-size: 0.9rem; background: transparent; color: #fff; border: 1px solid #555;"><i
+                    class="fas fa-arrow-right"></i> {{ 'Back' if current_lang == 'en' else 'العودة للتداول' }}</a>
+        </div>
+    </header>
+
+    <div class="chart-container">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div id="tradingview_advanced_chart" style="height:100%;width:100%"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+                new TradingView.widget(
+                    {
+                        "autosize": true,
+                        "symbol": "OANDA:XAUUSD",
+                        "interval": "60",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "ar",
+                        "enable_publishing": false,
+                        "backgroundColor": "#131722",
+                        "gridColor": "#1f293d",
+                        "hide_top_toolbar": false,
+                        "hide_legend": false,
+                        "save_image": false,
+                        "container_id": "tradingview_advanced_chart",
+                        "toolbar_bg": "#f1f3f6"
+                    }
+                );
+            </script>
+        </div>
+    </div>
+
+</body>
+
+</html>

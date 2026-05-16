@@ -121,6 +121,16 @@
             padding-right: 15px;
         }
 
+        /* تأثيرات حركة وتوهج لبنرات الشارت والأزرار */
+        .chart-cta-banner {
+            transition: 0.4s ease;
+        }
+
+        .chart-cta-banner:hover {
+            border-color: #28a745 !important;
+            box-shadow: 0 15px 40px rgba(40, 167, 69, 0.15) !important;
+        }
+
         @media (max-width: 1024px) {
             .portal-layout {
                 flex-direction: column;
@@ -165,7 +175,9 @@
     </header>
 
     <div class="portal-layout">
+
         <aside class="sidebar-right">
+
             <div class="widget-box">
                 <div class="widget-header"><i class="fas fa-newspaper" style="color: #d4af37;"></i> أخبارنا الحصرية
                     (مباشر)</div>
@@ -207,6 +219,25 @@
         </aside>
 
         <main class="main-left">
+
+            <div class="chart-cta-banner"
+                style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(19, 23, 34, 0.9) 100%); border: 1px solid var(--primary-gold); padding: 35px; border-radius: 16px; margin-bottom: 45px; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);">
+                <i class="fas fa-chart-area"
+                    style="font-size: 3.5rem; color: var(--primary-gold); margin-bottom: 15px; display: inline-block;"></i>
+                <h2 style="margin: 0 0 10px 0; color: #fff; font-size: 1.8rem; font-weight: bold;">منصة التحليل الفني
+                    والشارت المتقدم الحية</h2>
+                <p
+                    style="color: #b0b3bg; margin: 0 0 25px 0; font-size: 1.05rem; line-height: 1.7; max-width: 750px; margin-left: auto; margin-right: auto;">
+                    تتبع حركة أسعار الذهب <span style="color: var(--primary-gold); font-weight: bold;">XAUUSD</span>،
+                    الأزواج الرئيسية، والمؤشرات العالمية عبر أدوات تحليل متقدمة ومستويات سيولة لحظية بالكامل من داخل
+                    موقعنا.
+                </p>
+                <a href="{{ url_for('trading.live_chart', lang=current_lang) }}" class="cta-button"
+                    style="background: #28a745; color: #fff; border-color: #28a745; font-weight: bold; padding: 14px 40px; font-size: 1.1rem; border-radius: 8px; text-decoration: none; display: inline-block;">
+                    <i class="fas fa-expand-arrows-alt"></i> فتح منصة الشارت بكامل الشاشة
+                </a>
+            </div>
+
             <div class="section-header"
                 style="margin-bottom: 30px; border-bottom: 1px solid #2a2e39; padding-bottom: 15px;">
                 <h2 style="font-size: 2rem; color: #fff;"><i class="fas fa-robot" style="color: #fd7e14;"></i> MQL5
