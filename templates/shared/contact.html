@@ -8,6 +8,65 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* إصلاح تشوه مكتبة رقم الهاتف ليتناسب مع الثيم المظلم */
+        .iti {
+            width: 100%;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .iti__country-list {
+            background-color: #111;
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            text-align: left;
+            border-radius: 8px;
+        }
+
+        .iti__divider {
+            border-bottom: 1px solid #333;
+        }
+
+        .iti__country.iti__highlight {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .iti__dial-code {
+            color: var(--primary-gold);
+        }
+
+        .phone-input-container input {
+            padding-left: 55px !important;
+            height: 50px;
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .phone-input-container input:focus {
+            border-color: var(--primary-gold) !important;
+        }
+
+        .tech-contact-form input[type="text"],
+        .tech-contact-form input[type="email"],
+        .tech-contact-form textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            border-radius: 8px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .tech-contact-form input:focus,
+        .tech-contact-form textarea:focus {
+            border-color: var(--primary-gold);
+        }
+    </style>
 </head>
 
 <body>
@@ -24,24 +83,29 @@
         </nav>
     </header>
 
-    <section class="tech.contact-section" style="margin-top: 100px; background: transparent;">
-        <div class="section-title">
+    <section class="tech-contact-section"
+        style="margin-top: 100px; background: transparent; display: flex; flex-direction: column; align-items: center; padding: 0 20px;">
+        <div class="section-title" style="text-align: center;">
             <h2>{{ t.contact_title }}</h2>
-            <div class="title-underline"></div>
-            <p style="color: var(--gray-text); margin-top: 15px;">سواء كنت تبحث عن تطبيق برمجي أو نظام تداول، نحن هنا
-                للاستماع.</p>
+            <div class="title-underline" style="margin: 0 auto;"></div>
+            <p style="color: var(--gray-text); margin-top: 15px; margin-bottom: 40px;">سواء كنت تبحث عن تطبيق برمجي أو
+                نظام تداول، نحن هنا للاستماع.</p>
         </div>
-        <form action="{{ url_for('tech.tech.contact') }}" method="POST" class="tech.contact-form"
-            style="background: rgba(255,255,255,0.02); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border);">
+
+        <form action="{{ url_for('tech.contact') }}" method="POST" class="tech-contact-form"
+            style="background: rgba(255,255,255,0.02); padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border); width: 100%; max-width: 600px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+
             <input type="text" name="name" placeholder="{{ t.contact_name }}" required>
             <input type="email" name="email" placeholder="{{ t.contact_email }}" required>
+
             <div class="phone-input-container" dir="ltr">
                 <input type="tel" id="phone" name="phone" required
                     style="text-align: left; background: rgba(0, 0, 0, 0.3); color: #fff; width: 100%;">
             </div>
-            <textarea name="content" rows="5" placeholder="{{ t.contact_msg }}" required
-                style="margin-top: 15px;"></textarea>
-            <button type="submit" class="cta-button" style="width: 100%;">{{ t.contact_btn }}</button>
+
+            <textarea name="content" rows="5" placeholder="{{ t.contact_msg }}" required></textarea>
+            <button type="submit" class="cta-button"
+                style="width: 100%; margin-top: 10px; padding: 15px; font-size: 1.1rem;">{{ t.contact_btn }}</button>
         </form>
     </section>
 
@@ -50,7 +114,8 @@
         const phoneInput = document.querySelector("#phone");
         if (phoneInput) {
             window.intlTelInput(phoneInput, {
-                initialCountry: "iq", preferredCountries: ["iq", "sa", "ae", "us"],
+                initialCountry: "iq",
+                preferredCountries: ["iq", "sa", "ae", "us"],
                 utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
                 separateDialCode: true
             });
